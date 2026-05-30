@@ -1,9 +1,12 @@
-// messenger.js - Handles Channels and Messaging logic
+/**
+ * messenger.js - Handles Channels and Messaging logic
+ * Updated to support Tailwind CSS UI and Flowbite List-Group design
+ */
 
-// Global state
+// Global state tracking the currently active channel
 let currentChannelState = {
     uri: null,
-    index: null, // needed for sending messages
+    index: null, // Needed for sending messages to the correct backend index
     name: null
 };
 
@@ -11,7 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
     loadChannels();
     loadPersonsForRecipient(); // Load available persons for recipient selection
 
-    // Add enter key listener for textarea
+    // Add enter key listener for textarea to send message on "Enter"
     const input = document.getElementById('message-input');
     if (input) {
         input.addEventListener('keydown', function (e) {
@@ -23,6 +26,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
+/**
+ * Fetches channels from the API and dynamically renders them using Tailwind CSS classes.
+ * @return {Promise<void>}
+ */
 async function loadChannels() {
     console.log('Loading channels...');
     const container = document.getElementById('channel-list');
@@ -35,36 +42,57 @@ async function loadChannels() {
         const data = await response.json();
         console.log('Channels data:', data);
 
-        // Keep the header with create button
+        // Render the base wrapper for the Tailwind List Group
         container.innerHTML = `
-            <div class="channels-header" style="display:flex; align-items:center; justify-content:space-between;">
-                <h3>Channels</h3>
-                <button class="btn-icon-small" onclick="showCreateChannelModal()" title="Create Channel">+</button>
+            <div class="w-full text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-lg dark:bg-dark-card dark:border-dark-border dark:text-white shadow-sm" id="dynamic-channel-list">
             </div>
-            <div class="channel-list">
         `;
 
+        const listGroup = document.getElementById('dynamic-channel-list');
+
         if (data.channels && data.channels.length > 0) {
-            data.channels.forEach(channel => {
-                const item = document.createElement('div');
-                item.className = `channel-item ${currentChannelState.uri === channel.uri ? 'active' : ''}`;
+            data.channels.forEach((channel, index) => {
+                const isLast = index === data.channels.length - 1;
+                const isActive = currentChannelState.uri === channel.uri;
 
-                // Pass index, name, uri
-                item.onclick = () => selectChannel(channel.uri, channel.name, channel.index);
+                const item = document.createElement('a');
 
+                // Build Tailwind classes dynamically
+                let baseClasses = "channel-item flex justify-between items-center w-full px-4 py-3 cursor-pointer transition-colors ";
+
+                // Borders and rounded corners
+                if (!isLast) baseClasses += "border-b border-gray-200 dark:border-dark-border ";
+                if (index === 0) baseClasses += "rounded-t-lg ";
+                if (isLast) baseClasses += "rounded-b-lg ";
+
+                // Active vs Inactive state colors
+                if (isActive) {
+                    baseClasses += "bg-gray-100 text-primary-600 dark:bg-gray-800 dark:text-primary-400";
+                    item.setAttribute('aria-current', 'true');
+                } else {
+                    baseClasses += "hover:bg-gray-50 hover:text-primary-600 dark:hover:bg-gray-800 dark:hover:text-primary-400 text-gray-900 dark:text-white";
+                }
+
+                item.className = baseClasses;
+
+                // Attach click event to handle UI update and API fetch
+                item.onclick = () => selectChannel(item, channel.uri, channel.name, channel.index);
+
+                // Render internal HTML using FontAwesome and Tailwind
                 item.innerHTML = `
-                    <div class="channel-info">
-                        <div class="channel-name">${channel.name}</div>
-                        <div class="channel-uri">${channel.uri}</div>
+                    <div class="flex items-center truncate">
+                        <i class="fas fa-hashtag w-4 h-4 mr-2 ${isActive ? '' : 'text-gray-400 dark:text-gray-500'} channel-icon"></i>
+                        <span class="truncate name-text ${isActive ? 'font-bold' : ''}">${escapeHtml(channel.name)}</span>
                     </div>
-                    <div class="channel-meta">
-                        <div class="channel-badge">${channel.messages}</div>
-                        <button onclick="deleteChannel('${channel.uri}', event)" title="Delete Channel" class="btn-delete-channel">
-                            ×
+                    <div class="flex items-center">
+                        <span class="text-xs text-gray-400 mr-2 bg-gray-100 dark:bg-gray-700 px-2 py-0.5 rounded-full">${channel.messages}</span>
+                        <button onclick="deleteChannel('${channel.uri}', event)" class="text-gray-400 hover:text-red-500 transition-colors" title="Delete Channel">
+                            <i class="fas fa-times"></i>
                         </button>
                     </div>
                 `;
-                container.querySelector('.channel-list').appendChild(item);
+
+                listGroup.appendChild(item);
             });
 
             // Update info panel count
@@ -72,134 +100,97 @@ async function loadChannels() {
             if (countEl) countEl.textContent = data.channels.length;
 
         } else {
-            const empty = document.createElement('div');
-            empty.style.padding = '20px';
-            empty.style.textAlign = 'center';
-            empty.style.color = '#999';
-            empty.style.fontSize = '0.9rem';
-            empty.textContent = 'No channels yet.';
-            container.querySelector('.channel-list').appendChild(empty);
-
+            // Empty state styling
+            listGroup.innerHTML = `
+                <div class="p-5 text-center text-gray-500 dark:text-gray-400 text-sm">
+                    No channels available.<br>Create one using the <i class="fas fa-plus-circle text-primary-500 mx-1"></i> button.
+                </div>
+            `;
             const countEl = document.getElementById('active-channel-count');
             if (countEl) countEl.textContent = '0';
         }
 
     } catch (error) {
         console.error('Error loading channels:', error);
-        container.innerHTML += `<div style="color: red; padding: 10px;">Failed to load channels</div>`;
+        container.innerHTML = `<div class="p-4 text-center text-red-500 text-sm">Failed to load channels from server.</div>`;
     }
 }
 
-async function deleteChannel(uri, event) {
-    if (event) event.stopPropagation();
-    if (!confirm(`Delete channel ${uri}?`)) return;
+/**
+ * Handles the selection of a channel from the list, updates the UI classes,
+ * stores the state, and triggers the message fetch.
+ * * @param {HTMLElement} element - The clicked DOM element
+ * @param {string} uri - The unique URI of the selected channel
+ * @param {string} name - The display name of the selected channel
+ * @param {number} index - The backend index of the channel
+ */
+function selectChannel(element, uri, name, index) {
+    // 1. Update Global State
+    currentChannelState = {uri, name, index};
+    console.log('Selected channel state:', currentChannelState);
 
-    try {
-        const response = await fetch('/snm-webapp/api/messenger/channels', {
-            method: 'DELETE',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ uri: uri })
-        });
+    // 2. Reset all channels to INACTIVE state in UI
+    document.querySelectorAll('.channel-item').forEach(el => {
+        el.removeAttribute('aria-current');
+        el.classList.remove('bg-gray-100', 'text-primary-600', 'dark:bg-gray-800', 'dark:text-primary-400');
+        el.classList.add('hover:bg-gray-50', 'hover:text-primary-600', 'dark:hover:bg-gray-800', 'dark:hover:text-primary-400', 'text-gray-900', 'dark:text-white');
 
-        if (response.ok) {
-            loadChannels();
-            // If deleting current channel, clear view
-            if (currentChannelState.uri === uri) {
-                document.getElementById('chat-log').innerHTML = '<div style="text-align:center; padding:20px; color:#999;">Channel deleted.</div>';
-                document.getElementById('current-channel-name').textContent = 'Select a channel';
-                currentChannelState = { uri: null, index: null, name: null };
-            }
-        } else {
-            alert('Failed to delete channel');
-        }
-    } catch (e) {
-        console.error(e);
-        alert('Error deleting channel');
-    }
-}
+        const nameSpan = el.querySelector('.name-text');
+        if (nameSpan) nameSpan.classList.remove('font-bold');
 
-function showCreateChannelModal() {
-    document.getElementById('create-channel-form').style.display = 'block';
-    document.getElementById('new-channel-uri').focus();
-}
+        const icon = el.querySelector('.channel-icon');
+        if (icon) icon.classList.add('text-gray-400', 'dark:text-gray-500');
+    });
 
-function hideCreateChannelModal() {
-    document.getElementById('create-channel-form').style.display = 'none';
-}
+    // 3. Set the clicked channel to ACTIVE state in UI
+    if (element) {
+        element.setAttribute('aria-current', 'true');
+        element.classList.remove('hover:bg-gray-50', 'hover:text-primary-600', 'dark:hover:bg-gray-800', 'dark:hover:text-primary-400', 'text-gray-900', 'dark:text-white');
+        element.classList.add('bg-gray-100', 'text-primary-600', 'dark:bg-gray-800', 'dark:text-primary-400');
 
-async function createChannel() {
-    const uriInput = document.getElementById('new-channel-uri');
-    const nameInput = document.getElementById('new-channel-name');
+        const activeSpan = element.querySelector('.name-text');
+        if (activeSpan) activeSpan.classList.add('font-bold');
 
-    const uri = uriInput.value.trim();
-    const name = nameInput.value.trim() || uri;
-
-    if (!uri) {
-        alert('URI is required');
-        return;
+        const activeIcon = element.querySelector('.channel-icon');
+        if (activeIcon) activeIcon.classList.remove('text-gray-400', 'dark:text-gray-500');
     }
 
-    try {
-        const response = await fetch('/snm-webapp/api/messenger/channels', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ uri, name })
-        });
-
-        const result = await response.json();
-
-        if (response.ok) {
-            hideCreateChannelModal();
-            uriInput.value = '';
-            nameInput.value = '';
-            loadChannels(); // Refresh list
-        } else {
-            alert('Error: ' + (result.error || result.message || 'Unknown error'));
-        }
-    } catch (error) {
-        console.error('Error creating channel:', error);
-        alert('Request failed');
-    }
-}
-
-function selectChannel(uri, name, index) {
-    currentChannelState = { uri, name, index };
-    console.log('Selected channel:', currentChannelState);
-
-    // Update Header
+    // 4. Update the Main Chat Header
     const headerName = document.getElementById('current-channel-name');
     if (headerName) headerName.textContent = name || uri;
 
-    // Update UI active state
-    document.querySelectorAll('.channel-item').forEach(el => {
-        el.classList.remove('active');
-        if (el.innerHTML.includes(uri)) el.classList.add('active');
-    });
+    document.getElementById('current-channel-pki-status').innerText = 'Connected to ' + (name || uri);
 
+    const indicator = document.getElementById('status-indicator');
+    if (indicator) {
+        indicator.classList.remove('bg-gray-400');
+        indicator.classList.add('bg-green-500', 'shadow-[0_0_5px_#22c55e]');
+    }
+
+    // 5. Fetch messages from the server
     loadMessages(uri);
 }
 
+/**
+ * Fetches and displays messages for a specific channel URI.
+ * @param {string} uri - The channel URI
+ * @return {Promise<void>}
+ */
 async function loadMessages(uri) {
     const chatLog = document.getElementById('chat-log');
     if (!chatLog) return;
 
-    chatLog.innerHTML = '<div style="text-align:center; padding: 20px;">Loading messages...</div>';
+    chatLog.innerHTML = `
+        <div class="flex flex-col items-center justify-center h-full text-center space-y-3 opacity-60">
+            <i class="fas fa-spinner fa-spin text-3xl text-primary-500"></i>
+            <p class="text-sm">Loading messages...</p>
+        </div>
+    `;
 
     try {
-        // GET /api/messenger/messages/{uri}
-        // Note: The servlet maps to /api/messenger/messages/* so we append the uri
-        // We must encode the URI component twice? No, path parameter.
-        // If the uri contains slashes, it might be tricky. But usually channel URIs are like saved queries or just strings.
-        // Let's assume simple encoding.
         const encodedUri = encodeURIComponent(uri);
-
-        // We use a query parameter 'uri' to avoid Tomcat's security blocking of encoded slashes (%2F) in the path
-
-        // We use a trailing slash '/' to ensure we hit the ListMessagesServlet (mapped to /api/messenger/messages/*)
-        // instead of the MessageServlet (mapped to exact /messages).
-        // The path info will be '/' which our servlet logic ignores (length <= 1), 
-        // causing it to correctly use the 'uri' query parameter.
         const response = await fetch(`/snm-webapp/api/messenger/messages/?uri=${encodedUri}`);
+
         if (!response.ok) {
             const errorText = await response.text();
             throw new Error(`Status ${response.status}: ${errorText}`);
@@ -210,57 +201,56 @@ async function loadMessages(uri) {
         if (data.channel && data.channel.messages) {
             renderMessages(data.channel.messages);
         } else {
-            chatLog.innerHTML = '<div style="text-align:center; padding: 20px;">No messages.</div>';
+            chatLog.innerHTML = '<div class="text-center p-5 text-gray-400 text-sm">No messages. Be the first to say hello!</div>';
         }
 
     } catch (error) {
         console.error('Error loading messages:', error);
-        chatLog.innerHTML = `<div style="text-align:center; color:red; padding: 20px;">Error loading messages: ${error.message}</div>`;
+        chatLog.innerHTML = `<div class="text-center text-red-500 p-5 text-sm">Error loading messages: ${error.message}</div>`;
     }
 }
 
+/**
+ * Renders an array of messages into the chat log using Tailwind styling.
+ * @param {Array} messages - Array of message objects
+ * @return {void}
+ */
 function renderMessages(messages) {
     const chatLog = document.getElementById('chat-log');
     chatLog.innerHTML = '';
 
     if (messages.length === 0) {
-        chatLog.innerHTML = '<div style="text-align:center; padding: 20px; color:#999;">No messages here yet. Say hello!</div>';
+        chatLog.innerHTML = '<div class="text-center p-5 text-gray-400 text-sm">No messages here yet. Say hello!</div>';
         return;
     }
 
     messages.forEach(msg => {
         const line = document.createElement('div');
-        // Simple message styling
-        // We can differentiate 'you' vs others
         const isMe = msg.sender === 'you';
 
         line.innerHTML = `
-                    <div style="margin-bottom: 12px; max-width: 80%; ${isMe ? 'margin-left: auto; text-align: right;' : 'margin-right: auto;'}">
-                <div style="font-size: 0.75rem; color: #888; margin-bottom: 2px;">
+            <div class="mb-4 max-w-[80%] ${isMe ? 'ml-auto text-right' : 'mr-auto text-left'}">
+                <div class="text-[0.7rem] text-gray-500 dark:text-gray-400 mb-1 px-1">
                     ${msg.timestamp.split(' ')[1] || msg.timestamp} - ${msg.sender}
                 </div>
-                <div style="
-                    background: ${isMe ? 'var(--primary-color)' : '#f0f0f0'}; 
-                    color: ${isMe ? '#fff' : '#000'}; 
-                    padding: 8px 12px; 
-                    border-radius: 8px; 
-                    display: inline-block;
-                    text-align: left;
-                ">
+                <div class="${isMe ? 'bg-primary-500 text-white rounded-l-xl rounded-tr-xl' : 'bg-white dark:bg-dark-card border border-gray-200 dark:border-dark-border text-gray-800 dark:text-gray-200 rounded-r-xl rounded-tl-xl'} px-4 py-2 inline-block text-sm shadow-sm text-left">
                     ${escapeHtml(msg.content)}
                 </div>
             </div>
-                    `;
+        `;
         chatLog.appendChild(line);
     });
 
-    // Scroll to bottom
     chatLog.scrollTop = chatLog.scrollHeight;
 }
 
+/**
+ * Gathers input and sends a new message to the active channel.
+ * @return {Promise<void>}
+ */
 async function sendMessage() {
-    if (!currentChannelState.index) {
-        alert('Please select a channel first.');
+    if (currentChannelState.index === null || currentChannelState.index === undefined) {
+        alert('Please select a channel from the list first.');
         return;
     }
 
@@ -279,29 +269,21 @@ async function sendMessage() {
             receiver: document.getElementById('message-receiver')?.value || "ANY_SHARKNET_PEER"
         };
 
-        console.log('Sending message:', payload);
-
         const response = await fetch('/snm-webapp/api/messenger/messages', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {'Content-Type': 'application/json'},
             body: JSON.stringify(payload)
         });
 
         const result = await response.json();
 
         if (response.ok) {
-            console.log('Message sent:', result);
             input.value = ''; // Clear input
-
-            // Show success feedback
-            showSendSuccess(result);
-
-            // Reload messages to see the new one
+            showSendSuccess();
             setTimeout(() => {
                 loadMessages(currentChannelState.uri);
             }, 500);
         } else {
-            console.error('Send failed:', result);
             alert('Failed to send message: ' + (result.error || 'Unknown error'));
         }
 
@@ -311,21 +293,106 @@ async function sendMessage() {
     }
 }
 
-// Show send success feedback
-function showSendSuccess(result) {
-    const sendBtn = document.getElementById('send-btn');
-    const originalText = sendBtn.textContent;
+/**
+ * Deletes a channel after user confirmation.
+ * @param {string} uri - The URI of the channel to delete
+ * @param {Event} event - The click event
+ * @return {Promise<void>}
+ */
+async function deleteChannel(uri, event) {
+    if (event) event.stopPropagation(); // Prevent triggering selectChannel
+    if (!confirm(`Are you sure you want to delete the channel:\n${uri}?`)) return;
 
-    sendBtn.textContent = '✓ Sent!';
-    sendBtn.style.background = 'var(--green)';
+    try {
+        const response = await fetch('/snm-webapp/api/messenger/channels', {
+            method: 'DELETE',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({uri: uri})
+        });
+
+        if (response.ok) {
+            if (currentChannelState.uri === uri) {
+                // Reset UI if the deleted channel was currently active
+                document.getElementById('chat-log').innerHTML = '<div class="text-center p-5 text-gray-400 text-sm">Channel deleted.</div>';
+                document.getElementById('current-channel-name').textContent = 'Select a channel';
+                document.getElementById('current-channel-pki-status').innerText = 'Waiting for selection...';
+
+                const indicator = document.getElementById('status-indicator');
+                if (indicator) {
+                    indicator.classList.add('bg-gray-400');
+                    indicator.classList.remove('bg-green-500', 'shadow-[0_0_5px_#22c55e]');
+                }
+
+                currentChannelState = {uri: null, index: null, name: null};
+            }
+            loadChannels(); // Refresh the list from server
+        } else {
+            alert('Failed to delete channel from server.');
+        }
+    } catch (e) {
+        console.error(e);
+        alert('Error deleting channel');
+    }
+}
+
+/**
+ * Creates a new channel using the modal inputs.
+ * @return {Promise<void>}
+ */
+async function createChannel() {
+    const uriInput = document.getElementById('new-channel-uri');
+    const nameInput = document.getElementById('new-channel-name');
+
+    const uri = uriInput.value.trim();
+    const name = nameInput.value.trim() || uri;
+
+    if (!uri) {
+        alert('Channel URI is required');
+        return;
+    }
+
+    try {
+        const response = await fetch('/snm-webapp/api/messenger/channels', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({uri, name})
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+            hideCreateChannelModal();
+            uriInput.value = '';
+            nameInput.value = '';
+            loadChannels(); // Refresh UI
+        } else {
+            alert('Error: ' + (result.error || result.message || 'Unknown error'));
+        }
+    } catch (error) {
+        console.error('Error creating channel:', error);
+        alert('Request failed');
+    }
+}
+
+// Show send success feedback animation on button
+function showSendSuccess() {
+    const sendBtn = document.getElementById('send-btn');
+    if (!sendBtn) return;
+
+    const originalContent = sendBtn.innerHTML;
+
+    sendBtn.innerHTML = `<i class="fas fa-check text-base"></i><span class="text-xs">Sent!</span>`;
+    sendBtn.classList.remove('bg-primary-500', 'hover:bg-primary-600');
+    sendBtn.classList.add('bg-green-500', 'hover:bg-green-600');
 
     setTimeout(() => {
-        sendBtn.textContent = originalText;
-        sendBtn.style.background = '';
+        sendBtn.innerHTML = originalContent;
+        sendBtn.classList.remove('bg-green-500', 'hover:bg-green-600');
+        sendBtn.classList.add('bg-primary-500', 'hover:bg-primary-600');
     }, 2000);
 }
 
-// Load available persons for recipient selection
+// Load available persons for recipient selection dropdown
 async function loadPersonsForRecipient() {
     try {
         const response = await fetch('/snm-webapp/api/persons');
@@ -335,9 +402,7 @@ async function loadPersonsForRecipient() {
         const select = document.getElementById('message-receiver');
 
         if (select && data.persons && data.persons.length > 0) {
-            // Clear existing options except "Anyone"
             select.innerHTML = '<option value="ANY_SHARKNET_PEER">Anyone</option>';
-
             data.persons.forEach(person => {
                 const option = document.createElement('option');
                 option.value = person.name;
@@ -346,10 +411,16 @@ async function loadPersonsForRecipient() {
             });
         }
     } catch (error) {
-        console.error('Error loading persons for recipient selection:', error);
+        console.error('Error loading persons:', error);
     }
 }
 
+function showCreateChannelModal() {
+    document.getElementById('create-channel-form').style.display = 'flex';
+    document.getElementById('new-channel-uri').focus();
+}
+
+// Utility to escape HTML and prevent XSS
 function escapeHtml(text) {
     if (!text) return '';
     return text

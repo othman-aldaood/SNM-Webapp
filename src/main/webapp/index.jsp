@@ -1,178 +1,244 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-  <%@ page import="net.sharksystem.web.peer.PeerRuntimeManager" %>
-    <%@ page import="net.sharksystem.web.peer.PeerRuntime" %>
-      <% PeerRuntimeManager manager=PeerRuntimeManager.getInstance(); PeerRuntime activePeer=manager.getActivePeer(); if
-        (activePeer==null) { response.sendRedirect("login.jsp"); return; } %>
-        <!DOCTYPE html>
-        <html lang="en">
+<%@ page import="net.sharksystem.web.peer.PeerRuntimeManager" %>
+<%@ page import="net.sharksystem.web.peer.PeerRuntime" %>
+<%
+    // Initialize peer manager and check for active peer session
+    PeerRuntimeManager manager = PeerRuntimeManager.getInstance();
+    PeerRuntime activePeer = manager.getActivePeer();
 
-        <head>
-          <meta charset="UTF-8">
-          <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <title>SharkNet Messenger</title>
-          <link rel="stylesheet" href="css/style.css?v=8">
-          <link rel="stylesheet" href="css/messenger.css?v=2">
-        </head>
+    // Redirect to login if no active peer is found
+    if (activePeer == null) {
+        response.sendRedirect("login.jsp");
+        return;
+    }
+%>
+<!DOCTYPE html>
+<html lang="en">
 
-        <body>
-          <jsp:include page="header.jsp" />
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SharkNet Messenger</title>
 
-          <div class="main-container">
-            <% request.setAttribute("activePage", "messenger" ); %>
-              <jsp:include page="sidebar.jsp" />
+    <style>
+        /* Custom scrollbar styling for chat logs to maintain a clean UI with Tailwind */
+        .chat-scroll::-webkit-scrollbar { width: 6px; }
+        .chat-scroll::-webkit-scrollbar-track { background: transparent; }
+        .chat-scroll::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 20px; }
+        .dark .chat-scroll::-webkit-scrollbar-thumb { background-color: #475569; }
+    </style>
+</head>
 
-              <div class="content-wrapper">
-                <div class="messenger-grid">
-                  <!-- Channels Column -->
-                  <div class="col-channels" id="channel-list">
-                    <div class="channels-header">
-                      <h3>Channels</h3>
-                    </div>
-                    <div class="channel-list">
-                      <div style="text-align: center; padding: 20px; color: #666;">
-                        Loading channels...
-                      </div>
-                    </div>
-                  </div>
+<body class="bg-gray-50 dark:bg-dark-bg text-gray-900 dark:text-gray-100 min-h-screen flex flex-col transition-colors duration-300">
 
-                  <!-- Chat Column -->
-                  <div class="col-chat">
-                    <div class="chat-header">
-                      <div class="chat-title" id="current-channel-name">Select a channel</div>
-                      <div class="chat-subtitle">
-                        <div class="chat-status">
-                          <span class="status-dot"></span>
-                          <span id="current-channel-pki-status">Ready</span>
-                        </div>
-                      </div>
-                    </div>
+    <jsp:include page="header.jsp" />
 
-                    <div class="chat-log" id="chat-log">
-                      <div class="chat-welcome">
-                        <div class="chat-welcome-icon">💬</div>
-                        <h3>Welcome to SharkNet Messenger</h3>
-                        <p>Select a channel from the left to start messaging</p>
-                      </div>
+    <div class="flex flex-col md:flex-row flex-1">
+
+        <% request.setAttribute("activePage", "messenger"); %>
+        <jsp:include page="sidebar.jsp" />
+
+        <div class="flex-1 p-4 md:p-6 w-full max-w-full overflow-x-hidden">
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+                <div class="lg:col-span-4 xl:col-span-3 bg-white dark:bg-dark-card border border-gray-200 dark:border-dark-border rounded-xl shadow-sm flex flex-col h-[400px] lg:h-[calc(100vh-140px)]">
+
+                    <div class="p-4 border-b border-gray-200 dark:border-dark-border flex justify-between items-center bg-gray-50 dark:bg-gray-800/50 rounded-t-xl">
+                        <h3 class="font-bold text-gray-800 dark:text-white flex items-center gap-2">
+                            <i class="fas fa-list-ul text-primary-500"></i> Channels
+                        </h3>
+                        <button onclick="document.getElementById('create-channel-form').style.display='flex'" class="text-primary-500 hover:text-primary-600 transition-colors" title="Create Channel">
+                            <i class="fas fa-plus-circle text-xl"></i>
+                        </button>
                     </div>
 
-                    <div class="chat-input-wrapper">
-                      <div class="message-options">
-                        <select id="message-receiver" class="recipient-select">
-                          <option value="ANY_SHARKNET_PEER">Anyone</option>
-                        </select>
-                        <div class="security-options">
-                          <div class="security-option">
-                            <input type="checkbox" id="sign-message" checked>
-                            <label for="sign-message">🔐 Sign</label>
-                          </div>
-                          <div class="security-option">
-                            <input type="checkbox" id="encrypt-message">
-                            <label for="encrypt-message">🔒 Encrypt</label>
-                          </div>
+                    <div id="channel-list" class="flex-1 overflow-y-auto chat-scroll p-4">
+                        <div class="w-full text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-lg dark:bg-dark-card dark:border-dark-border dark:text-white shadow-sm">
+
+                            <a onclick="selectChannel(this, 'shark://general', 'General Chat')" class="channel-item flex justify-between items-center w-full px-4 py-3 bg-primary-50 text-primary-700 border-b border-gray-200 rounded-t-lg cursor-pointer dark:bg-gray-800 dark:border-dark-border dark:text-primary-400 transition-colors">
+                                <div class="flex items-center gap-3 overflow-hidden">
+                                    <i class="fas fa-hashtag channel-icon"></i>
+                                    <div class="flex-1 min-w-0 text-left">
+                                        <p class="font-bold truncate name-text">General Chat</p>
+                                        <p class="text-xs opacity-80 truncate font-normal">shark://general</p>
+                                    </div>
+                                </div>
+                                <button onclick="event.stopPropagation(); alert('Mock: Delete Channel')" class="text-red-500 hover:bg-red-100 dark:hover:bg-red-900/30 w-8 h-8 rounded-full flex items-center justify-center transition-colors">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </a>
+
+                            <a onclick="selectChannel(this, 'shark://tech-support', 'Tech Support')" class="channel-item flex justify-between items-center w-full px-4 py-3 border-b border-gray-200 cursor-pointer hover:bg-gray-50 hover:text-primary-600 dark:border-dark-border dark:hover:bg-gray-800 dark:hover:text-primary-400 transition-colors text-gray-900 dark:text-white">
+                                <div class="flex items-center gap-3 overflow-hidden">
+                                    <i class="fas fa-hashtag channel-icon text-gray-400"></i>
+                                    <div class="flex-1 min-w-0 text-left">
+                                        <p class="font-bold truncate name-text">Tech Support</p>
+                                        <p class="text-xs text-gray-500 dark:text-gray-400 truncate font-normal">shark://tech-support</p>
+                                    </div>
+                                </div>
+                                <button onclick="event.stopPropagation(); alert('Mock: Delete Channel')" class="text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 w-8 h-8 rounded-full flex items-center justify-center transition-colors">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </a>
+
+                            <a onclick="selectChannel(this, 'shark://news', 'News & Updates')" class="channel-item flex justify-between items-center w-full px-4 py-3 rounded-b-lg cursor-pointer hover:bg-gray-50 hover:text-primary-600 dark:border-dark-border dark:hover:bg-gray-800 dark:hover:text-primary-400 transition-colors text-gray-900 dark:text-white">
+                                <div class="flex items-center gap-3 overflow-hidden">
+                                    <i class="fas fa-hashtag channel-icon text-gray-400"></i>
+                                    <div class="flex-1 min-w-0 text-left">
+                                        <p class="font-bold truncate name-text">News & Updates</p>
+                                        <p class="text-xs text-gray-500 dark:text-gray-400 truncate font-normal">shark://news</p>
+                                    </div>
+                                </div>
+                                <button onclick="event.stopPropagation(); alert('Mock: Delete Channel')" class="text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 w-8 h-8 rounded-full flex items-center justify-center transition-colors">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </a>
+
                         </div>
-                      </div>
-                      <div class="message-input-container">
-                        <textarea id="message-input" class="message-input"
-                          placeholder="Type your message here..."></textarea>
-                        <button id="send-btn" class="send-button" onclick="sendMessage()">Send</button>
-                      </div>
                     </div>
-                  </div>
-
-                  <!-- Info Column -->
-                  <div class="col-info">
-                    <div class="info-header">
-                      <h3>Technical Info</h3>
-                    </div>
-                    <div class="info-content">
-                      <div class="info-section">
-                        <h4>Peer Information</h4>
-                        <div class="info-item">
-                          <span class="info-label">Peer ID:</span>
-                          <span class="info-value">
-                            <%= activePeer !=null ? activePeer.getPeerID() : "Unknown" %>
-                          </span>
-                        </div>
-                        <div class="info-item">
-                          <span class="info-label">Status:</span>
-                          <span class="info-value">Active</span>
-                        </div>
-                      </div>
-
-                      <div class="info-section">
-                        <h4>Channel Statistics</h4>
-                        <div class="info-item">
-                          <span class="info-label">Active Channels:</span>
-                          <span class="info-value" id="active-channel-count">Loading...</span>
-                        </div>
-                      </div>
-
-                      <div class="info-section">
-                        <h4>Network Status</h4>
-                        <div class="info-item">
-                          <span class="info-label">Open Ports:</span>
-                          <span class="info-value">
-                            <%= activePeer !=null ? activePeer.getOpenSockets().size() : 0 %>
-                          </span>
-                        </div>
-                        <div class="info-item">
-                          <span class="info-label">Active Connections:</span>
-                          <span class="info-value">
-                            <%= activePeer !=null ? activePeer.getActiveConnections().size() : 0 %>
-                          </span>
-                        </div>
-                      </div>
-
-                      <div class="info-section">
-                        <h4>Identity Key</h4>
-                        <div class="info-item">
-                          <span class="info-label">Fingerprint:</span>
-                          <span class="info-value"
-                            title="<%= activePeer != null ? activePeer.getPublicKeyFingerprint() : "" %>">
-                            <% String fp=activePeer !=null ? activePeer.getPublicKeyFingerprint() : "" ; if
-                              (fp.length()> 16) fp = fp.substring(0, 8) + "..." + fp.substring(fp.length() - 8);
-                              %>
-                              <%= fp %>
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
                 </div>
-              </div>
-          </div>
-          </div>
-          <script src="js/messenger.js?v=13"></script>
-          <div id="create-channel-form" class="modal hidden"
-            style="display:none; position:fixed; z-index:1000; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.5);">
-            <div class="modal-content"
-              style="background:var(--bg-card); margin:10% auto; padding:20px; border-radius:8px; width:90%; max-width:400px; box-shadow:0 4px 20px rgba(0,0,0,0.3);">
-              <div class="modal-header"
-                style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border-color); padding-bottom:10px; margin-bottom:20px;">
-                <h3 style="margin:0;">Create Channel</h3>
-                <button onclick="hideCreateChannelModal()"
-                  style="background:none; border:none; font-size:24px; cursor:pointer; color:var(--text-muted);">&times;</button>
-              </div>
-              <div class="modal-body">
-                <div class="form-group" style="margin-bottom:15px;">
-                  <label style="display:block; margin-bottom:5px; font-weight:600;">Channel URI:</label>
-                  <input type="text" id="new-channel-uri" class="form-control" placeholder="e.g. shark://my-channel"
-                    style="width:100%; padding:8px; border:1px solid var(--border-color); border-radius:4px;">
+
+                <div class="lg:col-span-8 xl:col-span-6 bg-white dark:bg-dark-card border border-gray-200 dark:border-dark-border rounded-xl shadow-sm flex flex-col h-[600px] lg:h-[calc(100vh-140px)]">
+
+                    <div class="p-4 border-b border-gray-200 dark:border-dark-border bg-gray-50 dark:bg-gray-800/50 rounded-t-xl">
+                        <div class="font-bold text-lg text-gray-800 dark:text-white" id="current-channel-name">Select a channel</div>
+                        <div class="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400 mt-1">
+                            <span class="w-2 h-2 rounded-full bg-gray-400" id="status-indicator"></span>
+                            <span id="current-channel-pki-status">Waiting for selection...</span>
+                        </div>
+                    </div>
+
+                    <div class="flex-1 overflow-y-auto chat-scroll p-4 bg-gray-50/50 dark:bg-dark-bg/50" id="chat-log">
+                        <div class="flex flex-col items-center justify-center h-full text-center space-y-3 opacity-60">
+                            <i class="fas fa-comments text-5xl text-primary-500"></i>
+                            <h3 class="text-xl font-bold">Welcome to SharkNet Messenger</h3>
+                            <p class="text-sm">Select a channel from the left to start messaging</p>
+                        </div>
+                    </div>
+
+                    <div class="p-3 border-t border-gray-200 dark:border-dark-border bg-white dark:bg-dark-card rounded-b-xl">
+
+                        <div class="flex flex-wrap items-center gap-4 mb-2 text-sm">
+                            <select id="message-receiver" class="bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-dark-border text-gray-700 dark:text-gray-300 rounded px-2 py-1 outline-none focus:ring-1 focus:ring-primary-500 cursor-pointer">
+                                <option value="ANY_SHARKNET_PEER">Anyone</option>
+                            </select>
+
+                            <div class="flex items-center gap-4">
+                                <label class="flex items-center gap-1.5 cursor-pointer text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors">
+                                    <input type="checkbox" id="sign-message" checked class="rounded border-gray-300 text-primary-500 focus:ring-primary-500">
+                                    <span><i class="fas fa-signature text-xs"></i> Sign</span>
+                                </label>
+                                <label class="flex items-center gap-1.5 cursor-pointer text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors">
+                                    <input type="checkbox" id="encrypt-message" class="rounded border-gray-300 text-primary-500 focus:ring-primary-500">
+                                    <span><i class="fas fa-lock text-xs"></i> Encrypt</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="flex gap-2">
+                            <textarea id="message-input" rows="2" class="flex-1 resize-none border border-gray-300 dark:border-dark-border rounded-lg p-2 text-sm bg-white dark:bg-dark-bg text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500" placeholder="Type your message here..."></textarea>
+                            <button id="send-btn" onclick="sendMessage()" class="bg-primary-500 hover:bg-primary-600 text-white rounded-lg px-4 font-bold flex flex-col items-center justify-center gap-1 transition-colors">
+                                <i class="fas fa-paper-plane text-base"></i>
+                                <span class="text-xs">Send</span>
+                            </button>
+                        </div>
+                    </div>
                 </div>
-                <div class="form-group" style="margin-bottom:15px;">
-                  <label style="display:block; margin-bottom:5px; font-weight:600;">Name (optional):</label>
-                  <input type="text" id="new-channel-name" class="form-control" placeholder="My Channel"
-                    style="width:100%; padding:8px; border:1px solid var(--border-color); border-radius:4px;">
+
+                <div class="hidden xl:block xl:col-span-3 space-y-6 h-auto lg:h-[calc(100vh-140px)] overflow-y-auto chat-scroll pr-2 pb-6">
+
+                    <div class="bg-white dark:bg-dark-card border border-gray-200 dark:border-dark-border rounded-xl shadow-sm p-4">
+                        <h4 class="font-bold border-b border-gray-100 dark:border-dark-border pb-2 mb-3 text-gray-800 dark:text-white flex items-center gap-2">
+                            <i class="fas fa-server text-gray-400"></i> Peer Info
+                        </h4>
+                        <div class="space-y-3 text-sm">
+                            <div class="flex flex-col gap-1">
+                                <span class="text-gray-500 dark:text-gray-400 text-xs uppercase tracking-wider font-semibold">Peer ID</span>
+                                <span class="font-mono text-gray-800 dark:text-gray-200 break-all bg-gray-50 dark:bg-gray-800/50 p-2 rounded border border-gray-100 dark:border-dark-border"><%= activePeer !=null ? activePeer.getPeerID() : "Unknown" %></span>
+                            </div>
+                            <div class="flex justify-between items-center pt-2">
+                                <span class="text-gray-500 dark:text-gray-400">Status</span>
+                                <span class="px-2 py-1 bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 rounded-md text-xs font-bold">Active</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white dark:bg-dark-card border border-gray-200 dark:border-dark-border rounded-xl shadow-sm p-4">
+                        <h4 class="font-bold border-b border-gray-100 dark:border-dark-border pb-2 mb-3 text-gray-800 dark:text-white flex items-center gap-2">
+                            <i class="fas fa-chart-pie text-gray-400"></i> Statistics
+                        </h4>
+                        <div class="space-y-3 text-sm">
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-500 dark:text-gray-400">Channels</span>
+                                <span id="active-channel-count" class="font-bold text-gray-800 dark:text-gray-200 bg-gray-100 dark:bg-gray-800 px-2 py-0.5 rounded">3</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-500 dark:text-gray-400">Open Ports</span>
+                                <span class="font-bold text-gray-800 dark:text-gray-200 bg-gray-100 dark:bg-gray-800 px-2 py-0.5 rounded"><%= activePeer !=null ? activePeer.getOpenSockets().size() : 0 %></span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-500 dark:text-gray-400">Connections</span>
+                                <span class="font-bold text-gray-800 dark:text-gray-200 bg-gray-100 dark:bg-gray-800 px-2 py-0.5 rounded"><%= activePeer !=null ? activePeer.getActiveConnections().size() : 0 %></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white dark:bg-dark-card border border-gray-200 dark:border-dark-border rounded-xl shadow-sm p-4">
+                        <h4 class="font-bold border-b border-gray-100 dark:border-dark-border pb-2 mb-3 text-gray-800 dark:text-white flex items-center gap-2">
+                            <i class="fas fa-fingerprint text-gray-400"></i> Identity Key
+                        </h4>
+                        <div class="text-sm">
+                            <div class="bg-gray-50 dark:bg-gray-800/50 p-3 rounded-lg border border-gray-200 dark:border-dark-border font-mono text-xs text-center text-gray-700 dark:text-gray-300 break-all" title="<%= activePeer != null ? activePeer.getPublicKeyFingerprint() : "" %>">
+                                <%
+                                    String fp = activePeer != null ? activePeer.getPublicKeyFingerprint() : "";
+                                    if (fp.length() > 16) {
+                                        fp = fp.substring(0, 8) + "..." + fp.substring(fp.length() - 8);
+                                    }
+                                %>
+                                <%= fp %>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-              </div>
-              <div class="modal-footer"
-                style="display:flex; justify-content:flex-end; gap:10px; border-top:1px solid var(--border-color); padding-top:15px;">
-                <button onclick="hideCreateChannelModal()" class="btn-secondary">Cancel</button>
-                <button onclick="createChannel()" class="btn-primary">Create</button>
-              </div>
+
             </div>
-          </div>
-          <script src="js/messenger.js?v=14"></script>
-        </body>
+        </div>
+    </div>
 
-        </html>
+    <div id="create-channel-form" class="fixed inset-0 z-50 bg-gray-900/50 backdrop-blur-sm hidden items-center justify-center p-4">
+        <div class="bg-white dark:bg-dark-card w-full max-w-md rounded-xl shadow-2xl border border-gray-200 dark:border-dark-border flex flex-col overflow-hidden animate-[fadeIn_0.2s_ease-out]">
+
+            <div class="p-4 border-b border-gray-200 dark:border-dark-border flex justify-between items-center bg-gray-50 dark:bg-gray-800/50">
+                <h3 class="font-bold text-lg text-gray-800 dark:text-white"><i class="fas fa-satellite-dish mr-2 text-primary-500"></i>Create Channel</h3>
+                <button onclick="hideCreateChannelModal()" class="text-gray-400 hover:text-red-500 transition-colors text-xl w-8 h-8 flex items-center justify-center rounded-full hover:bg-red-50 dark:hover:bg-red-900/20">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <div class="p-6 space-y-5">
+                <div>
+                    <label class="block mb-1.5 font-semibold text-sm text-gray-700 dark:text-gray-300">Channel URI <span class="text-red-500">*</span></label>
+                    <input type="text" id="new-channel-uri" class="w-full border border-gray-300 dark:border-dark-border rounded-lg p-2.5 bg-white dark:bg-dark-bg text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 outline-none font-mono text-sm transition-shadow" placeholder="e.g. shark://my-channel">
+                </div>
+                <div>
+                    <label class="block mb-1.5 font-semibold text-sm text-gray-700 dark:text-gray-300">Display Name (optional)</label>
+                    <input type="text" id="new-channel-name" class="w-full border border-gray-300 dark:border-dark-border rounded-lg p-2.5 bg-white dark:bg-dark-bg text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 outline-none text-sm transition-shadow" placeholder="e.g. My Secret Channel">
+                </div>
+            </div>
+
+            <div class="p-4 border-t border-gray-200 dark:border-dark-border bg-gray-50 dark:bg-gray-800/50 flex justify-end gap-3">
+                <button onclick="hideCreateChannelModal()" class="px-4 py-2 border border-gray-300 dark:border-dark-border rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 font-medium transition-colors">Cancel</button>
+                <button onclick="createChannel()" class="px-4 py-2 bg-primary-500 hover:bg-primary-600 text-white rounded-lg font-medium shadow-sm transition-colors flex items-center gap-2">
+                    <i class="fas fa-check"></i> Create
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/messenger.js?v=18"></script>
+
+
+</body>
+
+</html>

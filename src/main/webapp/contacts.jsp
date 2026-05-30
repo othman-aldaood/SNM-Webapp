@@ -1,188 +1,50 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-    <!DOCTYPE html>
-    <html lang="en">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Peer Management - SharkNet</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>tailwind.config = { darkMode: 'class' }</script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-300">
 
-    <head>
-        <meta charset="UTF-8">
-        <title>Peer Management - SharkNet</title>
-        <link rel="stylesheet" href="css/style.css?v=3">
-    </head>
+    <jsp:include page="header.jsp" />
 
-    <body>
-        <jsp:include page="header.jsp" />
+    <div class="flex flex-col md:flex-row min-h-screen">
+        <% request.setAttribute("activePage", "contacts"); %>
+        <jsp:include page="sidebar.jsp" />
 
-        <div class="main-container">
-            <% request.setAttribute("activePage", "contacts" ); %>
-                <jsp:include page="sidebar.jsp" />
-
-                <div class="content-wrapper">
-                    <div class="page-container">
-                        <div class="page-header">
-                            <div>
-                                <div class="page-title">Peer Management</div>
-                                <div class="page-subtitle">Manage SharkNet peer instances and their status.</div>
-                            </div>
-                            <button class="btn-primary" onclick="createNewPeer()">Add New Peer</button>
-                        </div>
-
-                        <div class="card">
-                            <input type="text" class="search-bar" placeholder="🔍 Search Peer ID or Name...">
-
-                            <table class="data-table">
-                                <thead>
-                                    <tr>
-                                        <th>Status</th>
-                                        <th>Peer ID / Name</th>
-                                        <th>Certificate Status</th>
-                                        <th>Connection Type</th>
-
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="contactsTableBody">
-                                    <tr>
-                                        <td colspan="5"
-                                            style="text-align:center; padding:20px; color:var(--text-muted);">
-                                            Loading peers...
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
+        <main class="flex-1 p-6">
+            <div class="max-w-6xl mx-auto">
+                <div class="flex justify-between items-center mb-8">
+                    <div>
+                        <h1 class="text-2xl font-bold">Peer Management</h1>
                     </div>
+                    <button class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-lg font-medium transition-colors" onclick="createNewPeer()">
+                        <i class="fas fa-plus mr-2"></i> Add New Peer
+                    </button>
                 </div>
-        </div>
 
-        <script>
-            async function loadContacts() {
-                const tableBody = document.getElementById('contactsTableBody');
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+                    <table class="w-full text-left text-sm">
+                        <thead class="text-xs uppercase bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-300">
+                            <tr>
+                                <th class="px-6 py-4">Status</th>
+                                <th class="px-6 py-4">Peer ID / Name</th>
+                                <th class="px-6 py-4">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="contactsTableBody" class="divide-y divide-gray-200 dark:divide-gray-700">
+                            <tr><td colspan="3" class="px-6 py-8 text-center text-gray-500">Loading peers...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
 
-                try {
-                    const response = await fetch('api/peer');
-                    if (!response.ok) throw new Error("Failed to fetch");
-
-                    const peers = await response.json();
-                    tableBody.innerHTML = ''; // Clear loading message
-
-                    if (peers.length === 0) {
-                        tableBody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding: 20px;">No peers found. Create one via API!</td></tr>';
-                        return;
-                    }
-
-                    peers.forEach(peer => {
-                        // Determine Status Badge
-                        const statusBadge = peer.active
-                            ? '<span class="badge badge-green">Active</span>'
-                            : '<span class="badge badge-gray">Inactive</span>';
-
-                        // Determine Connection Badge (Mock for now since API only gives basic info)
-                        const connType = peer.active ? 'P2P' : 'N/A';
-
-                        const row =
-                            '<tr>' +
-                            '<td>' + statusBadge + '</td>' +
-                            '<td>' +
-                            '<div style="font-weight:600; color:var(--text-main);">' + (peer.name || 'Unknown') + '</div>' +
-                            '<div style="font-family:var(--font-mono); font-size:0.8em; color:var(--text-muted);">' + peer.peerId + '</div>' +
-                            '</td>' +
-                            '<td><span class="badge badge-blue">Self-Signed</span></td>' +
-                            '<td>' + connType + '</td>' +
-
-                            '<td style="display:flex; gap:8px;">' +
-                            (peer.active
-                                ? '<button class="btn-secondary" onclick="stopPeer(\'' + peer.peerId + '\')">Stop Peer</button>'
-                                : '<button class="btn-primary" onclick="startPeer(\'' + peer.peerId + '\')">Start Peer</button>') +
-                            '<button class="btn-outline-danger" onclick="deletePeer(\'' + peer.peerId + '\')" style="border:1px solid var(--red); color:var(--red); padding:8px 12px; border-radius:6px; background:white;">Delete</button>' +
-                            '</td>' +
-                            '</tr>';
-
-                        tableBody.innerHTML += row;
-                    });
-
-                } catch (err) {
-                    console.error(err);
-                    tableBody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:red;">Error loading peers. Ensure backend is running.</td></tr>';
-                }
-            }
-
-            async function startPeer(peerId) {
-                try {
-                    const res = await fetch('api/start/' + encodeURIComponent(peerId), { method: 'POST' });
-                    if (res.ok) {
-                        loadContacts();
-                        location.reload();
-                    } else {
-                        const errorMsg = await res.text();
-                        alert("Failed to start peer: " + errorMsg);
-                    }
-                } catch (e) {
-                    console.error(e);
-                    alert("Request failed: " + e.message);
-                }
-            }
-
-            async function stopPeer(peerId) {
-                try {
-                    const res = await fetch('api/stop/' + encodeURIComponent(peerId), { method: 'POST' });
-                    if (res.ok) {
-                        loadContacts();
-                        location.reload();
-                    } else {
-                        const errorMsg = await res.text();
-                        alert("Failed to stop peer: " + errorMsg);
-                    }
-                } catch (e) {
-                    console.error(e);
-                    alert("Request failed: " + e.message);
-                }
-            }
-
-            async function createNewPeer() {
-                const name = prompt("Enter peer name:");
-                if (!name) return;
-
-                try {
-                    const res = await fetch('api/peer', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ name: name })
-                    });
-
-                    if (res.ok) {
-                        alert('Peer created!');
-                        loadContacts();
-                    } else {
-                        const txt = await res.text();
-                        alert('Error: ' + txt);
-                    }
-                } catch (err) {
-                    alert('Request failed');
-                }
-            }
-
-            async function deletePeer(peerId) {
-                if (!confirm("Are you sure you want to delete this peer?")) return;
-
-                try {
-                    const res = await fetch('api/peer', {
-                        method: 'DELETE',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ peerId: peerId })
-                    });
-
-                    if (res.ok) {
-                        loadContacts();
-                    } else {
-                        alert("Failed to delete");
-                    }
-                } catch (e) {
-                    console.error(e);
-                }
-            }
-
-            // Load on page load
-            document.addEventListener('DOMContentLoaded', loadContacts);
-        </script>
-    </body>
-
-    </html>
+    <script src="js/contacts.js"></script>
+</body>
+</html>
