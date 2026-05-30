@@ -1,4 +1,4 @@
-// hubs.js - Hub Connection Management
+// hubs.js - Hub Connection Management (Tailwind CSS Updated)
 
 document.addEventListener('DOMContentLoaded', () => {
     loadActiveHubs();
@@ -97,7 +97,7 @@ function loadActiveHubs() {
     if (!tbody) return;
 
     if (!peerId) {
-        tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:var(--text-muted);">No active peer selected.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="4" class="px-6 py-8 text-center text-gray-500 dark:text-gray-400 italic">No active peer selected.</td></tr>`;
         return;
     }
 
@@ -117,35 +117,37 @@ function loadActiveHubs() {
 
             openPorts.forEach(port => {
                 const tr = document.createElement('tr');
+                tr.className = "hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors";
                 tr.innerHTML = `
-                <td style="font-family:var(--font-mono);">localhost</td>
-                <td>${port}</td>
-                <td><span class="badge badge-green">Listening</span></td>
-                <td><button class="btn-secondary"
-                    style="color:var(--red);border-color:var(--red);padding:4px 8px;font-size:0.8rem;"
-                    onclick="closePort(${port})">Close</button></td>`;
+                <td class="px-6 py-4 font-mono font-medium text-gray-900 dark:text-white">localhost</td>
+                <td class="px-6 py-4 font-mono text-gray-600 dark:text-gray-300">${port}</td>
+                <td class="px-6 py-4"><span class="px-2.5 py-0.5 bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400 text-xs font-bold rounded-full">Listening</span></td>
+                <td class="px-6 py-4 text-right">
+                    <button class="px-3 py-1.5 text-xs bg-red-100 hover:bg-red-200 text-red-600 dark:bg-red-900/30 dark:text-red-400 dark:hover:bg-red-900/50 rounded transition-colors font-medium" onclick="closePort(${port})">Close</button>
+                </td>`;
                 tbody.appendChild(tr);
             });
 
             connections.forEach(conn => {
                 const tr = document.createElement('tr');
+                tr.className = "hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors";
                 tr.innerHTML = `
-                <td style="font-family:var(--font-mono);">${conn.remoteAddress}</td>
-                <td>${conn.remotePort}</td>
-                <td><span class="badge badge-green">Connected</span></td>
-                <td><button class="btn-secondary"
-                    style="color:var(--red);border-color:var(--red);padding:4px 8px;font-size:0.8rem;"
-                    onclick="closePort(${conn.remotePort})">Disconnect</button></td>`;
+                <td class="px-6 py-4 font-mono font-medium text-gray-900 dark:text-white">${escapeHtml(conn.remoteAddress)}</td>
+                <td class="px-6 py-4 font-mono text-gray-600 dark:text-gray-300">${conn.remotePort}</td>
+                <td class="px-6 py-4"><span class="px-2.5 py-0.5 bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400 text-xs font-bold rounded-full">Connected</span></td>
+                <td class="px-6 py-4 text-right">
+                    <button class="px-3 py-1.5 text-xs bg-red-100 hover:bg-red-200 text-red-600 dark:bg-red-900/30 dark:text-red-400 dark:hover:bg-red-900/50 rounded transition-colors font-medium" onclick="closePort(${conn.remotePort})">Disconnect</button>
+                </td>`;
                 tbody.appendChild(tr);
             });
 
             if (openPorts.length === 0 && connections.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:var(--text-muted);">No active connections.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="4" class="px-6 py-8 text-center text-gray-500 dark:text-gray-400 italic">No active connections.</td></tr>`;
             }
         })
         .catch(err => {
             console.error('loadActiveHubs error:', err);
-            tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:red;">Failed to load connections.</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="4" class="px-6 py-8 text-center text-red-500">Failed to load connections.</td></tr>`;
         });
 }
 
@@ -169,24 +171,44 @@ async function closePort(port) {
     }
 }
 
-// Show message
+// Show message using Tailwind classes
 function showMessage(type, text) {
     const isError = type === 'error';
+    let container = document.getElementById('msg-container');
+
+    if (!container) return; // Failsafe
+
     let el = document.getElementById('hub-msg');
     if (!el) {
         el = document.createElement('div');
         el.id = 'hub-msg';
-        const pageHeader = document.querySelector('.page-header');
-        if (pageHeader) pageHeader.insertAdjacentElement('afterend', el);
+        container.appendChild(el);
     }
-    el.style.cssText = `padding:10px 16px; margin:10px 0; border-radius:6px; font-size:0.9rem;
-        background:${isError ? '#fef2f2' : '#f0fdf4'};
-        color:${isError ? '#dc2626' : '#16a34a'};
-        border:1px solid ${isError ? '#fecaca' : '#bbf7d0'};`;
-    el.textContent = text;
-    el.style.display = 'block';
+
+    // Tailwind classes for success/error alerts
+    const baseClasses = "p-4 mb-4 text-sm rounded-lg border flex items-center gap-2 shadow-sm transition-opacity duration-300";
+    const errorClasses = "text-red-800 border-red-300 bg-red-50 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800";
+    const successClasses = "text-green-800 border-green-300 bg-green-50 dark:bg-green-900/20 dark:text-green-400 dark:border-green-800";
+
+    const icon = isError ? '<i class="fas fa-exclamation-circle"></i>' : '<i class="fas fa-check-circle"></i>';
+
+    el.className = `${baseClasses} ${isError ? errorClasses : successClasses}`;
+    el.innerHTML = `${icon} <span>${escapeHtml(text)}</span>`;
+    el.style.display = 'flex';
+
     clearTimeout(el._timer);
     el._timer = setTimeout(() => el.style.display = 'none', isError ? 5000 : 3000);
+}
+
+// Utility to prevent XSS
+function escapeHtml(text) {
+    if (!text) return '';
+    return text.toString()
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
 }
 
 // Auto-refresh every 15 seconds
