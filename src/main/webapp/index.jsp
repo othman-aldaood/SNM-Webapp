@@ -48,54 +48,14 @@
                         <h3 class="font-bold text-gray-800 dark:text-white flex items-center gap-2">
                             <i class="fas fa-list-ul text-primary-500"></i> Channels
                         </h3>
-                        <button onclick="document.getElementById('create-channel-form').style.display='flex'" class="text-primary-500 hover:text-primary-600 transition-colors" title="Create Channel">
+                        <button onclick="showCreateChannelModal()" class="text-primary-500 hover:text-primary-600 transition-colors" title="Create Channel">
                             <i class="fas fa-plus-circle text-xl"></i>
                         </button>
                     </div>
 
                     <div id="channel-list" class="flex-1 overflow-y-auto chat-scroll p-4">
                         <div class="w-full text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-lg dark:bg-dark-card dark:border-dark-border dark:text-white shadow-sm">
-
-                            <a onclick="selectChannel(this, 'shark://general', 'General Chat')" class="channel-item flex justify-between items-center w-full px-4 py-3 bg-primary-50 text-primary-700 border-b border-gray-200 rounded-t-lg cursor-pointer dark:bg-gray-800 dark:border-dark-border dark:text-primary-400 transition-colors">
-                                <div class="flex items-center gap-3 overflow-hidden">
-                                    <i class="fas fa-hashtag channel-icon"></i>
-                                    <div class="flex-1 min-w-0 text-left">
-                                        <p class="font-bold truncate name-text">General Chat</p>
-                                        <p class="text-xs opacity-80 truncate font-normal">shark://general</p>
-                                    </div>
-                                </div>
-                                <button onclick="event.stopPropagation(); alert('Mock: Delete Channel')" class="text-red-500 hover:bg-red-100 dark:hover:bg-red-900/30 w-8 h-8 rounded-full flex items-center justify-center transition-colors">
-                                    <i class="fas fa-times"></i>
-                                </button>
-                            </a>
-
-                            <a onclick="selectChannel(this, 'shark://tech-support', 'Tech Support')" class="channel-item flex justify-between items-center w-full px-4 py-3 border-b border-gray-200 cursor-pointer hover:bg-gray-50 hover:text-primary-600 dark:border-dark-border dark:hover:bg-gray-800 dark:hover:text-primary-400 transition-colors text-gray-900 dark:text-white">
-                                <div class="flex items-center gap-3 overflow-hidden">
-                                    <i class="fas fa-hashtag channel-icon text-gray-400"></i>
-                                    <div class="flex-1 min-w-0 text-left">
-                                        <p class="font-bold truncate name-text">Tech Support</p>
-                                        <p class="text-xs text-gray-500 dark:text-gray-400 truncate font-normal">shark://tech-support</p>
-                                    </div>
-                                </div>
-                                <button onclick="event.stopPropagation(); alert('Mock: Delete Channel')" class="text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 w-8 h-8 rounded-full flex items-center justify-center transition-colors">
-                                    <i class="fas fa-times"></i>
-                                </button>
-                            </a>
-
-                            <a onclick="selectChannel(this, 'shark://news', 'News & Updates')" class="channel-item flex justify-between items-center w-full px-4 py-3 rounded-b-lg cursor-pointer hover:bg-gray-50 hover:text-primary-600 dark:border-dark-border dark:hover:bg-gray-800 dark:hover:text-primary-400 transition-colors text-gray-900 dark:text-white">
-                                <div class="flex items-center gap-3 overflow-hidden">
-                                    <i class="fas fa-hashtag channel-icon text-gray-400"></i>
-                                    <div class="flex-1 min-w-0 text-left">
-                                        <p class="font-bold truncate name-text">News & Updates</p>
-                                        <p class="text-xs text-gray-500 dark:text-gray-400 truncate font-normal">shark://news</p>
-                                    </div>
-                                </div>
-                                <button onclick="event.stopPropagation(); alert('Mock: Delete Channel')" class="text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 w-8 h-8 rounded-full flex items-center justify-center transition-colors">
-                                    <i class="fas fa-times"></i>
-                                </button>
-                            </a>
-
-                        </div>
+                            </div>
                     </div>
                 </div>
 
@@ -118,7 +78,6 @@
                     </div>
 
                     <div class="p-3 border-t border-gray-200 dark:border-dark-border bg-white dark:bg-dark-card rounded-b-xl">
-
                         <div class="flex flex-wrap items-center gap-4 mb-2 text-sm">
                             <select id="message-receiver" class="bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-dark-border text-gray-700 dark:text-gray-300 rounded px-2 py-1 outline-none focus:ring-1 focus:ring-primary-500 cursor-pointer">
                                 <option value="ANY_SHARKNET_PEER">Anyone</option>
@@ -147,7 +106,6 @@
                 </div>
 
                 <div class="hidden xl:block xl:col-span-3 space-y-6 h-auto lg:h-[calc(100vh-140px)] overflow-y-auto chat-scroll pr-2 pb-6">
-
                     <div class="bg-white dark:bg-dark-card border border-gray-200 dark:border-dark-border rounded-xl shadow-sm p-4">
                         <h4 class="font-bold border-b border-gray-100 dark:border-dark-border pb-2 mb-3 text-gray-800 dark:text-white flex items-center gap-2">
                             <i class="fas fa-server text-gray-400"></i> Peer Info
@@ -171,7 +129,7 @@
                         <div class="space-y-3 text-sm">
                             <div class="flex justify-between items-center">
                                 <span class="text-gray-500 dark:text-gray-400">Channels</span>
-                                <span id="active-channel-count" class="font-bold text-gray-800 dark:text-gray-200 bg-gray-100 dark:bg-gray-800 px-2 py-0.5 rounded">3</span>
+                                <span id="active-channel-count" class="font-bold text-gray-800 dark:text-gray-200 bg-gray-100 dark:bg-gray-800 px-2 py-0.5 rounded">0</span>
                             </div>
                             <div class="flex justify-between items-center">
                                 <span class="text-gray-500 dark:text-gray-400">Open Ports</span>
@@ -207,7 +165,7 @@
     </div>
 
     <div id="create-channel-form" class="fixed inset-0 z-50 bg-gray-900/50 backdrop-blur-sm hidden items-center justify-center p-4">
-        <div class="bg-white dark:bg-dark-card w-full max-w-md rounded-xl shadow-2xl border border-gray-200 dark:border-dark-border flex flex-col overflow-hidden animate-[fadeIn_0.2s_ease-out]">
+        <div class="bg-white dark:bg-dark-card w-full max-w-md rounded-xl shadow-2xl border border-gray-200 dark:border-dark-border flex flex-col overflow-hidden animate-[fadeIn_0.2s_ease-out]" onclick="event.stopPropagation()">
 
             <div class="p-4 border-b border-gray-200 dark:border-dark-border flex justify-between items-center bg-gray-50 dark:bg-gray-800/50">
                 <h3 class="font-bold text-lg text-gray-800 dark:text-white"><i class="fas fa-satellite-dish mr-2 text-primary-500"></i>Create Channel</h3>
@@ -236,8 +194,7 @@
         </div>
     </div>
 
-    <script src="js/messenger.js?v=18"></script>
-
+    <script src="js/messenger.js?v=20"></script>
 
 </body>
 

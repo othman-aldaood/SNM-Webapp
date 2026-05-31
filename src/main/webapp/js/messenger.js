@@ -26,6 +26,43 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
+// Event listener to close the Create Channel modal when clicking outside of it
+document.addEventListener('click', function (e) {
+    const modal = document.getElementById('create-channel-form');
+    // Check if modal exists, is currently visible (not hidden), and the click target is exactly the modal overlay
+    if (modal && !modal.classList.contains('hidden') && e.target === modal) {
+        hideCreateChannelModal();
+    }
+});
+
+// Show Create Channel Modal
+function showCreateChannelModal() {
+    const modal = document.getElementById('create-channel-form');
+    if (modal) {
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        // Auto-focus the first input after the modal renders
+        setTimeout(() => {
+            const uriInput = document.getElementById('new-channel-uri');
+            if (uriInput) uriInput.focus();
+        }, 100);
+    }
+}
+
+// Hide Create Channel Modal and clear inputs
+function hideCreateChannelModal() {
+    const modal = document.getElementById('create-channel-form');
+    if (modal) {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+
+        const uriInput = document.getElementById('new-channel-uri');
+        const nameInput = document.getElementById('new-channel-name');
+        if (uriInput) uriInput.value = '';
+        if (nameInput) nameInput.value = '';
+    }
+}
+
 /**
  * Fetches channels from the API and dynamically renders them using Tailwind CSS classes.
  * @return {Promise<void>}
@@ -85,8 +122,8 @@ async function loadChannels() {
                         <span class="truncate name-text ${isActive ? 'font-bold' : ''}">${escapeHtml(channel.name)}</span>
                     </div>
                     <div class="flex items-center">
-                        <span class="text-xs text-gray-400 mr-2 bg-gray-100 dark:bg-gray-700 px-2 py-0.5 rounded-full">${channel.messages}</span>
-                        <button onclick="deleteChannel('${channel.uri}', event)" class="text-gray-400 hover:text-red-500 transition-colors" title="Delete Channel">
+                        <span class="text-xs text-gray-400 mr-2 bg-gray-100 dark:bg-gray-700 px-2 py-0.5 rounded-full">${channel.messages || 0}</span>
+                        <button onclick="deleteChannel('${escapeHtml(channel.uri)}', event)" class="text-gray-400 hover:text-red-500 transition-colors" title="Delete Channel">
                             <i class="fas fa-times"></i>
                         </button>
                     </div>
@@ -119,10 +156,6 @@ async function loadChannels() {
 /**
  * Handles the selection of a channel from the list, updates the UI classes,
  * stores the state, and triggers the message fetch.
- * * @param {HTMLElement} element - The clicked DOM element
- * @param {string} uri - The unique URI of the selected channel
- * @param {string} name - The display name of the selected channel
- * @param {number} index - The backend index of the channel
  */
 function selectChannel(element, uri, name, index) {
     // 1. Update Global State
@@ -159,7 +192,7 @@ function selectChannel(element, uri, name, index) {
     const headerName = document.getElementById('current-channel-name');
     if (headerName) headerName.textContent = name || uri;
 
-    document.getElementById('current-channel-pki-status').innerText = 'Connected to ' + (name || uri);
+    document.getElementById('current-channel-pki-status').innerText = 'Connected to ' + escapeHtml(name || uri);
 
     const indicator = document.getElementById('status-indicator');
     if (indicator) {
@@ -173,8 +206,6 @@ function selectChannel(element, uri, name, index) {
 
 /**
  * Fetches and displays messages for a specific channel URI.
- * @param {string} uri - The channel URI
- * @return {Promise<void>}
  */
 async function loadMessages(uri) {
     const chatLog = document.getElementById('chat-log');
@@ -212,8 +243,6 @@ async function loadMessages(uri) {
 
 /**
  * Renders an array of messages into the chat log using Tailwind styling.
- * @param {Array} messages - Array of message objects
- * @return {void}
  */
 function renderMessages(messages) {
     const chatLog = document.getElementById('chat-log');
@@ -231,9 +260,9 @@ function renderMessages(messages) {
         line.innerHTML = `
             <div class="mb-4 max-w-[80%] ${isMe ? 'ml-auto text-right' : 'mr-auto text-left'}">
                 <div class="text-[0.7rem] text-gray-500 dark:text-gray-400 mb-1 px-1">
-                    ${msg.timestamp.split(' ')[1] || msg.timestamp} - ${msg.sender}
+                    ${escapeHtml(msg.timestamp.split(' ')[1] || msg.timestamp)} - ${escapeHtml(msg.sender)}
                 </div>
-                <div class="${isMe ? 'bg-primary-500 text-white rounded-l-xl rounded-tr-xl' : 'bg-white dark:bg-dark-card border border-gray-200 dark:border-dark-border text-gray-800 dark:text-gray-200 rounded-r-xl rounded-tl-xl'} px-4 py-2 inline-block text-sm shadow-sm text-left">
+                <div class="${isMe ? 'bg-primary-500 text-white rounded-l-xl rounded-tr-xl' : 'bg-white dark:bg-dark-card border border-gray-200 dark:border-dark-border text-gray-800 dark:text-gray-200 rounded-r-xl rounded-tl-xl'} px-4 py-2 inline-block text-sm shadow-sm text-left break-words max-w-full">
                     ${escapeHtml(msg.content)}
                 </div>
             </div>
@@ -246,7 +275,6 @@ function renderMessages(messages) {
 
 /**
  * Gathers input and sends a new message to the active channel.
- * @return {Promise<void>}
  */
 async function sendMessage() {
     if (currentChannelState.index === null || currentChannelState.index === undefined) {
@@ -295,9 +323,6 @@ async function sendMessage() {
 
 /**
  * Deletes a channel after user confirmation.
- * @param {string} uri - The URI of the channel to delete
- * @param {Event} event - The click event
- * @return {Promise<void>}
  */
 async function deleteChannel(uri, event) {
     if (event) event.stopPropagation(); // Prevent triggering selectChannel
@@ -337,7 +362,6 @@ async function deleteChannel(uri, event) {
 
 /**
  * Creates a new channel using the modal inputs.
- * @return {Promise<void>}
  */
 async function createChannel() {
     const uriInput = document.getElementById('new-channel-uri');
@@ -362,8 +386,6 @@ async function createChannel() {
 
         if (response.ok) {
             hideCreateChannelModal();
-            uriInput.value = '';
-            nameInput.value = '';
             loadChannels(); // Refresh UI
         } else {
             alert('Error: ' + (result.error || result.message || 'Unknown error'));
@@ -406,7 +428,7 @@ async function loadPersonsForRecipient() {
             data.persons.forEach(person => {
                 const option = document.createElement('option');
                 option.value = person.name;
-                option.textContent = `${person.name} (${person.id.substring(0, 8)}...)`;
+                option.textContent = `${escapeHtml(person.name)} (${escapeHtml(person.id.substring(0, 8))}...)`;
                 select.appendChild(option);
             });
         }
@@ -415,15 +437,10 @@ async function loadPersonsForRecipient() {
     }
 }
 
-function showCreateChannelModal() {
-    document.getElementById('create-channel-form').style.display = 'flex';
-    document.getElementById('new-channel-uri').focus();
-}
-
 // Utility to escape HTML and prevent XSS
 function escapeHtml(text) {
     if (!text) return '';
-    return text
+    return text.toString()
         .replace(/&/g, "&amp;")
         .replace(/</g, "&lt;")
         .replace(/>/g, "&gt;")
