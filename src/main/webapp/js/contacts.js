@@ -83,17 +83,64 @@ async function deletePeer(id) {
     }
 }
 
-function createNewPeer() {
-    const name = prompt("Enter new Peer Name:");
-    if (!name || name.trim() === '') return;
+// --- Modal Functions for Creating New Peer ---
+
+function showCreatePeerModal() {
+    const modal = document.getElementById('create-peer-modal');
+    if (modal) {
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        // Auto-focus input after modal opens
+        setTimeout(() => {
+            const input = document.getElementById('new-peer-name');
+            if (input) input.focus();
+        }, 100);
+    }
+}
+
+function hideCreatePeerModal() {
+    const modal = document.getElementById('create-peer-modal');
+    if (modal) {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+
+        // Clear input when closing
+        const input = document.getElementById('new-peer-name');
+        if (input) input.value = '';
+    }
+}
+
+function submitNewPeer() {
+    const nameInput = document.getElementById('new-peer-name');
+    const name = nameInput ? nameInput.value.trim() : '';
+
+    if (!name) {
+        alert('Peer Name is required');
+        if (nameInput) nameInput.focus();
+        return;
+    }
 
     fetch('api/peer', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({name: name.trim()})
+        body: JSON.stringify({name: name})
     })
         .then(() => location.reload())
         .catch(err => alert("Error creating peer: " + err));
 }
 
-document.addEventListener('DOMContentLoaded', loadContacts);
+// Event Listeners Initialization
+document.addEventListener('DOMContentLoaded', () => {
+    loadContacts();
+
+    // Listen for 'Enter' key in the modal input
+    const peerInput = document.getElementById('new-peer-name');
+    if (peerInput) {
+        peerInput.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                submitNewPeer();
+            }
+        });
+    }
+});
