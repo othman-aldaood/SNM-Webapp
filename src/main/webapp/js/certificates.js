@@ -1,23 +1,20 @@
 /**
  * certificates.js - Certificate Management JavaScript
- * Updated to support Tailwind CSS and Flowbite-inspired styling.
+ * Fully Updated to support Tailwind CSS and Mobile Responsiveness.
  */
 
 let certificates = [];
 let pendingCredentials = [];
-let trustLevelCache = new Map(); // Cache trust levels to avoid repeated API calls
+let trustLevelCache = new Map();
 let lastRefreshTime = 0;
-const REFRESH_INTERVAL = 15000; // 15 seconds
+const REFRESH_INTERVAL = 15000;
 
-// Global state for filtering
 let currentFilter = {
     type: 'all',
     issuer: '',
     subject: '',
     trust: ''
 };
-
-// --- Utility Functions ---
 
 function formatCertificateDate(value, withTime) {
     if (value === undefined || value === null) return 'Unknown';
@@ -34,19 +31,14 @@ function formatCertificateDate(value, withTime) {
         }
     }
 
-    if (isNaN(date.getTime())) {
-        console.warn('Date parsing failed for:', value);
-        return 'Unknown';
-    }
+    if (isNaN(date.getTime())) return 'Unknown';
 
     try {
         const options = withTime ?
             {day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit'} :
             {day: '2-digit', month: '2-digit', year: 'numeric'};
-
         return date.toLocaleDateString(undefined, options);
     } catch (e) {
-        console.error('Date formatting error:', e);
         return 'Unknown';
     }
 }
@@ -61,15 +53,11 @@ function escapeHtml(text) {
         .replace(/'/g, "&#039;");
 }
 
-// --- Initialization & Polling ---
-
 document.addEventListener('DOMContentLoaded', function () {
-    console.log('=== CERTIFICATE PAGE LOADED ===');
     loadCertificates();
     loadPendingCredentials();
     loadOwnCertificate();
 
-    // Auto-refresh polling
     setInterval(() => {
         const importModal = document.getElementById('import-modal');
         const detailsModal = document.getElementById('details-modal');
@@ -103,8 +91,6 @@ function refreshCertificates() {
     loadPendingCredentials();
 }
 
-// --- Data Loading Functions ---
-
 async function loadOwnCertificate() {
     try {
         const response = await fetch('/snm-webapp/api/peer');
@@ -122,9 +108,8 @@ async function loadOwnCertificate() {
 
 async function loadCertificates(silent = false) {
     const tbody = document.getElementById('certificates-tbody');
-
     if (!silent) {
-        tbody.innerHTML = '<tr><td colspan="5" class="px-6 py-8 text-center text-gray-500">Loading certificates...</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="5" class="px-6 py-8 text-center text-gray-500 dark:text-gray-400">Loading certificates...</td></tr>';
     }
 
     try {
@@ -135,7 +120,7 @@ async function loadCertificates(silent = false) {
         const activePeer = peers.find(p => p.active);
 
         if (!activePeer) {
-            if (!silent) tbody.innerHTML = '<tr><td colspan="5" class="px-6 py-8 text-center text-gray-500">No active peer found - Please login first.</td></tr>';
+            if (!silent) tbody.innerHTML = '<tr><td colspan="5" class="px-6 py-8 text-center text-gray-500 dark:text-gray-400">No active peer found - Please login first.</td></tr>';
             return;
         }
 
@@ -148,7 +133,6 @@ async function loadCertificates(silent = false) {
 
     } catch (error) {
         if (!silent) {
-            console.error('LOAD CERTIFICATES ERROR:', error);
             tbody.innerHTML = `<tr><td colspan="5" class="px-6 py-8 text-center text-red-500">Error: ${escapeHtml(error.message)}</td></tr>`;
         }
     }
@@ -158,47 +142,47 @@ function displayCertificates() {
     const tbody = document.getElementById('certificates-tbody');
 
     if (certificates.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="5" class="px-6 py-8 text-center text-gray-500">No certificates found</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="5" class="px-6 py-8 text-center text-gray-500 dark:text-gray-400">No certificates found</td></tr>';
         return;
     }
 
     tbody.innerHTML = '';
     certificates.forEach((cert, index) => {
-        const subjectName = cert.subject?.name || 'Unknown';
-        const subjectId = cert.subject?.id || 'Unknown';
-        const issuerName = cert.issuedBy?.name || 'Unknown';
-        const issuerId = cert.issuedBy?.id || 'Unknown';
+        const subjectName = escapeHtml(cert.subject?.name || 'Unknown');
+        const subjectId = escapeHtml(cert.subject?.id || 'Unknown');
+        const issuerName = escapeHtml(cert.issuedBy?.name || 'Unknown');
+        const issuerId = escapeHtml(cert.issuedBy?.id || 'Unknown');
         const validUntil = formatCertificateDate(cert.validUntil, false);
 
         const row = document.createElement('tr');
-        row.className = "hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors";
+        row.className = "hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors";
 
         row.innerHTML = `
             <td class="px-6 py-4">
-                <div class="font-bold text-gray-900 dark:text-white">${escapeHtml(subjectName)}</div>
-                <div class="font-mono text-xs text-gray-500 truncate max-w-[150px]" title="${escapeHtml(subjectId)}">${escapeHtml(subjectId)}</div>
+                <div class="font-bold text-gray-900 dark:text-white">${subjectName}</div>
+                <div class="font-mono text-xs text-gray-500 dark:text-gray-400 truncate max-w-[120px] sm:max-w-[150px]" title="${subjectId}">${subjectId}</div>
             </td>
             <td class="px-6 py-4">
-                <div class="font-medium text-gray-900 dark:text-gray-300">${escapeHtml(issuerName)}</div>
-                <div class="font-mono text-xs text-gray-500 truncate max-w-[150px]" title="${escapeHtml(issuerId)}">${escapeHtml(issuerId)}</div>
+                <div class="font-medium text-gray-900 dark:text-gray-300">${issuerName}</div>
+                <div class="font-mono text-xs text-gray-500 dark:text-gray-400 truncate max-w-[120px] sm:max-w-[150px]" title="${issuerId}">${issuerId}</div>
             </td>
-            <td class="px-6 py-4 text-gray-700 dark:text-gray-300">${validUntil}</td>
-            <td class="px-6 py-4">
-                <span class="px-2.5 py-0.5 text-xs font-bold rounded-full bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400" id="trust-badge-${index}">
+            <td class="px-6 py-4 text-gray-700 dark:text-gray-300 text-sm whitespace-nowrap">${validUntil}</td>
+            <td class="px-6 py-4 text-center">
+                <span class="px-2.5 py-0.5 text-xs font-bold rounded-full bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400 whitespace-nowrap" id="trust-badge-${index}">
                     Loading...
                 </span>
             </td>
-            <td class="px-6 py-4 text-right flex justify-end gap-2">
-                <button class="px-3 py-1.5 text-xs bg-gray-200 hover:bg-gray-300 dark:bg-gray-600 dark:hover:bg-gray-500 rounded transition-colors font-medium text-gray-800 dark:text-gray-200" onclick="showCertificateDetails(${index})">Details</button>
-                <button class="px-3 py-1.5 text-xs bg-red-100 hover:bg-red-200 text-red-600 dark:bg-red-900/30 dark:text-red-400 dark:hover:bg-red-900/50 rounded transition-colors font-medium" onclick="showRevokeModal('${escapeHtml(subjectId)}', '${escapeHtml(subjectName)}')">Revoke</button>
+            <td class="px-6 py-4 text-right">
+                <div class="flex justify-end gap-2">
+                    <button class="px-3 py-1.5 text-xs bg-gray-200 hover:bg-gray-300 dark:bg-gray-600 dark:hover:bg-gray-500 rounded transition-colors font-medium text-gray-800 dark:text-gray-200" onclick="showCertificateDetails(${index})">Details</button>
+                    <button class="px-3 py-1.5 text-xs bg-red-100 hover:bg-red-200 text-red-600 dark:bg-red-900/30 dark:text-red-400 dark:hover:bg-red-900/50 rounded transition-colors font-medium" onclick="showRevokeModal('${subjectId}', '${subjectName}')">Revoke</button>
+                </div>
             </td>
         `;
         tbody.appendChild(row);
         loadTrustLevel(index, subjectId);
     });
 }
-
-// --- Trust Level Management ---
 
 async function loadTrustLevel(index, subjectId) {
     if (trustLevelCache.has(subjectId)) {
@@ -229,7 +213,7 @@ function updateTrustBadge(index, trustData) {
     const badgeEl = document.getElementById(`trust-badge-${index}`);
     if (badgeEl) {
         badgeEl.textContent = trustData.level;
-        badgeEl.className = `px-2.5 py-0.5 text-xs font-bold rounded-full ${trustData.badgeClass}`;
+        badgeEl.className = `px-2.5 py-0.5 text-xs font-bold rounded-full whitespace-nowrap ${trustData.badgeClass}`;
     }
 }
 
@@ -239,8 +223,6 @@ function getTrustBadgeTailwindClass(ia) {
     if (ia >= 4) return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-500';
     return 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400';
 }
-
-// --- Pending Credentials ---
 
 async function loadPendingCredentials() {
     try {
@@ -262,20 +244,20 @@ function displayPendingCredentials() {
     countBadge.textContent = pendingCredentials.length;
 
     if (pendingCredentials.length === 0) {
-        container.innerHTML = '<div class="text-gray-500 dark:text-gray-400 text-sm italic py-2">No pending credential requests</div>';
+        container.innerHTML = '<div class="text-gray-500 dark:text-gray-400 text-sm italic py-4 text-center border border-dashed border-gray-300 dark:border-gray-700 rounded-lg">No pending credential requests</div>';
         return;
     }
 
     container.innerHTML = '';
     pendingCredentials.forEach((cred, index) => {
-        const sender = cred.credential?.name || cred.credential?.id || 'Unknown Sender';
+        const sender = escapeHtml(cred.credential?.name || cred.credential?.id || 'Unknown Sender');
 
         const credDiv = document.createElement('div');
         credDiv.className = 'flex flex-col sm:flex-row justify-between items-start sm:items-center p-4 border border-gray-200 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-800/50 gap-4';
 
         credDiv.innerHTML = `
-            <div>
-                <div class="font-bold text-gray-900 dark:text-white">${escapeHtml(sender)}</div>
+            <div class="w-full">
+                <div class="font-bold text-gray-900 dark:text-white break-all">${sender}</div>
                 <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">Standard Credential Request</div>
             </div>
             <div class="flex gap-2 w-full sm:w-auto">
@@ -323,23 +305,45 @@ function showCertificateDetails(index) {
     const cert = certificates[index];
     const detailsDiv = document.getElementById('certificate-details');
 
-    const subjectName = cert.subject?.name || 'Unknown';
-    const subjectId = cert.subject?.id || 'Unknown';
-    const issuerName = cert.issuedBy?.name || 'Unknown';
-    const issuerId = cert.issuedBy?.id || 'Unknown';
+    const subjectName = escapeHtml(cert.subject?.name || 'Unknown');
+    const subjectId = escapeHtml(cert.subject?.id || 'Unknown');
+    const issuerName = escapeHtml(cert.issuedBy?.name || 'Unknown');
+    const issuerId = escapeHtml(cert.issuedBy?.id || 'Unknown');
     const validSince = formatCertificateDate(cert.validSince, true);
     const validUntil = formatCertificateDate(cert.validUntil, true);
-    const fingerprint = cert.publicKeyFingerprint || 'Not available';
+    const fingerprint = escapeHtml(cert.publicKeyFingerprint || 'Not available');
 
+    // Using grid & break-all to ensure long hashes don't break the modal width on mobile
     detailsDiv.innerHTML = `
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-y-4 gap-x-6">
-            <div><span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">Subject Name</span><div class="font-medium">${escapeHtml(subjectName)}</div></div>
-            <div><span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">Subject ID</span><div class="font-mono text-xs break-all bg-gray-100 dark:bg-gray-900 p-2 rounded">${escapeHtml(subjectId)}</div></div>
-            <div><span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">Issuer Name</span><div class="font-medium">${escapeHtml(issuerName)}</div></div>
-            <div><span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">Issuer ID</span><div class="font-mono text-xs break-all bg-gray-100 dark:bg-gray-900 p-2 rounded">${escapeHtml(issuerId)}</div></div>
-            <div><span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">Valid From</span><div>${validSince}</div></div>
-            <div><span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">Valid Until</span><div>${validUntil}</div></div>
-            <div class="md:col-span-2"><span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">Public Key Fingerprint</span><div class="font-mono text-xs break-all bg-gray-100 dark:bg-gray-900 p-2 rounded">${escapeHtml(fingerprint)}</div></div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-y-4 gap-x-6 w-full">
+            <div class="w-full">
+                <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">Subject Name</span>
+                <div class="font-medium text-gray-900 dark:text-white break-all">${subjectName}</div>
+            </div>
+            <div class="w-full">
+                <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">Subject ID</span>
+                <div class="font-mono text-xs break-all bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-300 p-2 rounded border border-gray-200 dark:border-gray-700">${subjectId}</div>
+            </div>
+            <div class="w-full">
+                <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">Issuer Name</span>
+                <div class="font-medium text-gray-900 dark:text-white break-all">${issuerName}</div>
+            </div>
+            <div class="w-full">
+                <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">Issuer ID</span>
+                <div class="font-mono text-xs break-all bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-300 p-2 rounded border border-gray-200 dark:border-gray-700">${issuerId}</div>
+            </div>
+            <div class="w-full">
+                <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">Valid From</span>
+                <div class="text-gray-900 dark:text-white">${validSince}</div>
+            </div>
+            <div class="w-full">
+                <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">Valid Until</span>
+                <div class="text-gray-900 dark:text-white">${validUntil}</div>
+            </div>
+            <div class="sm:col-span-2 w-full">
+                <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">Public Key Fingerprint</span>
+                <div class="font-mono text-xs break-all bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-300 p-2.5 rounded border border-gray-200 dark:border-gray-700">${fingerprint}</div>
+            </div>
         </div>
     `;
 
@@ -495,6 +499,8 @@ function showRevokeModal(id, name) {
 
 function hideRevokeModal() {
     document.getElementById('revoke-modal').classList.add('hidden');
+    document.getElementById('revoke-subject-id').value = '';
+    document.getElementById('revoke-subject-name').value = '';
 }
 
 window.onclick = function (event) {

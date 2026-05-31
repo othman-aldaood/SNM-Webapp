@@ -54,17 +54,66 @@ function applyTheme(theme) {
 }
 
 /**
- * Toggles the visibility of the sidebar menu.
+ * Toggles the sidebar visibility with a smooth slide animation.
+ * On mobile: Slides completely in and out of the screen.
+ * On desktop: Smoothly collapses width to show icons only (w-20) or expands to full width (w-64).
  *
  * @return {void}
  */
 function toggleSidebar() {
     const sidebar = document.getElementById('app-sidebar');
-    if (sidebar) {
-        sidebar.classList.toggle('hidden');
+    const texts = document.querySelectorAll('.sidebar-text');
+
+    if (!sidebar) return;
+
+    const isMobile = window.innerWidth < 768; // 768px is the 'md' breakpoint in Tailwind
+
+    if (isMobile) {
+        // Mobile behavior: Slide in / Slide out completely
+        sidebar.classList.toggle('-translate-x-full');
+
+        // Ensure it's full width and texts are visible when opened on mobile
+        sidebar.classList.remove('md:w-20');
+        sidebar.classList.add('md:w-64');
+        texts.forEach(text => {
+            text.style.display = 'block';
+            setTimeout(() => text.style.opacity = '1', 10);
+        });
+    } else {
+        // Desktop behavior: Collapse / Expand width
+        sidebar.classList.toggle('md:w-64');
+        sidebar.classList.toggle('md:w-20'); // w-20 = 80px (Centers the icon perfectly)
+
+        const isCollapsed = sidebar.classList.contains('md:w-20');
+
+        texts.forEach(text => {
+            if (isCollapsed) {
+                // Fade out text, then hide it so it doesn't take space
+                text.style.opacity = '0';
+                setTimeout(() => {
+                    text.style.display = 'none';
+                }, 200);
+            } else {
+                // Display text, then fade it in smoothly
+                text.style.display = 'block';
+                setTimeout(() => {
+                    text.style.opacity = '1';
+                }, 10);
+            }
+        });
     }
 }
 
+// Optional: Reset sidebar state correctly if user resizes the browser window
+window.addEventListener('resize', () => {
+    const sidebar = document.getElementById('app-sidebar');
+    if (!sidebar) return;
+
+    if (window.innerWidth >= 768) {
+        // Ensure it's not pushed off-screen on desktop
+        sidebar.classList.remove('-translate-x-full');
+    }
+});
 // Global Keyboard Shortcuts Event Listener
 document.addEventListener('keydown', (e) => {
     // [Ctrl + K] or [Cmd + K] => Global Search Focus

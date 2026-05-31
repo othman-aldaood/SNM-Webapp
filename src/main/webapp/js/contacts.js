@@ -1,36 +1,58 @@
+// Utility to escape HTML and prevent XSS
+function escapeHtml(text) {
+    if (!text) return '';
+    return text.toString()
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
 async function loadContacts() {
     const tableBody = document.getElementById('contactsTableBody');
+    tableBody.innerHTML = '<tr><td colspan="3" class="px-6 py-8 text-center text-gray-500 dark:text-gray-400">Loading peers...</td></tr>';
+
     try {
         const response = await fetch('api/peer');
         const peers = await response.json();
 
         tableBody.innerHTML = '';
 
+        if (peers.length === 0) {
+            tableBody.innerHTML = '<tr><td colspan="3" class="px-6 py-8 text-center text-gray-500 dark:text-gray-400">No peers found. Create one to get started.</td></tr>';
+            return;
+        }
+
         peers.forEach(peer => {
             const row = document.createElement('tr');
-            row.className = "hover:bg-gray-50 dark:hover:bg-gray-700/50";
-
+            row.className = "hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors";
 
             const isPeerActive = peer.active;
             const statusText = isPeerActive ? 'Active' : 'Inactive';
-            const statusClass = isPeerActive ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800';
+            const statusClass = isPeerActive
+                ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400'
+                : 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-400';
+
+            const actionBtn = isPeerActive
+                ? `<button class="px-3 py-1.5 text-xs bg-yellow-100 hover:bg-yellow-200 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400 dark:hover:bg-yellow-900/50 font-medium rounded transition-colors" onclick="stopPeer('${escapeHtml(peer.peerId)}')"><i class="fas fa-stop mr-1"></i> Stop</button>`
+                : `<button class="px-3 py-1.5 text-xs bg-blue-100 hover:bg-blue-200 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400 dark:hover:bg-blue-900/50 font-medium rounded transition-colors" onclick="startPeer('${escapeHtml(peer.peerId)}')"><i class="fas fa-play mr-1"></i> Start</button>`;
 
             row.innerHTML = `
                 <td class="px-6 py-4">
-                    <span class="px-2 py-1 text-xs font-bold rounded-full ${statusClass}">${statusText}</span>
+                    <span class="px-2.5 py-0.5 text-xs font-bold rounded-full ${statusClass}">${statusText}</span>
                 </td>
                 <td class="px-6 py-4">
-                    <div class="font-bold">${peer.name || 'Unknown'}</div>
-                    <div class="text-xs text-gray-500 font-mono">${peer.peerId}</div>
+                    <div class="font-bold text-gray-900 dark:text-white">${escapeHtml(peer.name) || 'Unknown'}</div>
+                    <div class="text-xs text-gray-500 dark:text-gray-400 font-mono mt-1 max-w-[200px] truncate" title="${escapeHtml(peer.peerId)}">${escapeHtml(peer.peerId)}</div>
                 </td>
-                <td class="px-6 py-4">
-                    <button class="px-3 py-1 text-xs ${isPeerActive ? 'bg-gray-500' : 'bg-blue-600'} text-white rounded" 
-                            onclick="${isPeerActive ? 'stopPeer' : 'startPeer'}('${peer.peerId}')">
-                        ${isPeerActive ? 'Stop' : 'Start'}
-                    </button>
-                    <button class="px-3 py-1 text-xs bg-red-600 text-white rounded ml-2" onclick="deletePeer('${peer.peerId}')">
-                        Delete
-                    </button>
+                <td class="px-6 py-4 text-right">
+                    <div class="flex justify-end gap-2">
+                        ${actionBtn}
+                        <button class="px-3 py-1.5 text-xs bg-red-100 hover:bg-red-200 text-red-600 dark:bg-red-900/30 dark:text-red-400 dark:hover:bg-red-900/50 font-medium rounded transition-colors" onclick="deletePeer('${escapeHtml(peer.peerId)}')">
+                            <i class="fas fa-trash mr-1"></i> Delete
+                        </button>
+                    </div>
                 </td>
             `;
             tableBody.appendChild(row);
@@ -39,7 +61,6 @@ async function loadContacts() {
         tableBody.innerHTML = '<tr><td colspan="3" class="px-6 py-8 text-center text-red-500">Error loading data.</td></tr>';
     }
 }
-
 
 async function startPeer(id) {
     await fetch('api/start/' + id, {method: 'POST'});
@@ -52,23 +73,27 @@ async function stopPeer(id) {
 }
 
 async function deletePeer(id) {
-    if (confirm('Sure?')) await fetch('api/peer', {
-        method: 'DELETE',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({peerId: id})
-    });
-    location.reload();
+    if (confirm('Are you sure you want to delete this peer?')) {
+        await fetch('api/peer', {
+            method: 'DELETE',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({peerId: id})
+        });
+        location.reload();
+    }
 }
 
 function createNewPeer() {
-    const name = prompt("Peer Name:");
-    if (!name) return;
+    const name = prompt("Enter new Peer Name:");
+    if (!name || name.trim() === '') return;
+
     fetch('api/peer', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({name: name})
+        body: JSON.stringify({name: name.trim()})
     })
-        .then(() => location.reload());
+        .then(() => location.reload())
+        .catch(err => alert("Error creating peer: " + err));
 }
 
 document.addEventListener('DOMContentLoaded', loadContacts);
