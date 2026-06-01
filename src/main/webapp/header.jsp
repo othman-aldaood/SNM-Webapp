@@ -26,6 +26,7 @@
 
 <!-- FontAwesome CDN -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 
 <!-- Sticky Header fixed to h-16 (64px) -->
 <header class="sticky top-0 z-50 w-full h-16 backdrop-blur-md bg-white/80 dark:bg-dark-card/80 border-b border-gray-200 dark:border-dark-border px-4 sm:px-6 transition-colors duration-300 shadow-sm flex items-center justify-between">
