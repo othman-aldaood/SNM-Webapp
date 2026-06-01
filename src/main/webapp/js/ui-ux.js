@@ -128,3 +128,96 @@ document.addEventListener('keydown', (e) => {
 
 // Run initialization immediately on script load
 initTheme();
+
+// ==========================================
+// Header & Network Status Logic
+// ==========================================
+
+document.addEventListener('DOMContentLoaded', () => {
+    const globalPeerCountEl = document.getElementById('globalPeerCount');
+    const activePeerNameEl = document.getElementById('activePeerName');
+
+    // Fetch network status for header
+    if (globalPeerCountEl) {
+        fetch("/snm-webapp/api/peer")
+            .then(r => r.json())
+            .then(peers => {
+                globalPeerCountEl.innerText = peers ? peers.length : 0;
+                if (peers && peers.length > 0) {
+                    const activePeer = peers.find(p => p.active);
+                    if (activePeer) {
+                        window.currentActivePeerId = activePeer.peerId;
+                        if (activePeerNameEl) activePeerNameEl.innerText = activePeer.name;
+                        window.dispatchEvent(new CustomEvent('peerReady', {detail: activePeer.peerId}));
+                    }
+                }
+            })
+            .catch(() => {
+                globalPeerCountEl.innerText = "Offline";
+            });
+    }
+});
+
+// ==========================================
+// Custom Logout Modal Logic
+// ==========================================
+
+/**
+ * Displays the custom logout confirmation modal with a fade-in animation.
+ */
+function showLogoutModal() {
+    const modal = document.getElementById('logout-modal');
+    if (modal) {
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        setTimeout(() => {
+            modal.classList.remove('opacity-0');
+            modal.querySelector('div').classList.remove('scale-95');
+            modal.querySelector('div').classList.add('scale-100');
+        }, 10);
+    }
+}
+
+/**
+ * Hides the custom logout confirmation modal with a fade-out animation.
+ */
+function hideLogoutModal() {
+    const modal = document.getElementById('logout-modal');
+    if (modal) {
+        modal.classList.add('opacity-0');
+        modal.querySelector('div').classList.remove('scale-100');
+        modal.querySelector('div').classList.add('scale-95');
+        setTimeout(() => {
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }, 300);
+    }
+}
+
+/**
+ * Executes the logout logic, stops the active peer via the backend API,
+ * and redirects the user to the login page.
+ */
+function confirmLogout() {
+    const logoutBtn = document.getElementById('confirm-logout-btn');
+    if (logoutBtn) {
+        logoutBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Logging out...';
+        logoutBtn.disabled = true;
+    }
+
+    if (window.currentActivePeerId) {
+        fetch(`/snm-webapp/api/stop/${window.currentActivePeerId}`, {method: 'POST'})
+            .then(() => window.location.href = '/snm-webapp/login.jsp')
+            .catch(() => window.location.href = '/snm-webapp/login.jsp');
+    } else {
+        window.location.href = '/snm-webapp/login.jsp';
+    }
+}
+
+// Close modal when clicking outside the modal content
+document.addEventListener('click', function (e) {
+    const modal = document.getElementById('logout-modal');
+    if (modal && !modal.classList.contains('hidden') && e.target === modal) {
+        hideLogoutModal();
+    }
+});

@@ -64,43 +64,41 @@
             <i class="fas fa-moon text-lg"></i>
         </button>
 
-        <button onclick="logout()" class="bg-red-50 hover:bg-red-100 dark:bg-red-900/20 dark:hover:bg-red-900/40 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-800/50 px-3 py-2 sm:px-4 rounded-lg text-sm font-medium transition-colors shadow-sm flex items-center gap-2" title="Logout">
+        <!-- Updated Logout Button to trigger the Modal -->
+        <button onclick="showLogoutModal()" class="bg-red-50 hover:bg-red-100 dark:bg-red-900/20 dark:hover:bg-red-900/40 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-800/50 px-3 py-2 sm:px-4 rounded-lg text-sm font-medium transition-colors shadow-sm flex items-center gap-2" title="Logout">
             <i class="fas fa-sign-out-alt"></i>
             <span class="hidden sm:block">Logout</span>
         </button>
     </div>
 </header>
 
-<!-- Rest of the scripts... -->
+<!-- Custom Tailwind Logout Modal -->
+<div id="logout-modal" class="fixed inset-0 z-[100] bg-gray-900/50 backdrop-blur-sm hidden items-center justify-center p-4 opacity-0 transition-opacity duration-300">
+    <div class="bg-white dark:bg-dark-card w-full max-w-sm rounded-xl shadow-2xl border border-gray-200 dark:border-dark-border flex flex-col overflow-hidden transform scale-95 transition-transform duration-300" onclick="event.stopPropagation()">
+
+        <div class="p-6 text-center">
+            <div class="w-16 h-16 rounded-full bg-red-100 dark:bg-red-900/30 text-red-500 mx-auto flex items-center justify-center text-3xl mb-4 shadow-sm">
+                <i class="fas fa-sign-out-alt"></i>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">Confirm Logout</h3>
+            <p class="text-sm text-gray-500 dark:text-gray-400">
+                Are you sure you want to log out? This will stop the active peer and redirect you to the login screen.
+            </p>
+        </div>
+
+        <div class="p-4 border-t border-gray-200 dark:border-dark-border bg-gray-50 dark:bg-gray-800/50 flex justify-center gap-3">
+            <button onclick="hideLogoutModal()" class="px-5 py-2 border border-gray-300 dark:border-dark-border rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 font-medium transition-colors w-full">
+                Cancel
+            </button>
+            <button id="confirm-logout-btn" onclick="confirmLogout()" class="px-5 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg font-medium shadow-sm transition-colors w-full flex items-center justify-center gap-2">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </button>
+        </div>
+    </div>
+</div>
+
 <script>
     window.currentActivePeerId = '<%= activePeerId %>';
-    fetch("/snm-webapp/api/peer").then(r => r.json()).then(peers => {
-        document.getElementById('globalPeerCount').innerText = peers ? peers.length : 0;
-        if (peers && peers.length > 0) {
-            const activePeer = peers.find(p => p.active);
-            if (activePeer) {
-                window.currentActivePeerId = activePeer.peerId;
-                document.getElementById('activePeerName').innerText = activePeer.name;
-                window.dispatchEvent(new CustomEvent('peerReady', { detail: activePeer.peerId }));
-            }
-        }
-    }).catch(() => {
-        const el = document.getElementById('globalPeerCount');
-        if (el) el.innerText = "Offline";
-    });
-
-    function logout() {
-        if (confirm('Are you sure you want to logout? This will stop the active peer.')) {
-            if (window.currentActivePeerId) {
-                fetch(`/snm-webapp/api/stop/${window.currentActivePeerId}`, { method: 'POST' })
-                    .then(() => window.location.href = '/snm-webapp/login.jsp')
-                    .catch(() => window.location.href = '/snm-webapp/login.jsp');
-            } else {
-                window.location.href = '/snm-webapp/login.jsp';
-            }
-        }
-    }
 </script>
 
-<!-- Scripts -->
-<script src="js/ui-ux.js?v=5"></script>
+<script src="js/ui-ux.js?v=6"></script>
