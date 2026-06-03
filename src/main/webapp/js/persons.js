@@ -280,7 +280,7 @@ document.addEventListener('DOMContentLoaded', () => {
 //TEST =>
 
 /*
-// حقن بيانات وهمية لاختبار الواجهة
+
 persons = [
     { id: "hash-12345", name: "Osama", identityAssurance: { value: 3, explanation: "Highly Verified" }, signingFailureRate: 0.5 },
     { id: "hash-67890", name: "Yigit", identityAssurance: { value: 2, explanation: "Verified" }, signingFailureRate: 15.2 },

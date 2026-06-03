@@ -2,12 +2,18 @@
 <%@ page import="net.sharksystem.web.peer.PeerRuntimeManager" %>
 <%@ page import="net.sharksystem.web.peer.PeerRuntime" %>
 <%
-    PeerRuntimeManager manager = PeerRuntimeManager.getInstance();
-    PeerRuntime activePeer = manager.getActivePeer();
-    String activePeerName = (activePeer != null) ? activePeer.getPeerName() : "";
-    String activePeerId = (activePeer != null) ? activePeer.getPeerID().toString() : "";
-%>
+    PeerRuntimeManager headerManager = PeerRuntimeManager.getInstance();
+    PeerRuntime headerActivePeer = headerManager.getActivePeer();
 
+    String activePeerName = (headerActivePeer != null) ? headerActivePeer.getPeerName() : "";
+    String activePeerId = (headerActivePeer != null) ? headerActivePeer.getPeerID().toString() : "";
+
+    // Redirect to login if no active peer is found
+    if (headerActivePeer == null) {
+        response.sendRedirect("login.jsp");
+        return;
+    }
+%>
 <!-- Tailwind CSS CDN & Configuration -->
 <script src="https://cdn.tailwindcss.com"></script>
 <script>

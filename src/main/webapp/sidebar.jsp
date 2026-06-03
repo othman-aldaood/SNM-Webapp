@@ -1,4 +1,29 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+
+<%-- ==========================================
+     1. Required Imports
+=========================================== --%>
+<%@ page import="net.sharksystem.web.peer.PeerRuntimeManager" %>
+<%@ page import="net.sharksystem.web.peer.PeerRuntime" %>
+
+<%
+    /**
+     * ==========================================
+     * 2. Sidebar Session Validation
+     * ==========================================
+     * Using unique variable names (sidebarManager, sidebarActivePeer)
+     * to prevent "Duplicate local variable" errors when included in other pages.
+     */
+    PeerRuntimeManager sidebarManager = PeerRuntimeManager.getInstance();
+    PeerRuntime sidebarActivePeer = sidebarManager.getActivePeer();
+
+    // Redirect to login if no active peer session is found
+    if (sidebarActivePeer == null) {
+        response.sendRedirect("login.jsp");
+        return;
+    }
+%>
+
 <%--
 /**
  * Sidebar Navigation Component
