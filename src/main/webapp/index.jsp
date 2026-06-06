@@ -199,7 +199,7 @@
         </button>
     </div>
 
-    <script src="js/messenger.js?v=35"></script>
+    <script src="js/messenger.js?v=1000"></script>
 
 </body>
 </html>

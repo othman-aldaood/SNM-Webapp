@@ -137,7 +137,7 @@
         </div>
     </div>
 
-    <script src="js/welcome.js?v=2.0"></script>
+    <script src="js/welcome.js?v=3"></script>
 </body>
 
 </html>

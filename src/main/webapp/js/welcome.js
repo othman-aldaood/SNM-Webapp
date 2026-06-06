@@ -154,20 +154,38 @@ async function triggerHubConnectAttempt() {
 }
 
 /**
- * Implements final step configurations processing channel routing maps setup.
- * * @return {Promise<void>}
+ * Implements final step configurations by initializing the first channel via API.
+ * @return {Promise<void>}
  */
 async function completeOnboardingSequenceWorkflow() {
     const channelUri = document.getElementById('ob-channelUri').value.trim();
     const channelName = document.getElementById('ob-channelName').value.trim();
 
     if (!channelUri) {
-        alert("A valid active scope target channel URI sequence context parameter is required.");
+        alert("A valid active scope target channel URI is required.");
         return;
     }
 
-    console.log("Saving onboarding preferences parameters context data mapping...");
+    try {
+        // 1. Dispatch API request to create the initial channel
+        const response = await fetch('/snm-webapp/api/messenger/channels', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                uri: channelUri,
+                name: channelName || channelUri
+            })
+        });
 
-    // Final redirection after configuration completing orchestration steps boundaries
-    window.location.href = '/snm-webapp/index.jsp';
+        if (response.ok) {
+            // 2. Redirect to the main application interface upon success
+            window.location.href = 'index.jsp';
+        } else {
+            const result = await response.json();
+            alert('Failed to initialize your first channel: ' + (result.error || 'Unknown error'));
+        }
+    } catch (error) {
+        console.error("Configuration sequence error:", error);
+        alert('An error occurred while saving your configuration.');
+    }
 }
