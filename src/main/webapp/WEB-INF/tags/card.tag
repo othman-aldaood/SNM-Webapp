@@ -3,31 +3,19 @@
 <%-- ==========================================
      1. Attribute Declarations
 =========================================== --%>
-<%-- Optional: The title displayed in the card header --%>
 <%@ attribute name="title" required="false" type="java.lang.String" %>
-
-<%-- Optional: FontAwesome icon class to display next to the title (e.g., fas fa-server) --%>
 <%@ attribute name="icon" required="false" type="java.lang.String" %>
-
-<%-- Optional: Padding utility class for the card body (default: p-4) --%>
 <%@ attribute name="padding" required="false" type="java.lang.String" %>
-
-<%-- Optional: Additional Tailwind CSS classes for the main card container --%>
 <%@ attribute name="cssClass" required="false" type="java.lang.String" %>
+<%-- Added optional localization key attribute --%>
+<%@ attribute name="key" required="false" type="java.lang.String" %>
 
 <%
     /**
      * ==========================================
      * 2. Default Fallbacks Processing
      * ==========================================
-     * Processes optional attributes and assigns default values.
-     * This component acts as a flexible container and renders any nested HTML
-     * via the <jsp:doBody/> tag.
-     *
-     * @param padding  The Tailwind padding utility class for the card body (default: "p-4")
-     * @param cssClass Additional CSS classes for custom layout styling (default: "")
      */
-
     String finalPadding = (padding != null && !padding.isEmpty()) ? padding : "p-4";
     String extraClasses = (cssClass != null) ? cssClass : "";
 %>
@@ -46,12 +34,12 @@
                 <i class="${icon} text-gray-500 dark:text-gray-400"></i>
             <% } %>
 
-            <%-- Render the card title --%>
-            <h3 class="font-bold text-gray-800 dark:text-white">${title}</h3>
+            <%-- Render the card title with optional i18n support attribute --%>
+            <h3 class="font-bold text-gray-800 dark:text-white" <% if (key != null && !key.isEmpty()) { %> data-i18n="<%= key %>" <% } %>>${title}</h3>
         </div>
     <% } %>
 
-    <%-- Card Body: Renders whatever content is placed inside the component tags --%>
+    <%-- Card Body --%>
     <div class="<%= finalPadding %> flex-1">
         <jsp:doBody/>
     </div>

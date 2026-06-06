@@ -7,6 +7,9 @@
 <%@ page import="net.sharksystem.web.peer.PeerRuntime" %>
 <%@ taglib prefix="ui" tagdir="/WEB-INF/tags" %>
 <%
+    /**
+     * Resolve active identity runtime session from management framework boundaries.
+     */
     PeerRuntimeManager manager = PeerRuntimeManager.getInstance();
     PeerRuntime activePeer = manager.getActivePeer();
 
@@ -49,15 +52,15 @@
                         <i class="fas fa-id-card"></i>
                     </div>
                     <div>
-                        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Peer Profile</h1>
-                        <p class="text-sm text-gray-500 dark:text-gray-400">Manage your decentralized identity and view network metrics.</p>
+                        <h1 class="text-2xl font-bold text-gray-900 dark:text-white" data-i18n="prof.title">Peer Profile</h1>
+                        <p class="text-sm text-gray-500 dark:text-gray-400" data-i18n="prof.desc">Manage your decentralized identity and view network metrics.</p>
                     </div>
                 </div>
 
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
                     <%-- ==========================================
-                         Column 1: Identity Overview (Task Req: Name, ID, PKI, Avatar)
+                         Column 1: Identity Overview (Name, ID, PKI, Avatar)
                     =========================================== --%>
                     <div class="lg:col-span-1 space-y-6">
                         <ui:card cssClass="text-center">
@@ -67,26 +70,27 @@
                                     <i class="fas fa-user-astronaut"></i>
                                 </div>
                                 <h2 class="text-xl font-bold text-gray-800 dark:text-white mb-1">${peerName}</h2>
-                                <ui:badge text="Active Identity" theme="success" cssClass="mb-4" />
+                                <ui:badge text="Active Identity" theme="success" cssClass="mb-4" key="prof.active_identity" />
 
-                                <%-- Export/Share Profile Button --%>
-                                <ui:button text="Export Identity" theme="primary" icon="fas fa-file-export" onClick="exportProfileData()" cssClass="w-full justify-center" />
+                                <%-- Export/Share Profile Button configured with valid i18n key tracking --%>
+                                <ui:button text="Export Identity" theme="primary" icon="fas fa-file-export" onClick="exportProfileData()" cssClass="w-full justify-center" key="prof.export" />
                             </div>
                         </ui:card>
 
-                        <ui:card title="Cryptographic Identity" icon="fas fa-fingerprint">
+                        <%-- Cryptographic Identity Panel configured with valid i18n key tracking --%>
+                        <ui:card title="Cryptographic Identity" icon="fas fa-fingerprint" key="prof.crypto_id">
                             <div class="space-y-4 text-sm">
                                 <div>
-                                    <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Peer ID</label>
+                                    <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1" data-i18n="prof.peer_id">Peer ID</label>
                                     <div class="p-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-dark-border rounded font-mono text-xs break-all text-gray-700 dark:text-gray-300">
                                         ${peerId}
                                     </div>
                                 </div>
                                 <div>
-                                    <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Public Key Fingerprint</label>
+                                    <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1" data-i18n="prof.fingerprint">Public Key Fingerprint</label>
                                     <div id="profile-fingerprint" class="p-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-dark-border rounded font-mono text-xs break-all text-gray-700 dark:text-gray-300 relative group cursor-pointer transition-colors hover:bg-gray-100 dark:hover:bg-gray-700" onclick="copyFingerprint()" title="Click to copy">
                                         <div class="flex items-center justify-between">
-                                            <span class="opacity-60 italic">Resolving from PKI...</span>
+                                            <span class="opacity-60 italic" data-i18n="prof.resolving">Resolving from PKI...</span>
                                             <i class="fas fa-copy text-gray-400 group-hover:text-primary-500 transition-colors"></i>
                                         </div>
                                     </div>
@@ -100,32 +104,32 @@
                     =========================================== --%>
                     <div class="lg:col-span-2 space-y-6">
 
-                        <%-- Activity Statistics (Task Req: Channels, Messages, Connections) --%>
-                        <ui:card title="Network Activity" icon="fas fa-chart-line">
+                        <%-- Activity Statistics Grid Overview configured with valid i18n key tracking --%>
+                        <ui:card title="Network Activity" icon="fas fa-chart-line" key="prof.net_activity">
                             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                                 <div class="p-4 rounded-lg border border-gray-100 dark:border-dark-border bg-gray-50 dark:bg-gray-800/50 text-center">
                                     <i class="fas fa-network-wired text-2xl text-blue-500 mb-2"></i>
                                     <div class="text-3xl font-bold text-gray-800 dark:text-white">${activeConns}</div>
-                                    <div class="text-xs font-semibold text-gray-500 uppercase tracking-wide mt-1">Connections</div>
+                                    <div class="text-xs font-semibold text-gray-500 uppercase tracking-wide mt-1" data-i18n="prof.connections">Connections</div>
                                 </div>
                                 <div class="p-4 rounded-lg border border-gray-100 dark:border-dark-border bg-gray-50 dark:bg-gray-800/50 text-center">
                                     <i class="fas fa-satellite-dish text-2xl text-purple-500 mb-2"></i>
                                     <div class="text-3xl font-bold text-gray-800 dark:text-white">${openPorts}</div>
-                                    <div class="text-xs font-semibold text-gray-500 uppercase tracking-wide mt-1">Open Ports</div>
+                                    <div class="text-xs font-semibold text-gray-500 uppercase tracking-wide mt-1" data-i18n="prof.open_ports">Open Ports</div>
                                 </div>
                                 <div class="p-4 rounded-lg border border-gray-100 dark:border-dark-border bg-gray-50 dark:bg-gray-800/50 text-center relative overflow-hidden">
                                     <div class="absolute -right-2 -top-2 opacity-10 text-6xl"><i class="fas fa-envelope"></i></div>
                                     <i class="fas fa-comment-dots text-2xl text-green-500 mb-2"></i>
-                                    <div class="text-3xl font-bold text-gray-800 dark:text-white">Active</div>
-                                    <div class="text-xs font-semibold text-gray-500 uppercase tracking-wide mt-1">Messaging Status</div>
+                                    <div class="text-3xl font-bold text-gray-800 dark:text-white" data-i18n="welcome.pki.active">Active</div>
+                                    <div class="text-xs font-semibold text-gray-500 uppercase tracking-wide mt-1" data-i18n="prof.messaging_status">Messaging Status</div>
                                 </div>
                             </div>
                         </ui:card>
 
-                        <%-- Trust Level Summary (Task Req: How peers see you) --%>
-                        <ui:card title="Web of Trust Summary" icon="fas fa-shield-alt">
+                        <%-- Trust Level Summary Grid Overview configured with valid i18n key tracking --%>
+                        <ui:card title="Web of Trust Summary" icon="fas fa-shield-alt" key="prof.wot">
                             <div class="flex flex-col sm:flex-row items-center gap-6 p-2">
-                                <%-- Trust Ring Visual --%>
+                                <%-- Trust Ring Visual Charts --%>
                                 <div class="relative w-32 h-32 flex-shrink-0">
                                     <svg class="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
                                         <path class="text-gray-200 dark:text-gray-700" stroke-width="3" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
@@ -133,18 +137,18 @@
                                     </svg>
                                     <div class="absolute inset-0 flex flex-col items-center justify-center">
                                         <span class="text-2xl font-bold text-gray-800 dark:text-white">85%</span>
-                                        <span class="text-[10px] font-bold text-green-500 uppercase">Trusted</span>
+                                        <span class="text-[10px] font-bold text-green-500 uppercase" data-i18n="prof.trusted_status">Trusted</span>
                                     </div>
                                 </div>
-                                <%-- Trust Details --%>
+                                <%-- Trust Details Parameters Mapping --%>
                                 <div class="flex-1 space-y-3">
-                                    <p class="text-sm text-gray-600 dark:text-gray-400">
+                                    <p class="text-sm text-gray-600 dark:text-gray-400" data-i18n="prof.wot_desc">
                                         Your identity has been verified and trusted by multiple peers within your local mesh network.
                                     </p>
                                     <div class="flex flex-wrap gap-2">
-                                        <ui:badge text="Verified Certificates: 3" theme="primary" icon="fas fa-certificate" />
-                                        <ui:badge text="Direct Trust: High" theme="success" icon="fas fa-check-circle" />
-                                        <ui:badge text="No security flags" theme="secondary" icon="fas fa-flag" />
+                                        <ui:badge text="Verified Certificates: 3" theme="primary" icon="fas fa-certificate" key="prof.badge_verified" />
+                                        <ui:badge text="Direct Trust: High" theme="success" icon="fas fa-check-circle" key="prof.badge_direct_trust" />
+                                        <ui:badge text="No security flags" theme="secondary" icon="fas fa-flag" key="prof.badge_no_flags" />
                                     </div>
                                 </div>
                             </div>
@@ -157,21 +161,19 @@
         </div>
     </div>
 
-  <%-- ==========================================
-           Client-side Logic for Profile Data
-      =========================================== --%>
-      <script>
-          /**
-           * Inject JSP backend variables into the global window object
-           * so the external profile.js file can access them securely.
-           */
-          window.PROFILE_CONTEXT = {
-              peerId: '${peerId}',
-              peerName: '${peerName}'
-          };
-      </script>
+    <%-- Client-side Logic for Profile Data --%>
+    <script>
+        /**
+         * Inject JSP backend variables into the global window object
+         * so the external profile.js file can access them securely.
+         */
+        window.PROFILE_CONTEXT = {
+            peerId: '${peerId}',
+            peerName: '${peerName}'
+        };
+    </script>
 
-      <%-- Import the external JavaScript file --%>
-      <script src="js/profile.js?v=1"></script>
-  </body>
-  </html>
+    <%-- Import the external JavaScript file --%>
+    <script src="js/profile.js?v=1"></script>
+</body>
+</html>

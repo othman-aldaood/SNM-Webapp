@@ -3,30 +3,22 @@
 <%-- ==========================================
      1. Attribute Declarations
 =========================================== --%>
-<%-- Required: The text to display inside the badge --%>
 <%@ attribute name="text" required="true" type="java.lang.String" %>
-
-<%-- Optional: Theme color, icon, and custom CSS classes --%>
 <%@ attribute name="theme" required="false" type="java.lang.String" %>
 <%@ attribute name="icon" required="false" type="java.lang.String" %>
 <%@ attribute name="cssClass" required="false" type="java.lang.String" %>
+<%-- Added optional localization key attribute --%>
+<%@ attribute name="key" required="false" type="java.lang.String" %>
 
 <%
     /**
      * ==========================================
      * 2. Theme Processing & Default Fallbacks
      * ==========================================
-     * Evaluates the requested theme and assigns the corresponding Tailwind
-     * utility classes for background, text, and border colors.
-     *
-     * @param theme    The semantic color theme (default: "info")
-     * Accepts: "success", "warning", "danger", "primary"
-     * @param cssClass Additional CSS classes for custom styling
      */
     String finalTheme = (theme != null && !theme.isEmpty()) ? theme : "info";
     String extraClasses = (cssClass != null) ? cssClass : "";
 
-    // Default theme (info/gray)
     String themeClasses = "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300 border border-gray-200 dark:border-gray-700";
 
     if ("success".equals(finalTheme)) {
@@ -47,5 +39,5 @@
     <% if (icon != null && !icon.isEmpty()) { %>
         <i class="${icon} text-[10px]"></i>
     <% } %>
-    <span>${text}</span>
+    <span <% if (key != null && !key.isEmpty()) { %> data-i18n="<%= key %>" <% } %>>${text}</span>
 </span>

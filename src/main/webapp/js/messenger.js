@@ -1,6 +1,7 @@
 /**
  * messenger.js - Handles Channels and Messaging logic
  * Updated with Advanced Filters (Search/Date/Sender) and Right-Click Context Menu.
+ * Patched with reactive internationalization (i18n) properties support.
  */
 
 // --- Global State ---
@@ -11,6 +12,17 @@ let editingMessageId = null;
 // Context Menu Targets
 let ctxTargetMsgId = null;
 let ctxTargetMsgContent = null;
+
+/**
+ * Global helper function to retrieve active language localized string from window dictionary.
+ * @param {string} key - Dictionary translation node identifier
+ * @param {string} fallback - Default language string sequence boundary literal
+ * @return {string} Localized text matching environment settings
+ */
+function t(key, fallback) {
+    const lang = localStorage.getItem('snm-lang') || 'en';
+    return (window.translations && window.translations[lang] && window.translations[lang][key]) ? window.translations[lang][key] : fallback;
+}
 
 /**
  * Initializes listeners on DOM content loaded.
@@ -49,9 +61,7 @@ document.addEventListener('click', function (e) {
     }
 });
 
-// ==========================================
-// Channel Logic
-// ==========================================
+// --- Channel Logic ---
 
 /**
  * Shows the Create Channel modal.
@@ -83,7 +93,7 @@ function hideCreateChannelModal() {
 }
 
 /**
- * Fetches and renders channels from the backend API.
+ * Fetches and renders channels.
  * @return {Promise<void>}
  */
 async function loadChannels() {
@@ -136,7 +146,7 @@ async function loadChannels() {
 
             document.getElementById('active-channel-count').textContent = data.channels.length;
         } else {
-            listGroup.innerHTML = `<div class="p-5 text-center text-gray-500 dark:text-gray-400 text-sm">No channels available.<br>Create one using the <i class="fas fa-plus-circle text-primary-500 mx-1"></i> button.</div>`;
+            listGroup.innerHTML = `<div class="p-5 text-center text-gray-500 dark:text-gray-400 text-sm">No channels available.<br>Create one using the + button.</div>`;
             document.getElementById('active-channel-count').textContent = '0';
         }
     } catch (error) {
@@ -145,7 +155,7 @@ async function loadChannels() {
 }
 
 /**
- * Handles channel selection, updates UI styling, and fetches messages.
+ * Handles channel selection and UI updates.
  * @param {HTMLElement} element - Clicked channel element
  * @param {string} uri - Channel URI
  * @param {string} name - Channel Display Name
@@ -180,20 +190,16 @@ function selectChannel(element, uri, name, index) {
         indicator.classList.add('bg-green-500', 'shadow-[0_0_5px_#22c55e]');
     }
 
-    const searchInput = document.getElementById('message-search');
-    const filterBtn = document.getElementById('filter-toggle-btn');
-    if (searchInput) searchInput.disabled = false;
-    if (filterBtn) filterBtn.disabled = false;
-
+    // Enable Search & Filters
+    document.getElementById('message-search').disabled = false;
+    document.getElementById('filter-toggle-btn').disabled = false;
     clearFilters();
     cancelEditMode();
 
     loadMessages(uri);
 }
 
-// ==========================================
-// Messages & Advanced Filtering
-// ==========================================
+// --- Messages & Advanced Filtering ---
 
 /**
  * Fetches messages for the active channel.
@@ -211,11 +217,7 @@ async function loadMessages(uri) {
         const data = await response.json();
 
         if (data.channel && data.channel.messages) {
-            // Clean binary characters from messages upon receiving them
-            currentMessages = data.channel.messages.map(m => {
-                m.content = cleanText(m.content);
-                return m;
-            });
+            currentMessages = data.channel.messages;
             applyFilters();
         } else {
             currentMessages = [];
@@ -274,7 +276,7 @@ function applyFilters() {
 }
 
 /**
- * Clears all active filters and resets the search panel.
+ * Clears all filters and resets the search panel.
  * @return {void}
  */
 function clearFilters() {
@@ -286,7 +288,7 @@ function clearFilters() {
 }
 
 /**
- * Highlights a specific search term within the text content.
+ * Highlights a specific search term within text.
  * @param {string} text - The original text
  * @param {string} term - The search term to highlight
  * @return {string} Highlighted HTML string
@@ -299,7 +301,7 @@ function highlightText(text, term) {
 }
 
 /**
- * Renders the filtered messages to the DOM.
+ * Renders the messages to the DOM.
  * @param {Array} messages - Array of message objects
  * @param {string} searchTerm - Active search term for highlighting
  * @return {void}
@@ -319,9 +321,7 @@ function renderMessages(messages, searchTerm = '') {
         const msgId = msg.id || msg.timestamp;
 
         const highlightedContent = highlightText(msg.content, searchTerm);
-
-        // Use URI encoding to safely pass raw text to the context menu without HTML escaping issues
-        const encodedContent = encodeURIComponent(msg.content);
+        const escapedContentForJS = escapeHtml(msg.content).replace(/'/g, "\\'").replace(/"/g, '&quot;');
         const isMeStr = isMe ? 'true' : 'false';
 
         line.innerHTML = `
@@ -330,7 +330,7 @@ function renderMessages(messages, searchTerm = '') {
                     ${escapeHtml(msg.timestamp.split(' ')[1] || msg.timestamp)} - ${escapeHtml(msg.sender)}
                     ${msg.edited ? '<span class="italic text-gray-400 text-[0.65rem] ml-1">(edited)</span>' : ''}
                 </div>
-                <div oncontextmenu="handleContextMenu(event, '${escapeHtml(msgId)}', '${encodedContent}', ${isMeStr})" 
+                <div oncontextmenu="handleContextMenu(event, '${escapeHtml(msgId)}', '${escapedContentForJS}', ${isMeStr})" 
                      class="${isMe ? 'cursor-context-menu bg-primary-500 text-white rounded-l-xl rounded-tr-xl hover:brightness-110' : 'bg-white dark:bg-dark-card border border-gray-200 dark:border-dark-border text-gray-800 dark:text-gray-200 rounded-r-xl rounded-tl-xl'} px-4 py-2 inline-block text-sm shadow-sm text-left break-words max-w-full transition-all"
                      title="${isMe ? 'Right-click to Edit or Delete' : ''}">
                     ${highlightedContent}
@@ -343,26 +343,23 @@ function renderMessages(messages, searchTerm = '') {
     chatLog.scrollTop = chatLog.scrollHeight;
 }
 
-// ==========================================
-// Context Menu Logic
-// ==========================================
+// --- Context Menu Logic ---
 
 /**
  * Handles the right-click context menu for messages.
  * @param {Event} event - The contextmenu event
  * @param {string} msgId - The ID of the message
- * @param {string} encodedContent - The URL-encoded content of the message
+ * @param {string} content - The content of the message
  * @param {boolean} isMe - Indicates if the user is the sender
  * @return {void}
  */
-function handleContextMenu(event, msgId, encodedContent, isMe) {
+function handleContextMenu(event, msgId, content, isMe) {
     if (!isMe) return;
 
     event.preventDefault();
 
     ctxTargetMsgId = msgId;
-    // Decode the content securely back to raw text
-    ctxTargetMsgContent = decodeURIComponent(encodedContent);
+    ctxTargetMsgContent = content;
 
     const menu = document.getElementById('message-context-menu');
     menu.classList.remove('hidden', 'opacity-0', 'pointer-events-none');
@@ -393,18 +390,18 @@ function hideContextMenu() {
 }
 
 /**
- * Triggers the edit message flow from the context menu.
+ * Triggers the edit process from the context menu.
  * @return {void}
  */
 function triggerEditFromMenu() {
-    if (ctxTargetMsgId && ctxTargetMsgContent !== null) {
+    if (ctxTargetMsgId && ctxTargetMsgContent) {
         startEditMessage(ctxTargetMsgId, ctxTargetMsgContent);
     }
     hideContextMenu();
 }
 
 /**
- * Triggers the delete message flow from the context menu.
+ * Triggers the delete process from the context menu.
  * @return {void}
  */
 function triggerDeleteFromMenu() {
@@ -414,9 +411,7 @@ function triggerDeleteFromMenu() {
     hideContextMenu();
 }
 
-// ==========================================
-// Edit & Delete Logic (Optimistic UI)
-// ==========================================
+// --- Edit & Delete Logic (Optimistic UI) ---
 
 /**
  * Initializes the message edit mode in the UI.
@@ -448,7 +443,7 @@ function startEditMessage(id, content) {
 }
 
 /**
- * Cancels the message edit mode and resets the UI state.
+ * Cancels the message edit mode.
  * @return {void}
  */
 function cancelEditMode() {
@@ -467,7 +462,7 @@ function cancelEditMode() {
 }
 
 /**
- * Gathers input payload and sends (or updates) a message.
+ * Gathers input and sends (or updates) a message.
  * @return {Promise<void>}
  */
 async function sendMessage() {
@@ -569,12 +564,10 @@ async function deleteMessage(msgId) {
     }
 }
 
-// ==========================================
-// Utilities
-// ==========================================
+// --- Utils ---
 
 /**
- * Creates a new channel via backend API.
+ * Creates a new channel via API.
  * @return {Promise<void>}
  */
 async function createChannel() {
@@ -605,9 +598,9 @@ async function createChannel() {
 }
 
 /**
- * Deletes a channel via backend API.
+ * Deletes a channel via API.
  * @param {string} uri - Channel URI
- * @param {Event} event - Click event to prevent bubbling
+ * @param {Event} event - Click event
  * @return {Promise<void>}
  */
 async function deleteChannel(uri, event) {
@@ -663,7 +656,7 @@ function showSendSuccess() {
 }
 
 /**
- * Fetches available persons from the API to populate the receiver dropdown.
+ * Fetches available persons to populate the receiver dropdown.
  * @return {Promise<void>}
  */
 async function loadPersonsForRecipient() {
@@ -682,32 +675,15 @@ async function loadPersonsForRecipient() {
             });
         }
     } catch (error) {
-        // Silently fail if persons API is unavailable
     }
 }
 
 /**
- * Escapes HTML characters to prevent XSS (Cross-Site Scripting) attacks.
+ * Escapes HTML characters to prevent XSS attacks.
  * @param {string} text - Raw input text
  * @return {string} Escaped safe text
  */
 function escapeHtml(text) {
     if (!text) return '';
-    return text.toString()
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
-}
-
-/**
- * Cleans non-printable control characters often caused by backend binary serialization.
- * @param {string} text - Raw input text
- * @return {string} Cleaned text ready for UI rendering
- */
-function cleanText(text) {
-    if (!text) return '';
-    // Removes hidden ASCII control characters (e.g., \x00 Null bytes) but keeps newlines
-    return text.toString().replace(/[\x00-\x08\x0B-\x0C\x0E-\x1F\x7F]/g, '');
+    return text.toString().replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
 }

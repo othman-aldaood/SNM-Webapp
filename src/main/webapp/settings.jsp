@@ -31,8 +31,8 @@
 
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-2 md:mb-6 gap-4">
                     <div>
-                        <h1 class="text-xl md:text-2xl font-bold">Settings & Configuration</h1>
-                        <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Manage peer configuration and application settings.</p>
+                        <h1 class="text-xl md:text-2xl font-bold" data-i18n="settings.title">Settings & Configuration</h1>
+                        <p class="text-sm text-gray-500 dark:text-gray-400 mt-1" data-i18n="settings.desc">Manage peer configuration and application settings.</p>
                     </div>
                     <div class="w-full sm:w-auto">
                         <button class="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 px-5 rounded-lg shadow-sm transition-colors flex justify-center items-center gap-2" onclick="saveSettings()">
@@ -55,6 +55,22 @@
                         <h3 class="text-lg font-bold">Application Settings</h3>
                     </div>
 
+                    <%-- ==========================================
+                         NEW: Localization & Language Switcher
+                    =========================================== --%>
+                    <h4 class="font-semibold text-base mb-4 text-gray-800 dark:text-gray-200" data-i18n="settings.lang.title">Language Preference</h4>
+                    <div class="flex bg-gray-50 dark:bg-gray-900 p-1 rounded-lg border border-gray-200 dark:border-gray-700 w-fit mb-6">
+                        <button id="lang-btn-en" onclick="setLanguage('en')" class="px-4 py-2 rounded-md text-sm font-bold transition-colors">
+                            <i class="mr-1">🇬🇧</i> English
+                        </button>
+                        <button id="lang-btn-de" onclick="setLanguage('de')" class="px-4 py-2 rounded-md text-sm font-bold transition-colors">
+                            <i class="mr-1">🇩🇪</i> Deutsch
+                        </button>
+                    </div>
+
+                    <hr class="border-gray-100 dark:border-gray-700 my-6">
+
+                    <%-- Existing Settings --%>
                     <h4 class="font-semibold text-base mb-4 text-gray-800 dark:text-gray-200">Message Defaults</h4>
                     <div class="space-y-4 mb-6">
                         <label class="inline-flex items-center cursor-pointer">
@@ -62,7 +78,8 @@
                             <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600 shrink-0"></div>
                             <span class="ms-3 text-sm sm:text-base font-medium text-gray-700 dark:text-gray-300">Sign messages by default</span>
                         </label>
-                        <br> <label class="inline-flex items-center cursor-pointer mt-2">
+                        <br>
+                        <label class="inline-flex items-center cursor-pointer mt-2">
                             <input type="checkbox" id="defaultEncryptMsg" class="sr-only peer">
                             <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600 shrink-0"></div>
                             <span class="ms-3 text-sm sm:text-base font-medium text-gray-700 dark:text-gray-300">Encrypt messages by default</span>
@@ -131,5 +148,4 @@
 
     <script src="js/settings.js?v=6"></script>
 </body>
-
 </html>

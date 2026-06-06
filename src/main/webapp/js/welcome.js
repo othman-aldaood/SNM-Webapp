@@ -1,10 +1,22 @@
 /**
  * welcome.js - Handles User Onboarding multi-step wizard logic
  * Integrates directly with verified runtime configuration REST APIs.
+ * Fully compliant with internationalization (i18n) properties architecture.
  */
 
 let currentOnboardingStep = 1;
 const maximumOnboardingSteps = 4;
+
+/**
+ * Global helper function to retrieve active language localized string from window dictionary.
+ * @param {string} key - Dictionary translation node identifier
+ * @param {string} fallback - Default language string sequence boundary literal
+ * @return {string} Localized text matching environment settings
+ */
+function t(key, fallback) {
+    const lang = localStorage.getItem('snm-lang') || 'en';
+    return (window.translations && window.translations[lang] && window.translations[lang][key]) ? window.translations[lang][key] : fallback;
+}
 
 /**
  * Executes initialization routines on DOM verification content readiness.
@@ -15,7 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 /**
  * Extracts cryptographic identity parameters from active instance status APIs.
- * * @return {void}
+ * @return {void}
  */
 function extractActivePeerIdentityFingerprint() {
     if (!window.currentActivePeerId) {
@@ -44,13 +56,13 @@ function extractActivePeerIdentityFingerprint() {
 
 /**
  * Handles validation and state transformation updates when progressing forward.
- * * @return {void}
+ * @return {void}
  */
 function navigateNextStep() {
     if (currentOnboardingStep === 1) {
         const nameInput = document.getElementById('ob-displayName').value.trim();
         if (!nameInput) {
-            alert("Please input your display parameter representation to proceed.");
+            alert(t("welcome.alert.name_required", "Please input your display name representation to proceed."));
             return;
         }
     }
@@ -66,7 +78,7 @@ function navigateNextStep() {
 
 /**
  * Adjusts state contexts to navigate back into previous layout boundaries.
- * * @return {void}
+ * @return {void}
  */
 function navigatePreviousStep() {
     if (currentOnboardingStep <= 1) return;
@@ -76,7 +88,7 @@ function navigatePreviousStep() {
 
 /**
  * Handles visual element manipulation to match state settings.
- * * @return {void}
+ * @return {void}
  */
 function transformWizardWorkflowUI() {
     // Toggle block sections visibility tracking maps
@@ -122,7 +134,7 @@ function transformWizardWorkflowUI() {
 
 /**
  * Dispatches a formal background execution connection attempt to verified hub systems.
- * * @return {Promise<void>}
+ * @return {Promise<void>}
  */
 async function triggerHubConnectAttempt() {
     if (!window.currentActivePeerId) return;
@@ -131,7 +143,7 @@ async function triggerHubConnectAttempt() {
     const port = document.getElementById('ob-hubPort').value.trim();
 
     if (!host || !port) {
-        alert("Please enter both target remote address and operational port mappings.");
+        alert(t("welcome.alert.hub_required", "Please enter both target remote address and operational port mappings."));
         return;
     }
 
@@ -149,7 +161,7 @@ async function triggerHubConnectAttempt() {
         alert(output.msg || "Operation executed.");
     } catch (error) {
         console.error("Hub deployment link exception:", error);
-        alert("Failed dispatching operational frame context to target hub.");
+        alert(t("welcome.alert.hub_failed", "Failed dispatching operational frame context to target hub."));
     }
 }
 
@@ -162,12 +174,12 @@ async function completeOnboardingSequenceWorkflow() {
     const channelName = document.getElementById('ob-channelName').value.trim();
 
     if (!channelUri) {
-        alert("A valid active scope target channel URI is required.");
+        alert(t("welcome.alert.uri_required", "A valid active scope target channel URI is required."));
         return;
     }
 
     try {
-        // 1. Dispatch API request to create the initial channel
+        // Dispatch API request to create the initial channel
         const response = await fetch('/snm-webapp/api/messenger/channels', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
@@ -178,14 +190,14 @@ async function completeOnboardingSequenceWorkflow() {
         });
 
         if (response.ok) {
-            // 2. Redirect to the main application interface upon success
+            // Redirect to the main application interface upon success
             window.location.href = 'index.jsp';
         } else {
             const result = await response.json();
-            alert('Failed to initialize your first channel: ' + (result.error || 'Unknown error'));
+            alert(t("welcome.alert.channel_failed", "Failed to initialize your first channel: ") + (result.error || 'Unknown error'));
         }
     } catch (error) {
         console.error("Configuration sequence error:", error);
-        alert('An error occurred while saving your configuration.');
+        alert(t("welcome.alert.save_error", "An error occurred while saving your configuration."));
     }
 }
