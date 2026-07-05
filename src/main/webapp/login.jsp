@@ -1,406 +1,177 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
-    <!DOCTYPE html>
-    <html lang="en">
+ <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+ <%@ taglib prefix="ui" tagdir="/WEB-INF/tags" %>
+ <!DOCTYPE html>
+ <html lang="en">
 
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Login - SharkNet Messenger</title>
-        <link rel="stylesheet" href="css/style.css?v=4">
-        <style>
-            .login-container {
-                min-height: 100vh;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                padding: 20px;
-            }
+ <ui:head title="Login - SharkNet Messenger"/>
 
-            .login-card {
-                background: white;
-                border-radius: 16px;
-                box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-                padding: 40px;
-                width: 100%;
-                max-width: 480px;
-                text-align: center;
-            }
+ <body class="min-h-screen flex items-center justify-center transition-colors duration-300 p-4 relative overflow-hidden">
 
-            .app-title {
-                font-family: 'JetBrains Mono', monospace;
-                font-size: 2rem;
-                font-weight: 700;
-                color: var(--primary-color);
-                margin-bottom: 12px;
-            }
+     <div id="vanta-bg" class="absolute inset-0 z-0"></div>
 
-            .app-subtitle {
-                color: var(--text-muted);
-                margin-bottom: 32px;
-                font-size: 0.95rem;
-            }
+     <%-- Top-Right Controls Container --%>
+     <div class="absolute top-6 right-6 z-20 flex gap-2">
 
-            .login-form {
-                text-align: left;
-            }
+         <%-- I18N Language Switcher Dropdown Inside Login Interface --%>
+         <div class="relative">
+             <button onclick="toggleLoginLangDropdown()" class="w-10 h-10 rounded-full bg-white/80 dark:bg-dark-card/80 backdrop-blur-md border border-gray-200 dark:border-dark-border text-gray-600 dark:text-gray-300 flex items-center justify-center shadow-sm hover:bg-white dark:hover:bg-gray-800 transition-colors" title="Language / Sprache">
+                 <i class="fas fa-globe text-lg"></i>
+             </button>
+             <div id="login-lang-dropdown" class="hidden absolute right-0 mt-2 w-32 bg-white dark:bg-dark-card border border-gray-200 dark:border-dark-border rounded-lg shadow-xl z-50 overflow-hidden">
+                 <button onclick="setLanguage('en'); toggleLoginLangDropdown()" class="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 flex items-center gap-2">🇬🇧 English</button>
+                 <button onclick="setLanguage('de'); toggleLoginLangDropdown()" class="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 flex items-center gap-2">🇩🇪 Deutsch</button>
+                 <button onclick="setLanguage('tr'); toggleLoginLangDropdown()" class="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 flex items-center gap-2">🇹🇷 Türkçe</button>
+                 <button onclick="setLanguage('ar'); toggleLoginLangDropdown()" class="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 flex items-center gap-2" dir="rtl">🇸🇦 العربية</button>
+             </div>
+         </div>
 
-            .form-group {
-                margin-bottom: 20px;
-            }
+         <%-- Theme Toggle Button --%>
+         <button onclick="toggleLoginTheme()" class="w-10 h-10 rounded-full bg-white/80 dark:bg-dark-card/80 backdrop-blur-md border border-gray-200 dark:border-dark-border text-gray-600 dark:text-gray-300 flex items-center justify-center shadow-sm hover:bg-white dark:hover:bg-gray-800 transition-colors" title="Toggle Dark Mode">
+             <i class="fas fa-moon dark:hidden"></i>
+             <i class="fas fa-sun hidden dark:inline"></i>
+         </button>
+     </div>
 
-            .form-label {
-                display: block;
-                margin-bottom: 8px;
-                font-weight: 600;
-                color: var(--text-primary);
-                font-family: 'JetBrains Mono', monospace;
-                font-size: 0.9rem;
-            }
+     <%-- Main Login Container Card --%>
+     <div class="relative z-10 bg-white/85 dark:bg-dark-card/85 backdrop-blur-xl rounded-2xl shadow-2xl w-full max-w-md p-8 border border-white/50 dark:border-white/10 transition-colors duration-300 animate-[fadeIn_0.3s_ease-out]">
 
-            .form-input,
-            .form-select {
-                width: 100%;
-                padding: 12px 16px;
-                border: 2px solid #e5e7eb;
-                border-radius: 8px;
-                font-size: 0.95rem;
-                transition: border-color 0.2s, box-shadow 0.2s;
-                background: white !important;
-                color: #1f2937 !important;
-                font-family: 'JetBrains Mono', monospace;
-                z-index: 10;
-                -webkit-appearance: none;
-                -moz-appearance: none;
-                appearance: none;
-            }
+         <div class="text-center mb-8">
+             <div class="w-16 h-16 bg-primary-500 text-white rounded-2xl flex items-center justify-center text-3xl mx-auto mb-4 shadow-lg">
+                 <i class="fas fa-water"></i>
+             </div>
+             <h1 class="text-2xl font-bold text-gray-900 dark:text-white font-mono tracking-tight">SharkNet</h1>
+             <p class="text-gray-500 dark:text-gray-400 text-sm mt-2 font-medium" data-i18n="login.subtitle">Decentralized P2P Communication</p>
+         </div>
 
-            .form-select option {
-                background: white !important;
-                color: #1f2937 !important;
-                padding: 8px !important;
-                z-index: 10 !important;
-                border: none !important;
-            }
+         <div id="error-message" class="hidden bg-red-50 dark:bg-red-900/40 text-red-600 dark:text-red-400 p-3 rounded-lg text-sm mb-4 border border-red-200 dark:border-red-800/50 flex items-center gap-2"></div>
+         <div id="success-message" class="hidden bg-green-50 dark:bg-green-900/40 text-green-600 dark:text-red-400 p-3 rounded-lg text-sm mb-4 border border-green-200 dark:border-red-800/50 flex items-center gap-2"></div>
 
-            /* Force dropdown visibility */
-            .form-select::-webkit-calendar-picker-indicator {
-                background: transparent;
-                bottom: 0;
-                color: transparent;
-                cursor: pointer;
-                height: auto;
-                left: 0;
-                position: absolute;
-                right: 0;
-                top: 0;
-                width: auto;
-            }
+         <div id="loading" class="hidden text-center py-6">
+             <i class="fas fa-spinner fa-spin text-3xl text-primary-500 mb-3"></i>
+             <div class="text-gray-500 dark:text-gray-400 text-sm font-medium" data-i18n="login.processing">Processing request...</div>
+         </div>
 
-            .form-input:focus,
-            .form-select:focus {
-                outline: none;
-                border-color: var(--primary-color);
-                box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-            }
+         <div id="existing-peer-form" class="login-form space-y-4">
+             <div>
+                 <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2" data-i18n="login.select_peer">Select Existing Peer</label>
 
-            /* Dark mode support for dropdown */
-            @media (prefers-color-scheme: dark) {
+                 <div class="relative custom-dropdown">
+                     <button type="button" onclick="toggleDropdown()" class="w-full flex justify-between items-center bg-gray-50/80 dark:bg-dark-bg/80 border border-gray-300 dark:border-dark-border text-gray-900 dark:text-white px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 transition-shadow backdrop-blur-sm">
+                         <span id="selected-peer-text" class="truncate" data-i18n="login.select_peer_placeholder">-- Select a peer --</span>
+                         <i class="fas fa-chevron-down text-gray-400 text-sm transition-transform duration-200" id="dropdown-arrow"></i>
+                     </button>
+                     <div id="peer-dropdown-options" class="hidden absolute z-50 w-full mt-2 bg-white dark:bg-dark-card border border-gray-200 dark:border-dark-border rounded-lg shadow-xl max-h-48 overflow-y-auto backdrop-blur-md">
+                     </div>
+                 </div>
+             </div>
 
-                .form-input,
-                .form-select {
-                    background: #1f2937 !important;
-                    color: white !important;
-                    border-color: #374151;
-                }
+             <ui:button text="Continue" theme="primary" size="lg" icon="fas fa-arrow-right" onClick="selectExistingPeer()" cssClass="w-full font-bold" key="login.btn_continue" />
+         </div>
 
-                .form-select option {
-                    background: #1f2937 !important;
-                    color: white !important;
-                }
-            }
+         <div class="flex items-center my-6 login-form">
+             <div class="flex-1 border-t border-gray-200 dark:border-dark-border"></div>
+             <span class="px-3 text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider" data-i18n="login.or">OR</span>
+             <div class="flex-1 border-t border-gray-200 dark:border-dark-border"></div>
+         </div>
 
-            /* Ultra aggressive dropdown fix */
-            select.form-select {
-                background-color: white !important;
-                color: #1f2937 !important;
-            }
+         <div id="new-peer-form" class="login-form space-y-4">
+             <div>
+                 <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2" data-i18n="login.create_peer">Create New Peer</label>
+                 <input type="text" id="peer-name" placeholder="Enter peer name..." data-i18n-placeholder="login.peer_name_placeholder" maxlength="50" class="w-full bg-gray-50/80 dark:bg-dark-bg/80 border border-gray-300 dark:border-dark-border text-gray-900 dark:text-white px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 transition-shadow placeholder-gray-400 backdrop-blur-sm">
+             </div>
 
-            select.form-select option {
-                background-color: white !important;
-                color: #1f2937 !important;
-            }
+             <ui:button text="Create New Peer" theme="primary" size="lg" icon="fas fa-plus" onClick="createNewPeer()" cssClass="w-full font-bold !bg-gray-800 hover:!bg-gray-900 dark:!bg-gray-700 dark:hover:!bg-gray-600 !border-transparent" key="login.btn_create" />
+         </div>
 
-            /* Override any inherited styles */
-            * select.form-select option {
-                background: white !important;
-                color: #1f2937 !important;
-            }
+         <div class="mt-6 text-center login-form">
+             <ui:button text="Refresh Peer List" theme="transparent" icon="fas fa-sync-alt" onClick="refreshPeers()" cssClass="font-bold mx-auto" key="login.btn_refresh" />
+         </div>
 
-            /* Most aggressive fix - target all select options globally */
-            option {
-                background: white !important;
-                color: #1f2937 !important;
-                -webkit-appearance: none !important;
-                -moz-appearance: none !important;
-                appearance: none !important;
-            }
+     </div>
 
-            /* Force dropdown arrow visibility */
-            .form-select {
-                background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e") !important;
-                background-repeat: no-repeat !important;
-                background-position: right 0.5rem center !important;
-                background-size: 1em !important;
-                padding-right: 2.5rem !important;
-            }
+     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+     <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.net.min.js"></script>
 
-            /* Custom Dropdown Styles */
-            .custom-dropdown {
-                position: relative;
-                width: 100%;
-            }
+     <script>
+         /**
+          * Global framework UI theme tracking definitions.
+          */
+         const savedTheme = localStorage.getItem('snm-theme');
+         const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+         let isDarkTheme = savedTheme === 'dark' || (!savedTheme && prefersDark);
 
-            .dropdown-selected {
-                width: 100%;
-                padding: 12px 16px;
-                border: 2px solid #e5e7eb;
-                border-radius: 8px;
-                background: white;
-                color: #1f2937;
-                font-size: 0.95rem;
-                font-family: 'JetBrains Mono', monospace;
-                cursor: pointer;
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                transition: border-color 0.2s, box-shadow 0.2s;
-            }
+         if (isDarkTheme) {
+             document.documentElement.classList.add('dark');
+         }
 
-            .dropdown-selected:hover {
-                border-color: #d1d5db;
-            }
+         let vantaEffect = null;
 
-            .dropdown-selected:focus {
-                outline: none;
-                border-color: var(--primary-color);
-                box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-            }
+         /**
+          * Initializes or regenerates the Vanta.net animated background block context.
+          * @param {boolean} isDark - True if dark mode color profiles are active
+          * @return {void}
+          */
+         function initVanta(isDark) {
+             if (vantaEffect) {
+                 vantaEffect.destroy();
+             }
+             if (typeof VANTA !== 'undefined') {
+                 vantaEffect = VANTA.NET({
+                     el: "#vanta-bg",
+                     mouseControls: true,
+                     touchControls: true,
+                     gyroControls: false,
+                     minHeight: 200.00,
+                     minWidth: 200.00,
+                     scale: 1.00,
+                     scaleMobile: 1.00,
+                     color: isDark ? 0x60a5fa : 0x2563eb,
+                     backgroundColor: isDark ? 0x0f172a : 0xf0f9ff,
+                     points: 13.00,
+                     maxDistance: 22.00,
+                     spacing: 18.00,
+                     showDots: true
+                 });
+             }
+         }
 
-            .dropdown-arrow {
-                color: #6b7280;
-                font-size: 0.8rem;
-                transition: transform 0.2s;
-            }
+         document.addEventListener('DOMContentLoaded', () => {
+             initVanta(isDarkTheme);
+         });
 
-            .dropdown-options {
-                position: absolute;
-                top: 100%;
-                left: 0;
-                right: 0;
-                background: white;
-                border: 2px solid #e5e7eb;
-                border-top: none;
-                border-radius: 0 0 8px 8px;
-                max-height: 200px;
-                overflow-y: auto;
-                z-index: 1000;
-                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-                display: none;
-                /* Default to hidden, toggled by JS */
-            }
+         /**
+          * Safely toggles application dark mode context state structures.
+          * @return {void}
+          */
+         function toggleLoginTheme() {
+             document.documentElement.classList.toggle('dark');
+             isDarkTheme = document.documentElement.classList.contains('dark');
+             localStorage.setItem('snm-theme', isDarkTheme ? 'dark' : 'light');
+             initVanta(isDarkTheme);
+         }
 
-            .dropdown-options.show {
-                display: block !important;
-            }
+         /**
+          * Toggles the login interface language selection dropdown overlay.
+          * @return {void}
+          */
+         function toggleLoginLangDropdown() {
+             const dropdown = document.getElementById('login-lang-dropdown');
+             if (dropdown) {
+                 dropdown.classList.toggle('hidden');
+             }
+         }
 
-            .dropdown-option {
-                padding: 12px 16px;
-                color: #1f2937;
-                font-size: 0.95rem;
-                font-family: 'JetBrains Mono', monospace;
-                cursor: pointer;
-                border-bottom: 1px solid #f3f4f6;
-                transition: background-color 0.2s;
-                background: white;
-                min-height: 20px;
-                line-height: 1.4;
-                display: block;
-            }
+         // Close dropdown when clicking outside the boundary context window
+         document.addEventListener('click', function(event) {
+             const dropdown = document.getElementById('login-lang-dropdown');
+             const btn = event.target.closest('button[title="Language / Sprache"]');
+             if (dropdown && !dropdown.classList.contains('hidden') && !btn && !event.target.closest('#login-lang-dropdown')) {
+                 dropdown.classList.add('hidden');
+             }
+         });
+     </script>
 
-            .dropdown-option:hover {
-                background-color: #f8fafc;
-            }
-
-            .dropdown-option:last-child {
-                border-bottom: none;
-            }
-
-            .btn-primary {
-                width: 100%;
-                padding: 14px 20px;
-                background: var(--primary-color);
-                color: white;
-                border: none;
-                border-radius: 8px;
-                font-weight: 600;
-                font-size: 0.95rem;
-                cursor: pointer;
-                transition: background-color 0.2s;
-                font-family: 'JetBrains Mono', monospace;
-            }
-
-            .btn-primary:hover {
-                background: #2563eb;
-            }
-
-            .btn-secondary {
-                width: 100%;
-                padding: 14px 20px;
-                background: #f3f4f6;
-                color: var(--text-primary);
-                border: 2px solid #e5e7eb;
-                border-radius: 8px;
-                font-weight: 600;
-                font-size: 0.95rem;
-                cursor: pointer;
-                transition: background-color 0.2s, border-color 0.2s;
-                font-family: 'JetBrains Mono', monospace;
-                margin-top: 12px;
-            }
-
-            .btn-secondary:hover {
-                background: #e5e7eb;
-                border-color: #d1d5db;
-            }
-
-            .divider {
-                text-align: center;
-                margin: 24px 0;
-                position: relative;
-            }
-
-            .divider::before {
-                content: '';
-                position: absolute;
-                top: 50%;
-                left: 0;
-                right: 0;
-                height: 1px;
-                background: #e5e7eb;
-            }
-
-            .divider-text {
-                background: white;
-                padding: 0 16px;
-                color: var(--text-muted);
-                font-size: 0.85rem;
-                font-family: 'JetBrains Mono', monospace;
-            }
-
-            .error-message {
-                background: #fef2f2;
-                color: #dc2626;
-                padding: 12px;
-                border-radius: 6px;
-                margin-bottom: 20px;
-                font-size: 0.9rem;
-                border: 1px solid #fecaca;
-            }
-
-            .success-message {
-                background: #f0fdf4;
-                color: #16a34a;
-                padding: 12px;
-                border-radius: 6px;
-                margin-bottom: 20px;
-                font-size: 0.9rem;
-                border: 1px solid #bbf7d0;
-            }
-
-            .loading {
-                display: none;
-                text-align: center;
-                padding: 20px;
-            }
-
-            .spinner {
-                border: 3px solid #f3f4f6;
-                border-top: 3px solid var(--primary-color);
-                border-radius: 50%;
-                width: 24px;
-                height: 24px;
-                animation: spin 1s linear infinite;
-                margin: 0 auto 12px;
-            }
-
-            @keyframes spin {
-                0% {
-                    transform: rotate(0deg);
-                }
-
-                100% {
-                    transform: rotate(360deg);
-                }
-            }
-        </style>
-    </head>
-
-    <body>
-        <div class="login-container">
-            <div class="login-card">
-                <div class="app-title">🦈 SharkNet Messenger</div>
-                <div class="app-subtitle">Decentralized Peer-to-Peer Communication</div>
-
-                <div id="error-message" class="error-message" style="display: none;"></div>
-                <div id="success-message" class="success-message" style="display: none;"></div>
-
-                <div id="loading" class="loading">
-                    <div class="spinner"></div>
-                    <div>Processing...</div>
-                </div>
-
-                <div id="existing-peer-form" class="login-form">
-                    <div class="form-group">
-                        <label class="form-label">Select Existing Peer</label>
-                        <div class="custom-dropdown">
-                            <div class="dropdown-selected" onclick="toggleDropdown()">
-                                <span id="selected-peer-text">-- Select a peer --</span>
-                                <span class="dropdown-arrow">▼</span>
-                            </div>
-                            <div id="peer-dropdown-options" class="dropdown-options">
-                                <!-- Options will be populated by JavaScript -->
-                            </div>
-                        </div>
-                    </div>
-                    <button type="button" class="btn-primary" onclick="selectExistingPeer()">
-                        Continue with Selected Peer
-                    </button>
-                </div>
-
-                <div class="divider">
-                    <span class="divider-text">OR</span>
-                </div>
-
-                <!-- Create New Peer Form -->
-                <div id="new-peer-form" class="login-form">
-                    <div class="form-group">
-                        <label class="form-label">Create New Peer</label>
-                        <input type="text" id="peer-name" class="form-input" placeholder="Enter peer name..."
-                            maxlength="50">
-                    </div>
-                    <button type="button" class="btn-primary" onclick="createNewPeer()">
-                        Create New Peer
-                    </button>
-                </div>
-
-                <button type="button" class="btn-secondary" onclick="refreshPeers()">
-                    🔄 Refresh Peer List
-                </button>
-            </div>
-        </div>
-
-        <script src="js/login.js"></script>
-    </body>
-
-    </html>
+     <script src="js/login.js?v=6"></script>
+     <script src="js/i18n.js?v=4"></script>
+ </body>
+ </html>

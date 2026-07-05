@@ -1,100 +1,151 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-    <!DOCTYPE html>
-    <html lang="en">
+<%@ page import="net.sharksystem.web.peer.PeerRuntimeManager" %>
+<%@ page import="net.sharksystem.web.peer.PeerRuntime" %>
+<%@ taglib prefix="ui" tagdir="/WEB-INF/tags" %>
+<%
+    PeerRuntimeManager manager = PeerRuntimeManager.getInstance();
+    PeerRuntime activePeer = manager.getActivePeer();
 
-    <head>
-        <meta charset="UTF-8">
-        <title>Settings - SharkNet</title>
-        <link rel="stylesheet" href="css/style.css?v=3">
-        <link rel="stylesheet" href="css/settings.css?v=1">
-    </head>
+    if (activePeer == null) {
+        response.sendRedirect("login.jsp");
+        return;
+    }
 
-    <body>
-        <jsp:include page="header.jsp" />
+    pageContext.setAttribute("peerId", activePeer.getPeerID());
+    pageContext.setAttribute("openPorts", activePeer.getOpenSockets().size());
+    pageContext.setAttribute("activeConns", activePeer.getActiveConnections().size());
+%>
+<!DOCTYPE html>
+<html lang="en">
+<ui:head title="Settings - SharkNet Messenger"/>
 
-        <div class="main-container">
-            <% request.setAttribute("activePage", "settings" ); %>
-                <jsp:include page="sidebar.jsp" />
+<body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-300">
+    <jsp:include page="header.jsp" />
 
-                <div class="content-wrapper">
-                    <div class="page-container">
-                        <div class="page-header">
-                            <div>
-                                <div class="page-title">Settings & Configuration</div>
-                                <div class="page-subtitle">Manage peer configuration and application settings.</div>
-                            </div>
-                            <div>
-                                <button class="btn-primary" onclick="saveSettings()">Save Changes</button>
-                            </div>
-                        </div>
+    <div class="flex flex-col md:flex-row min-h-screen">
+        <% request.setAttribute("activePage", "settings"); %>
+        <jsp:include page="sidebar.jsp" />
 
-                        <!-- Peer Status -->
-                        <div class="card settings-section">
-                            <div
-                                style="margin-bottom:20px; border-bottom:1px solid var(--border-color); padding-bottom:16px;">
-                                <h3>Peer Status</h3>
-                            </div>
+        <div class="flex-1 p-4 md:p-6 w-full max-w-full overflow-x-hidden">
+            <div class="max-w-4xl mx-auto space-y-4 md:space-y-6">
 
-                            <div id="peer-status-content">
-                                <div class="loading">Loading peer status...</div>
-                            </div>
-                        </div>
-
-                        <!-- App Settings -->
-                        <div class="card settings-section">
-                            <div
-                                style="margin-bottom:20px; border-bottom:1px solid var(--border-color); padding-bottom:16px;">
-                                <h3>Application Settings</h3>
-                            </div>
-
-                            <!-- Hub settings disabled for future implementation
-                    <div class="form-group">
-                        <label class="form-label" style="display:flex; align-items:center;">
-                            <input type="checkbox" id="rememberNewHubConnections">
-                            Remember new hub connections
-                        </label>
-                        <div class="form-hint">Automatically save and reconnect to previously used hub connections.</div>
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-2 md:mb-6 gap-4">
+                    <div>
+                        <h1 class="text-xl md:text-2xl font-bold" data-i18n="settings.title">Settings & Configuration</h1>
+                        <p class="text-sm text-gray-500 dark:text-gray-400 mt-1" data-i18n="settings.desc">Manage peer configuration and application settings.</p>
                     </div>
-
-                    <div class="form-group">
-                        <label class="form-label" style="display:flex; align-items:center;">
-                            <input type="checkbox" id="hubReconnect">
-                            Enable hub reconnection
-                        </label>
-                        <div class="form-hint">Automatically attempt to reconnect to hubs when connection is lost.</div>
-                    </div>
-                    -->
-                        </div>
-
-                        <!-- PKI Status -->
-                        <div class="card settings-section">
-                            <div
-                                style="margin-bottom:20px; border-bottom:1px solid var(--border-color); padding-bottom:16px;">
-                                <h3>PKI Status</h3>
-                            </div>
-
-                            <div id="pki-status-content">
-                                <div class="loading">Loading PKI status...</div>
-                            </div>
-                        </div>
-
-                        <!-- Network Status -->
-                        <div class="card settings-section">
-                            <div
-                                style="margin-bottom:20px; border-bottom:1px solid var(--border-color); padding-bottom:16px;">
-                                <h3>Network Status</h3>
-                            </div>
-
-                            <div id="network-status-content">
-                                <div class="loading">Loading network status...</div>
-                            </div>
-                        </div>
-
+                    <div class="w-full sm:w-auto">
+                        <button class="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 px-5 rounded-lg shadow-sm transition-colors flex justify-center items-center gap-2" onclick="saveSettings()">
+                            <i class="fas fa-save"></i> Save Changes
+                        </button>
                     </div>
                 </div>
+
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4 md:p-6">
+                    <div class="border-b border-gray-100 dark:border-gray-700 pb-3 md:pb-4 mb-4">
+                        <h3 class="text-lg font-bold">Peer Status</h3>
+                    </div>
+                    <div id="peer-status-content">
+                        <div class="animate-pulse text-gray-500 dark:text-gray-400 text-sm">Loading peer status...</div>
+                    </div>
+                </div>
+
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4 md:p-6">
+                    <div class="border-b border-gray-100 dark:border-gray-700 pb-3 md:pb-4 mb-4 md:mb-6">
+                        <h3 class="text-lg font-bold">Application Settings</h3>
+                    </div>
+
+                    <%-- ==========================================
+                         NEW: Localization & Language Switcher
+                    =========================================== --%>
+                    <h4 class="font-semibold text-base mb-4 text-gray-800 dark:text-gray-200" data-i18n="settings.lang.title">Language Preference</h4>
+                    <div class="flex bg-gray-50 dark:bg-gray-900 p-1 rounded-lg border border-gray-200 dark:border-gray-700 w-fit mb-6">
+                        <button id="lang-btn-en" onclick="setLanguage('en')" class="px-4 py-2 rounded-md text-sm font-bold transition-colors">
+                            <i class="mr-1">🇬🇧</i> English
+                        </button>
+                        <button id="lang-btn-de" onclick="setLanguage('de')" class="px-4 py-2 rounded-md text-sm font-bold transition-colors">
+                            <i class="mr-1">🇩🇪</i> Deutsch
+                        </button>
+                    </div>
+
+                    <hr class="border-gray-100 dark:border-gray-700 my-6">
+
+                    <%-- Existing Settings --%>
+                    <h4 class="font-semibold text-base mb-4 text-gray-800 dark:text-gray-200">Message Defaults</h4>
+                    <div class="space-y-4 mb-6">
+                        <label class="inline-flex items-center cursor-pointer">
+                            <input type="checkbox" id="defaultSignMsg" class="sr-only peer">
+                            <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600 shrink-0"></div>
+                            <span class="ms-3 text-sm sm:text-base font-medium text-gray-700 dark:text-gray-300">Sign messages by default</span>
+                        </label>
+                        <br>
+                        <label class="inline-flex items-center cursor-pointer mt-2">
+                            <input type="checkbox" id="defaultEncryptMsg" class="sr-only peer">
+                            <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600 shrink-0"></div>
+                            <span class="ms-3 text-sm sm:text-base font-medium text-gray-700 dark:text-gray-300">Encrypt messages by default</span>
+                        </label>
+                    </div>
+
+                    <hr class="border-gray-100 dark:border-gray-700 my-6">
+
+                    <h4 class="font-semibold text-base mb-4 text-gray-800 dark:text-gray-200">Hub Connection Settings</h4>
+                    <div class="space-y-5 mb-6">
+                        <div>
+                            <label class="inline-flex items-center cursor-pointer">
+                                <input type="checkbox" id="rememberNewHubConnections" class="sr-only peer">
+                                <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600 shrink-0"></div>
+                                <span class="ms-3 text-sm sm:text-base font-medium text-gray-700 dark:text-gray-300">Remember new hub connections</span>
+                            </label>
+                            <div class="text-xs sm:text-sm text-gray-500 dark:text-gray-400 ml-14 mt-1">
+                                Automatically save and reconnect to previously used hub connections.
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="inline-flex items-center cursor-pointer">
+                                <input type="checkbox" id="hubReconnect" class="sr-only peer">
+                                <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600 shrink-0"></div>
+                                <span class="ms-3 text-sm sm:text-base font-medium text-gray-700 dark:text-gray-300">Enable hub reconnection</span>
+                            </label>
+                            <div class="text-xs sm:text-sm text-gray-500 dark:text-gray-400 ml-14 mt-1">
+                                Automatically attempt to reconnect to hubs when connection is lost.
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr class="border-gray-100 dark:border-gray-700 my-6">
+
+                    <h4 class="font-semibold text-base mb-3 text-gray-800 dark:text-gray-200">Display Preferences</h4>
+                    <div class="mb-2">
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Peer Display Name Customization</label>
+                        <input type="text" id="customDisplayName" class="w-full bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none transition-shadow" placeholder="Enter custom display name...">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4 md:p-6 w-full overflow-hidden">
+                        <div class="border-b border-gray-100 dark:border-gray-700 pb-3 md:pb-4 mb-4">
+                            <h3 class="text-lg font-bold">PKI Status</h3>
+                        </div>
+                        <div id="pki-status-content" class="w-full">
+                            <div class="animate-pulse text-gray-500 dark:text-gray-400 text-sm">Loading PKI status...</div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4 md:p-6 w-full overflow-hidden">
+                        <div class="border-b border-gray-100 dark:border-gray-700 pb-3 md:pb-4 mb-4">
+                            <h3 class="text-lg font-bold">Network Status</h3>
+                        </div>
+                        <div id="network-status-content" class="w-full">
+                            <div class="animate-pulse text-gray-500 dark:text-gray-400 text-sm">Loading network status...</div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
         </div>
+    </div>
 
-        <script src="js/settings.js?v=1"></script>
-    </body>
-
-    </html>
+    <script src="js/settings.js?v=6"></script>
+</body>
+</html>

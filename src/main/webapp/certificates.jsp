@@ -1,210 +1,226 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-    <!DOCTYPE html>
-    <html lang="en">
+<%@ page import="net.sharksystem.web.peer.PeerRuntimeManager" %>
+<%@ page import="net.sharksystem.web.peer.PeerRuntime" %>
+<%@ taglib prefix="ui" tagdir="/WEB-INF/tags" %>
+<%
+    /**
+     * Resolve active identity runtime session from management framework boundaries.
+     */
+    PeerRuntimeManager manager = PeerRuntimeManager.getInstance();
+    PeerRuntime activePeer = manager.getActivePeer();
 
-    <head>
-        <meta charset="UTF-8">
-        <title>Certificates - SharkNet</title>
-        <link rel="stylesheet" href="css/style.css?v=3">
-        <link rel="stylesheet" href="css/certificates.css?v=1">
-    </head>
+    if (activePeer == null) {
+        response.sendRedirect("login.jsp");
+        return;
+    }
 
-    <body>
-        <jsp:include page="header.jsp" />
+    pageContext.setAttribute("peerId", activePeer.getPeerID());
+    pageContext.setAttribute("openPorts", activePeer.getOpenSockets().size());
+    pageContext.setAttribute("activeConns", activePeer.getActiveConnections().size());
+%>
+<!DOCTYPE html>
+<html lang="en">
+<ui:head title="Certificates - SharkNet Messenger"/>
 
-        <div class="main-container">
-            <% request.setAttribute("activePage", "certificates" ); %>
-                <jsp:include page="sidebar.jsp" />
+<body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-300">
+    <jsp:include page="header.jsp" />
 
-                <div class="content-wrapper">
-                    <div class="page-container">
-                        <div class="page-header certificates-header">
-                            <div>
-                                <div class="page-title">Certificate Management</div>
-                                <div class="page-subtitle">Manage PKI credentials, trust stores, and identity
-                                    certificates.</div>
-                            </div>
-                            <div>
-                                <button class="btn-secondary" onclick="showImportModal()">Send Certificate</button>
-                                <button class="btn-primary" onclick="refreshCertificates()">Refresh</button>
-                            </div>
+    <div class="flex flex-col md:flex-row min-h-screen">
+        <% request.setAttribute("activePage", "certificates"); %>
+        <jsp:include page="sidebar.jsp" />
+
+        <main class="flex-1 p-4 md:p-6 w-full max-w-full overflow-x-hidden">
+            <div class="max-w-6xl mx-auto space-y-4 md:space-y-6">
+
+                <%-- Page Header --%>
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-2 md:mb-6 gap-4">
+                    <div>
+                        <h1 class="text-xl md:text-2xl font-bold" data-i18n="cert.title">Certificate Management</h1>
+                        <p class="text-sm text-gray-500 dark:text-gray-400 mt-1" data-i18n="cert.desc">Manage PKI credentials, trust stores, and identity certificates.</p>
+                    </div>
+                    <div class="flex flex-col sm:flex-row w-full sm:w-auto gap-2 sm:gap-3">
+                        <button class="w-full sm:w-auto bg-gray-200 hover:bg-gray-300 text-gray-800 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 px-4 py-2.5 rounded-lg font-medium transition-colors shadow-sm flex justify-center items-center gap-2" onclick="showImportModal()">
+                            <i class="fas fa-paper-plane"></i> <span data-i18n="cert.send">Send Certificate</span>
+                        </button>
+                        <button class="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-lg font-medium transition-colors shadow-sm flex justify-center items-center gap-2" onclick="refreshCertificates()">
+                            <i class="fas fa-sync-alt"></i> <span data-i18n="爷爷.refresh">Refresh</span>
+                        </button>
+                    </div>
+                </div>
+
+                <%-- Your Identity Section --%>
+                <div class="bg-white dark:bg-gray-800 p-4 md:p-6 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                    <div class="w-full">
+                        <h3 class="font-bold text-lg text-gray-900 dark:text-white flex items-center gap-2"><i class="fas fa-id-card text-blue-500"></i> <span data-i18n="cert.your_identity">Your Identity Certificate</span></h3>
+                        <div class="text-sm text-gray-500 dark:text-gray-400 mt-2 flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
+                            <span class="font-medium text-gray-700 dark:text-gray-300">Peer ID:</span>
+                            <span id="your-peer-id" class="font-mono text-xs bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-300 p-1.5 rounded break-all w-full sm:w-auto inline-block" data-i18n="common.loading">Loading...</span>
+                        </div>
+                    </div>
+                    <button class="w-full md:w-auto bg-gray-100 hover:bg-gray-200 text-gray-800 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 px-4 py-2 rounded-lg text-sm font-medium transition-colors border border-gray-300 dark:border-gray-600 whitespace-nowrap" onclick="exportOwnCertificate()">
+                        <i class="fas fa-download mr-1"></i> <span data-i18n="cert.export_public">Export Public Key</span>
+                    </button>
+                </div>
+
+                <%-- Pending Requests Section --%>
+                <div class="bg-white dark:bg-gray-800 p-4 md:p-6 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
+                    <div class="flex justify-between items-center mb-4 border-b border-gray-100 dark:border-gray-700 pb-3">
+                        <h3 class="font-bold text-lg text-gray-900 dark:text-white" data-i18n="cert.pending">Pending Requests</h3>
+                        <span id="pending-count" class="bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-500 text-xs font-bold px-2.5 py-0.5 rounded-full">0</span>
+                    </div>
+                    <div id="pending-credentials-container" class="space-y-3">
+                        <div class="text-gray-500 dark:text-gray-400 text-sm italic py-2 text-center" data-i18n="cert.no_pending">No pending credential requests</div>
+                    </div>
+                </div>
+
+                <%-- Advanced Filtering Section --%>
+                <div class="bg-white dark:bg-gray-800 p-4 md:p-6 rounded-xl border border-gray-200 dark:border-dark-border shadow-sm">
+                    <h3 class="font-bold text-lg mb-4 border-b border-gray-100 dark:border-gray-700 pb-3"><i class="fas fa-filter text-gray-400 mr-2"></i><span data-i18n="cert.adv_filter">Advanced Filtering</span></h3>
+
+                    <div class="flex flex-col sm:flex-row flex-wrap items-end gap-4">
+                        <div class="w-full sm:w-auto flex-1 min-w-[150px]">
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1" data-i18n="cert.filter_by">Filter by:</label>
+                            <select id="filter-type" class="w-full bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none" onchange="onFilterTypeChange()">
+                                <option value="all" data-i18n="cert.all">All Certificates</option>
+                                <option value="issuer" data-i18n="cert.issuer">By Issuer</option>
+                                <option value="subject" data-i18n="cert.subject">By Subject</option>
+                                <option value="trust" data-i18n="cert.trust_level">By Trust Level</option>
+                            </select>
                         </div>
 
-                        <!-- Your Identity Certificate -->
-                        <div class="card identity-section">
-                            <div class="identity-header">
-                                <div>
-                                    <div class="card-title identity-title">Your Identity Certificate</div>
-                                    <div class="identity-peer-id">
-                                        Peer ID: <span id="your-peer-id">Loading...</span>
-                                    </div>
-                                </div>
-                                <button class="btn-secondary" onclick="exportOwnCertificate()">Export Public
-                                    Key</button>
-                            </div>
+                        <div class="w-full sm:w-auto flex-1 min-w-[150px] hidden" id="issuer-filter">
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Issuer:</label>
+                            <select id="issuer-select" class="w-full bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                                <option value="">All Issuers</option>
+                            </select>
                         </div>
 
-                        <!-- Pending Credentials -->
-                        <div class="card pending-section">
-                            <div class="card-title pending-title">
-                                Pending Credential Requests
-                                <span id="pending-count" class="badge badge-yellow pending-count">0</span>
-                            </div>
-                            <div id="pending-credentials-container">
-                                <div class="pending-empty">No pending credential requests</div>
-                            </div>
+                        <div class="w-full sm:w-auto flex-1 min-w-[150px] hidden" id="subject-filter">
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Subject:</label>
+                            <select id="subject-select" class="w-full bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                                <option value="">All Subjects</option>
+                            </select>
                         </div>
 
-                        <!-- Advanced Certificate Filtering -->
-                        <div class="card">
-                            <div
-                                style="margin-bottom:20px; border-bottom:1px solid var(--border-color); padding-bottom:16px;">
-                                <h3>Advanced Filtering</h3>
-                            </div>
-
-                            <div class="filter-controls">
-                                <div class="filter-group">
-                                    <label>Filter by:</label>
-                                    <select id="filter-type" class="form-control" onchange="onFilterTypeChange()">
-                                        <option value="all">All Certificates</option>
-                                        <option value="issuer">By Issuer</option>
-                                        <option value="subject">By Subject</option>
-                                        <option value="trust">By Trust Level</option>
-                                    </select>
-                                </div>
-
-                                <div class="filter-group" id="issuer-filter" style="display:none;">
-                                    <label>Issuer:</label>
-                                    <select id="issuer-select" class="form-control">
-                                        <option value="">All Issuers</option>
-                                    </select>
-                                </div>
-
-                                <div class="filter-group" id="subject-filter" style="display:none;">
-                                    <label>Subject:</label>
-                                    <select id="subject-select" class="form-control">
-                                        <option value="">All Subjects</option>
-                                    </select>
-                                </div>
-
-                                <div class="filter-group" id="trust-filter" style="display:none;">
-                                    <label>Trust Level:</label>
-                                    <select id="trust-select" class="form-control">
-                                        <option value="">All Levels</option>
-                                        <option value="0">Unknown</option>
-                                        <option value="1">Self-Signed</option>
-                                        <option value="2">Verified</option>
-                                        <option value="3">Highly Verified</option>
-                                    </select>
-                                </div>
-
-                                <div class="filter-actions">
-                                    <button class="btn-primary" onclick="applyFilter()">Apply Filter</button>
-                                    <button class="btn-secondary" onclick="clearFilter()">Clear</button>
-                                </div>
-                            </div>
+                        <div class="w-full sm:w-auto flex-1 min-w-[150px] hidden" id="trust-filter">
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Trust Level:</label>
+                            <select id="trust-select" class="w-full bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                                <option value="">All Levels</option>
+                                <option value="0">Unknown</option>
+                                <option value="1">Self-Signed</option>
+                                <option value="2">Verified</option>
+                                <option value="3">Highly Verified</option>
+                            </select>
                         </div>
 
-                        <!-- Trusted Peer Certificates -->
-                        <div class="card trusted-section">
-                            <div class="card-title">Trusted Peer Certificates</div>
-                            <input type="text" id="certificate-search" class="search-bar"
-                                placeholder="🔍 Search Certificates..." onkeyup="filterCertificates()">
-
-                            <table class="data-table" id="certificates-table">
-                                <thead>
-                                    <tr>
-                                        <th>Subject</th>
-                                        <th>Issuer</th>
-                                        <th>Valid Until</th>
-                                        <th>Trust Level</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="certificates-tbody">
-                                    <tr>
-                                        <td colspan="5" class="loading-state">Loading certificates...</td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                        <div class="w-full sm:w-auto flex gap-2 mt-2 sm:mt-0">
+                            <button class="flex-1 sm:flex-none bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-lg text-sm font-medium transition-colors" onclick="applyFilter()" data-i18n="cert.apply">Apply</button>
+                            <button class="flex-1 sm:flex-none bg-gray-200 hover:bg-gray-300 text-gray-800 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors" onclick="clearFilter()" data-i18n="cert.clear">Clear</button>
                         </div>
                     </div>
                 </div>
-        </div>
 
-        <!-- Revoke Certificate Modal -->
-        <div id="revoke-modal" class="modal hidden">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h3>Revoke Certificate</h3>
-                    <button class="modal-close" onclick="hideRevokeModal()">&times;</button>
-                </div>
-                <div class="modal-body">
-                    <div class="form-group">
-                        <label>Subject ID:</label>
-                        <input type="text" id="revoke-subject-id" class="form-control" readonly>
+                <%-- Trusted Certificates Table Summary Panel --%>
+                <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden w-full">
+                    <div class="p-4 border-b border-gray-200 dark:border-gray-700 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                        <h3 class="font-bold text-lg text-gray-900 dark:text-white" data-i18n="cert.trusted_peer">Trusted Peer Certificates</h3>
+                        <div class="relative w-full sm:w-64">
+                            <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                            <input type="text" id="certificate-search" class="w-full bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 rounded-lg py-2 pl-10 pr-4 text-sm outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white" placeholder="Search Certificates..." data-i18n-placeholder="cert.search_placeholder" onkeyup="filterCertificates()">
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label>Certificate Subject:</label>
-                        <input type="text" id="revoke-subject-name" class="form-control" readonly>
+
+                    <div class="overflow-x-auto w-full">
+                        <table class="w-full text-left text-sm whitespace-nowrap" id="certificates-table">
+                            <thead class="text-xs uppercase bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-b border-gray-200 dark:border-gray-700">
+                                <tr>
+                                    <th class="px-6 py-4 font-semibold" data-i18n="cert.th.subject">Subject</th>
+                                    <th class="px-6 py-4 font-semibold" data-i18n="cert.th.issuer">Issuer</th>
+                                    <th class="px-6 py-4 font-semibold" data-i18n="cert.th.valid_until">Valid Until</th>
+                                    <th class="px-6 py-4 font-semibold text-center" data-i18n="cert.th.trust_level">Trust Level</th>
+                                    <th class="px-6 py-4 font-semibold text-right" data-i18n="common.actions">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="certificates-tbody" class="divide-y divide-gray-200 dark:divide-gray-700">
+                                <tr>
+                                    <td colspan="5" class="px-6 py-8 text-center text-gray-500 dark:text-gray-400" data-i18n="cert.loading">Loading certificates...</td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
-                    <div class="warning-message">
-                        <strong>⚠️ Warning:</strong> This action cannot be undone. The certificate will be revoked and
-                        can no longer be used for verification.
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button class="btn-secondary" onclick="hideRevokeModal()">Cancel</button>
-                    <button class="btn-danger" onclick="revokeCertificate()">Revoke Certificate</button>
                 </div>
             </div>
-        </div>
+        </main>
+    </div>
 
-        <!-- Import Certificate Modal -->
-        <div id="import-modal" class="modal hidden">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h3>Import Certificate</h3>
-                    <button class="modal-close" onclick="hideImportModal()">&times;</button>
+    <%-- Revoke Modal Overlay Boundary Context --%>
+    <div id="revoke-modal" class="fixed inset-0 z-[60] hidden bg-gray-900/50 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-gray-800 w-full max-w-md rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 flex flex-col overflow-hidden">
+            <div class="p-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center bg-gray-50 dark:bg-gray-700/50">
+                <h3 class="font-bold text-lg text-red-600 dark:text-red-400"><i class="fas fa-exclamation-triangle mr-2"></i><span data-i18n="cert.revoke.title">Revoke Certificate</span></h3>
+                <button class="text-gray-400 hover:text-red-500 transition-colors text-xl w-8 h-8 flex items-center justify-center rounded-full hover:bg-red-50 dark:hover:bg-red-900/20" onclick="hideRevokeModal()">&times;</button>
+            </div>
+            <div class="p-6 space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Subject ID:</label>
+                    <input type="text" id="revoke-subject-id" class="w-full bg-gray-100 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 rounded-lg p-2.5 text-sm text-gray-500 dark:text-gray-400 cursor-not-allowed font-mono" readonly>
                 </div>
-                <div class="modal-body">
-                    <div class="form-group">
-                        <label>Peer ID (optional):</label>
-                        <input type="text" id="import-peer-name" class="form-control"
-                            placeholder="Enter peer ID (leave empty to broadcast)">
-                    </div>
-                    <div class="form-group">
-                        <label>Message (optional):</label>
-                        <textarea id="import-message" class="form-control"
-                            placeholder="Optional message to send with credentials"></textarea>
-                    </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Certificate Subject:</label>
+                    <input type="text" id="revoke-subject-name" class="w-full bg-gray-100 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 rounded-lg p-2.5 text-sm text-gray-500 dark:text-gray-400 cursor-not-allowed" readonly>
                 </div>
-                <div class="modal-footer">
-                    <button class="btn-secondary" onclick="hideImportModal()">Cancel</button>
-                    <button class="btn-primary" onclick="sendCredentials()">Send Credentials</button>
+                <div class="bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 p-3 rounded-lg text-sm border border-red-200 dark:border-red-800/30 leading-relaxed" data-i18n="cert.revoke.warning">
+                    <strong>⚠️ Warning:</strong> This action cannot be undone. The certificate will be revoked and can no longer be used for verification.
                 </div>
             </div>
-        </div>
-
-        <!-- Certificate Details Modal -->
-        <div id="details-modal" class="modal hidden">
-            <div class="modal-content wide">
-                <div class="modal-header">
-                    <h3>Certificate Details</h3>
-                    <button class="modal-close" onclick="hideDetailsModal()">&times;</button>
-                </div>
-                <div class="modal-body">
-                    <div id="certificate-details">
-                        <!-- Details will be populated here -->
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button class="btn-secondary" onclick="hideDetailsModal()">Close</button>
-                </div>
+            <div class="p-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700/50 flex flex-col-reverse sm:flex-row justify-end gap-3">
+                <button class="w-full sm:w-auto px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 text-sm font-medium transition-colors" onclick="hideRevokeModal()" data-i18n="common.cancel">Cancel</button>
+                <button class="w-full sm:w-auto px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm font-medium shadow-sm transition-colors" onclick="revokeCertificate()" data-i18n="cert.revoke.title">Revoke</button>
             </div>
         </div>
+    </div>
 
-        <script src="js/certificates.js?v=1"></script>
-    </body>
+    <%-- Send/Import Certificate Modal Overlay Boundary Context --%>
+    <div id="import-modal" class="fixed inset-0 z-[60] hidden bg-gray-900/50 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-gray-800 w-full max-w-md rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 flex flex-col overflow-hidden">
+            <div class="p-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center bg-gray-50 dark:bg-gray-700/50">
+                <h3 class="font-bold text-lg text-gray-900 dark:text-white"><i class="fas fa-paper-plane text-blue-500 mr-2"></i><span data-i18n="cert.send">Send Certificate</span></h3>
+                <button class="text-gray-400 hover:text-red-500 transition-colors text-xl w-8 h-8 flex items-center justify-center rounded-full hover:bg-red-50 dark:hover:bg-red-900/20" onclick="hideImportModal()">&times;</button>
+            </div>
+            <div class="p-6 space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Peer ID (optional):</label>
+                    <input type="text" id="import-peer-name" class="w-full bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Leave empty to broadcast">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Message (optional):</label>
+                    <textarea id="import-message" rows="3" class="w-full bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none resize-none" placeholder="Optional message..."></textarea>
+                </div>
+            </div>
+            <div class="p-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700/50 flex flex-col-reverse sm:flex-row justify-end gap-3">
+                <button class="w-full sm:w-auto px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 text-sm font-medium transition-colors" onclick="hideImportModal()" data-i18n="common.cancel">Cancel</button>
+                <button class="w-full sm:w-auto px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium shadow-sm transition-colors" onclick="sendCredentials()" data-i18n="msg.send">Send</button>
+            </div>
+        </div>
+    </div>
 
-    </html>
+    <%-- Details Modal Overlay Boundary Context --%>
+    <div id="details-modal" class="fixed inset-0 z-[60] hidden bg-gray-900/50 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-gray-800 w-full max-w-2xl rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 flex flex-col overflow-hidden max-h-[90vh]">
+            <div class="p-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center bg-gray-50 dark:bg-gray-700/50">
+                <h3 class="font-bold text-lg text-gray-900 dark:text-white"><i class="fas fa-info-circle text-blue-500 mr-2"></i><span>Certificate Details</span></h3>
+                <button class="text-gray-400 hover:text-red-500 transition-colors text-xl w-8 h-8 flex items-center justify-center rounded-full hover:bg-red-50 dark:hover:bg-red-900/20" onclick="hideDetailsModal()">&times;</button>
+            </div>
+            <div class="p-6 overflow-y-auto w-full">
+                <div id="certificate-details" class="text-sm text-gray-700 dark:text-gray-300 space-y-4 w-full">
+                </div>
+            </div>
+            <div class="p-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700/50 flex justify-end">
+                <button class="w-full sm:w-auto px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 text-sm font-medium transition-colors" onclick="hideDetailsModal()" data-i18n="common.close">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/certificates.js?v=4.1"></script>
+</body>
+</html>
