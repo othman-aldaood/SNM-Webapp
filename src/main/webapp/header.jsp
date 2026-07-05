@@ -77,12 +77,10 @@
                 <i class="fas fa-globe text-lg"></i>
             </button>
             <div id="lang-dropdown" class="hidden absolute right-0 mt-2 w-32 bg-white dark:bg-dark-card border border-gray-200 dark:border-dark-border rounded-lg shadow-xl z-50 overflow-hidden">
-                <button onclick="setLanguage('en'); toggleLangDropdown()" class="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 flex items-center gap-2">
-                    🇬🇧 English
-                </button>
-                <button onclick="setLanguage('de'); toggleLangDropdown()" class="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 flex items-center gap-2">
-                    🇩🇪 Deutsch
-                </button>
+                <button onclick="setLanguage('en'); toggleLangDropdown()" class="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 flex items-center gap-2">🇬🇧 English</button>
+                <button onclick="setLanguage('de'); toggleLangDropdown()" class="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 flex items-center gap-2">🇩🇪 Deutsch</button>
+                <button onclick="setLanguage('tr'); toggleLangDropdown()" class="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 flex items-center gap-2">🇹🇷 Türkçe</button>
+                <button onclick="setLanguage('ar'); toggleLangDropdown()" class="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 flex items-center gap-2" dir="rtl">🇸🇦 العربية</button>
             </div>
         </div>
 
@@ -142,4 +140,4 @@
     });
 </script>
 <script src="js/ui-ux.js?v=6"></script>
-<script src="js/i18n.js?v=2"></script>
+<script src="js/i18n.js?v=3‚"></script>
