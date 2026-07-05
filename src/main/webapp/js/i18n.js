@@ -383,7 +383,27 @@ const translations = {
         "tut.lbl_enough": "enough?",
         "tut.lbl_nice": "nice",
         "tut.lbl_good": "good",
-        "tut.lbl_perfect": "perfect"
+        "tut.lbl_perfect": "perfect",
+
+        // Messenger E2E security badges & hops (Phase 1)
+        "msg.security": "Security",
+        "msg.sec.encrypted": "Encrypted",
+        "msg.sec.encrypted_tip": "End-to-end encrypted",
+        "msg.sec.verified": "Verified",
+        "msg.sec.verified_tip": "Signature verified",
+        "msg.sec.unverified": "Unverified",
+        "msg.sec.unverified_tip": "Signed, but the signature could not be verified",
+        "msg.sec.unsigned": "Unsigned",
+        "msg.sec.unsigned_tip": "This message is not signed - the sender cannot be verified",
+        "msg.sec.via_tcp": "via TCP",
+        "msg.hops": "hops",
+        "msg.hops_tip": "Hop list (sender [connection] encrypted/verified)",
+        "msg.hops_none": "direct",
+        "msg.hops_none_tip": "Received directly - no intermediate hops",
+        "time.now": "now",
+        "time.min": "min ago",
+        "time.hr": "h ago",
+        "time.day": "d ago"
     },
 
 
@@ -766,7 +786,27 @@ const translations = {
         "tut.lbl_enough": "genug?",
         "tut.lbl_nice": "gut",
         "tut.lbl_good": "sehr gut",
-        "tut.lbl_perfect": "perfekt"
+        "tut.lbl_perfect": "perfekt",
+
+        // Messenger E2E security badges & hops (Phase 1)
+        "msg.security": "Sicherheit",
+        "msg.sec.encrypted": "Verschlüsselt",
+        "msg.sec.encrypted_tip": "Ende-zu-Ende verschlüsselt",
+        "msg.sec.verified": "Verifiziert",
+        "msg.sec.verified_tip": "Signatur verifiziert",
+        "msg.sec.unverified": "Unverifiziert",
+        "msg.sec.unverified_tip": "Signiert, aber die Signatur konnte nicht verifiziert werden",
+        "msg.sec.unsigned": "Unsigniert",
+        "msg.sec.unsigned_tip": "Diese Nachricht ist nicht signiert - der Absender kann nicht verifiziert werden",
+        "msg.sec.via_tcp": "über TCP",
+        "msg.hops": "Hops",
+        "msg.hops_tip": "Hop-Liste (Absender [Verbindung] verschlüsselt/verifiziert)",
+        "msg.hops_none": "direkt",
+        "msg.hops_none_tip": "Direkt empfangen - keine Zwischenstationen",
+        "time.now": "jetzt",
+        "time.min": "Min.",
+        "time.hr": "Std.",
+        "time.day": "T."
     },
     tr: {
         // Common
@@ -1146,7 +1186,27 @@ const translations = {
         "tut.lbl_enough": "yeterli mi?",
         "tut.lbl_nice": "hoş",
         "tut.lbl_good": "iyi",
-        "tut.lbl_perfect": "mükemmel"
+        "tut.lbl_perfect": "mükemmel",
+
+        // Messenger E2E security badges & hops (Phase 1)
+        "msg.security": "Güvenlik",
+        "msg.sec.encrypted": "Şifreli",
+        "msg.sec.encrypted_tip": "Uçtan uca şifreli",
+        "msg.sec.verified": "Doğrulandı",
+        "msg.sec.verified_tip": "İmza doğrulandı",
+        "msg.sec.unverified": "Doğrulanmadı",
+        "msg.sec.unverified_tip": "İmzalı, ancak imza doğrulanamadı",
+        "msg.sec.unsigned": "İmzasız",
+        "msg.sec.unsigned_tip": "Bu mesaj imzalı değil - gönderen doğrulanamaz",
+        "msg.sec.via_tcp": "TCP üzerinden",
+        "msg.hops": "sıçrama",
+        "msg.hops_tip": "Sıçrama listesi (gönderen [bağlantı] şifreli/doğrulanmış)",
+        "msg.hops_none": "doğrudan",
+        "msg.hops_none_tip": "Doğrudan alındı - ara sıçrama yok",
+        "time.now": "şimdi",
+        "time.min": "dk önce",
+        "time.hr": "sa önce",
+        "time.day": "gün önce"
     },
     ar: {
         // Common
@@ -1526,7 +1586,27 @@ const translations = {
         "tut.lbl_enough": "كافٍ؟",
         "tut.lbl_nice": "جيد",
         "tut.lbl_good": "جيد جداً",
-        "tut.lbl_perfect": "ممتاز"
+        "tut.lbl_perfect": "ممتاز",
+
+        // Messenger E2E security badges & hops (Phase 1)
+        "msg.security": "الأمان",
+        "msg.sec.encrypted": "مشفرة",
+        "msg.sec.encrypted_tip": "مشفرة من طرف إلى طرف",
+        "msg.sec.verified": "موثقة",
+        "msg.sec.verified_tip": "تم التحقق من التوقيع",
+        "msg.sec.unverified": "غير موثقة",
+        "msg.sec.unverified_tip": "موقعة لكن تعذر التحقق من التوقيع",
+        "msg.sec.unsigned": "غير موقعة",
+        "msg.sec.unsigned_tip": "هذه الرسالة غير موقعة - لا يمكن التحقق من المرسل",
+        "msg.sec.via_tcp": "عبر TCP",
+        "msg.hops": "قفزات",
+        "msg.hops_tip": "قائمة القفزات (المرسل [الاتصال] مشفرة/موثقة)",
+        "msg.hops_none": "مباشرة",
+        "msg.hops_none_tip": "استُلمت مباشرة - بدون قفزات وسيطة",
+        "time.now": "الآن",
+        "time.min": "د",
+        "time.hr": "س",
+        "time.day": "يوم"
     }
 };
 

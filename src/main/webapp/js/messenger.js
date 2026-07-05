@@ -301,6 +301,85 @@ function highlightText(text, term) {
 }
 
 /**
+ * Returns a human readable relative age for a message timestamp.
+ * @param {string} timestamp - Server format "yyyy-MM-dd HH:mm:ss.SSS"
+ * @return {string} Relative age (e.g. "5 min ago") or '' if unparseable
+ */
+function relativeAge(timestamp) {
+    if (!timestamp) return '';
+    const date = new Date(timestamp.replace(' ', 'T'));
+    if (isNaN(date.getTime())) return '';
+
+    const diffSec = Math.max(0, Math.floor((Date.now() - date.getTime()) / 1000));
+    if (diffSec < 60) return t('time.now', 'now');
+    if (diffSec < 3600) return `${Math.floor(diffSec / 60)} ${t('time.min', 'min ago')}`;
+    if (diffSec < 86400) return `${Math.floor(diffSec / 3600)} ${t('time.hr', 'h ago')}`;
+    return `${Math.floor(diffSec / 86400)} ${t('time.day', 'd ago')}`;
+}
+
+/**
+ * Returns true if any hop of the message travelled over a direct TCP link.
+ * @param {Object} msg - Message object (server JSON)
+ * @return {boolean}
+ */
+function hasTcpHop(msg) {
+    return Array.isArray(msg.hopingList) && msg.hopingList.some(h => h.via === 'TCP');
+}
+
+/**
+ * Builds the E2E security badges (encrypted / signed / verified state)
+ * for a message, based on the e2eSecurity object provided by the API.
+ * @param {Object} msg - Message object (server JSON)
+ * @return {string} HTML string (may be empty)
+ */
+function securityBadgesHTML(msg) {
+    const sec = msg.e2eSecurity;
+    if (!sec) return '';
+
+    const badges = [];
+    const base = 'inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[0.62rem] font-semibold align-middle';
+
+    if (sec.encrypted) {
+        badges.push(`<span class="${base} bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400" title="${t('msg.sec.encrypted_tip', 'End-to-end encrypted')}"><i class="fas fa-lock"></i> ${t('msg.sec.encrypted', 'Encrypted')}</span>`);
+    }
+
+    if (sec.signed && sec.verified) {
+        const iaTip = sec.ia ? ` — IA: ${escapeHtml(sec.ia)}` : '';
+        badges.push(`<span class="${base} bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400" title="${t('msg.sec.verified_tip', 'Signature verified')}${iaTip}"><i class="fas fa-check-circle"></i> ${t('msg.sec.verified', 'Verified')}</span>`);
+    } else if (sec.signed && !sec.verified) {
+        const viaTcp = hasTcpHop(msg) ? ` ${t('msg.sec.via_tcp', 'via TCP')}` : '';
+        badges.push(`<span class="${base} bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400" title="${t('msg.sec.unverified_tip', 'Signed, but the signature could not be verified')}"><i class="fas fa-exclamation-triangle"></i> ${t('msg.sec.unverified', 'Unverified')}${viaTcp}</span>`);
+    } else if (!sec.signed && msg.sender !== 'you') {
+        badges.push(`<span class="${base} bg-gray-100 text-gray-500 dark:bg-gray-700 dark:text-gray-400" title="${t('msg.sec.unsigned_tip', 'This message is not signed - the sender cannot be verified')}"><i class="fas fa-unlock"></i> ${t('msg.sec.unsigned', 'Unsigned')}</span>`);
+    }
+
+    return badges.join(' ');
+}
+
+/**
+ * Builds a small hops chip showing how the message travelled through
+ * the network (hopingList from the API). Details shown in a tooltip.
+ * @param {Object} msg - Message object (server JSON)
+ * @return {string} HTML string (may be empty)
+ */
+function hopsChipHTML(msg) {
+    const hops = msg.hopingList;
+    const base = 'inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[0.62rem] font-semibold align-middle bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400';
+
+    if (!Array.isArray(hops)) {
+        if (msg.sender === 'you') return '';
+        return `<span class="${base}" title="${t('msg.hops_none_tip', 'Received directly - no intermediate hops')}"><i class="fas fa-route"></i> ${t('msg.hops_none', 'direct')}</span>`;
+    }
+
+    const lines = hops.map((h, i) =>
+        `${i + 1}. ${h.sender} [${h.via}]` +
+        `${h.encrypted ? ' \u{1F512}' : ''}${h.verified ? ' ✔' : ''}`
+    ).join('&#10;');
+
+    return `<span class="${base}" title="${t('msg.hops_tip', 'Hop list (sender [connection] encrypted/verified)')}:&#10;${escapeHtml(lines)}"><i class="fas fa-route"></i> ${hops.length} ${t('msg.hops', 'hops')}</span>`;
+}
+
+/**
  * Renders the messages to the DOM.
  * @param {Array} messages - Array of message objects
  * @param {string} searchTerm - Active search term for highlighting
@@ -327,8 +406,13 @@ function renderMessages(messages, searchTerm = '') {
         line.innerHTML = `
             <div class="mb-4 max-w-[85%] ${isMe ? 'ml-auto text-right' : 'mr-auto text-left'}">
                 <div class="text-[0.7rem] text-gray-500 dark:text-gray-400 mb-1 px-1">
-                    ${escapeHtml(msg.timestamp.split(' ')[1] || msg.timestamp)} - ${escapeHtml(msg.sender)}
+                    <span title="${escapeHtml(msg.timestamp)}">${escapeHtml(msg.timestamp.split(' ')[1] || msg.timestamp)}</span>
+                    <span class="text-gray-400">&middot; ${relativeAge(msg.timestamp)}</span>
+                    - ${escapeHtml(msg.sender)}
                     ${msg.edited ? '<span class="italic text-gray-400 text-[0.65rem] ml-1">(edited)</span>' : ''}
+                </div>
+                <div class="mb-1 px-1 flex flex-wrap gap-1 ${isMe ? 'justify-end' : 'justify-start'}">
+                    ${securityBadgesHTML(msg)} ${hopsChipHTML(msg)}
                 </div>
                 <div oncontextmenu="handleContextMenu(event, '${escapeHtml(msgId)}', '${escapedContentForJS}', ${isMeStr})" 
                      class="${isMe ? 'cursor-context-menu bg-primary-500 text-white rounded-l-xl rounded-tr-xl hover:brightness-110' : 'bg-white dark:bg-dark-card border border-gray-200 dark:border-dark-border text-gray-800 dark:text-gray-200 rounded-r-xl rounded-tl-xl'} px-4 py-2 inline-block text-sm shadow-sm text-left break-words max-w-full transition-all"

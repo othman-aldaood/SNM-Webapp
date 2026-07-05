@@ -24,11 +24,6 @@
         <span class="sidebar-text transition-opacity duration-200" data-i18n="nav.peer">Peer Contacts</span>
     </a>
 
-    <a href="persons.jsp" class="flex items-center gap-4 px-3 py-3 rounded-lg font-medium transition-colors duration-200 whitespace-nowrap ${activePage == 'persons' ? 'bg-primary-500 text-white shadow-md' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'}">
-        <span class="text-xl w-8 text-center flex-shrink-0"><i class="fas fa-user"></i></span>
-        <span class="sidebar-text transition-opacity duration-200" data-i18n="nav.persons">Persons</span>
-    </a>
-
     <a href="certificates.jsp" class="flex items-center gap-4 px-3 py-3 rounded-lg font-medium transition-colors duration-200 whitespace-nowrap ${activePage == 'certificates' ? 'bg-primary-500 text-white shadow-md' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'}">
         <span class="text-xl w-8 text-center flex-shrink-0"><i class="fas fa-key"></i></span>
         <span class="sidebar-text transition-opacity duration-200" data-i18n="nav.certificates">Certificates</span>
