@@ -112,12 +112,16 @@
                                 <option value="ANY_SHARKNET_PEER">Anyone</option>
                             </select>
 
-                            <div class="flex items-center gap-4">
-                                <label class="flex items-center gap-1.5 cursor-pointer text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors">
+                            <%-- E2E security options group --%>
+                            <div class="flex items-center gap-3 bg-gray-50 dark:bg-gray-800/60 border border-gray-200 dark:border-dark-border rounded-lg px-3 py-1.5">
+                                <span class="text-xs font-semibold text-gray-500 dark:text-gray-400 flex items-center gap-1.5">
+                                    <i class="fas fa-shield-alt text-primary-500"></i> <span data-i18n="msg.security">Security</span>
+                                </span>
+                                <label class="flex items-center gap-1.5 cursor-pointer text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors" title="Attach your digital signature so the receiver can verify the sender">
                                     <input type="checkbox" id="sign-message" checked class="rounded border-gray-300 text-primary-500 focus:ring-primary-500">
                                     <span data-i18n="msg.sign"><i class="fas fa-signature text-xs"></i> Sign</span>
                                 </label>
-                                <label class="flex items-center gap-1.5 cursor-pointer text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors">
+                                <label class="flex items-center gap-1.5 cursor-pointer text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors" title="Encrypt so only the selected receiver can read the message">
                                     <input type="checkbox" id="encrypt-message" class="rounded border-gray-300 text-primary-500 focus:ring-primary-500">
                                     <span data-i18n="msg.encrypt"><i class="fas fa-lock text-xs"></i> Encrypt</span>
                                 </label>
