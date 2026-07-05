@@ -1,20 +1,36 @@
 /**
- * certificates.js - Certificate Management JavaScript
- * Fully Updated to support Tailwind CSS and Mobile Responsiveness.
+ * certificates.js - Certificate & Identity Assurance Management (v5.0)
+ * Redesigned UC4 layout: peers list + detail panel (IA score, SF, certificates).
+ * Tailwind CSS, dark mode and i18n aware.
  */
 
+let persons = [];
 let certificates = [];
 let pendingCredentials = [];
-let trustLevelCache = new Map();
+let ownPeerId = null;
+let selectedPersonId = null;
+let selectedCertIdx = 0;
 let lastRefreshTime = 0;
 const REFRESH_INTERVAL = 15000;
 
-let currentFilter = {
-    type: 'all',
-    issuer: '',
-    subject: '',
-    trust: ''
-};
+/* ------------------------------------------------------------------ */
+/* Helpers                                                             */
+/* ------------------------------------------------------------------ */
+
+function tl(key, fallback) {
+    const currentLang = localStorage.getItem('snm-lang') || 'en';
+    return (window.translations && window.translations[currentLang] && window.translations[currentLang][key]) ? window.translations[currentLang][key] : fallback;
+}
+
+function escapeHtml(text) {
+    if (!text) return '';
+    return text.toString()
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
 
 function formatCertificateDate(value, withTime) {
     if (value === undefined || value === null) return 'Unknown';
@@ -35,7 +51,7 @@ function formatCertificateDate(value, withTime) {
 
     try {
         const options = withTime ?
-            {day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit'} :
+            {day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit'} :
             {day: '2-digit', month: '2-digit', year: 'numeric'};
         return date.toLocaleDateString(undefined, options);
     } catch (e) {
@@ -43,186 +59,297 @@ function formatCertificateDate(value, withTime) {
     }
 }
 
-function escapeHtml(text) {
-    if (!text) return '';
-    return text.toString()
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
+/* IA color helpers (score 0..10) */
+function iaBarColor(score) {
+    if (score >= 8) return 'bg-green-500';
+    if (score >= 4) return 'bg-yellow-400';
+    if (score > 0) return 'bg-orange-400';
+    return 'bg-gray-300 dark:bg-gray-600';
 }
 
+function iaTextColor(score) {
+    if (score >= 8) return 'text-green-600 dark:text-green-400';
+    if (score >= 4) return 'text-yellow-600 dark:text-yellow-500';
+    if (score > 0) return 'text-orange-500';
+    return 'text-gray-500 dark:text-gray-400';
+}
+
+function iaBadgeClass(score) {
+    if (score >= 8) return 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400';
+    if (score >= 4) return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-500';
+    if (score > 0) return 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400';
+    return 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400';
+}
+
+function iaLabel(score) {
+    if (score >= 10) return tl('cert.ia.verified', 'Verified by you');
+    if (score >= 8) return tl('cert.ia.high', 'High');
+    if (score >= 4) return tl('cert.ia.medium', 'Medium');
+    if (score > 0) return tl('cert.ia.low', 'Low');
+    return tl('cert.ia.unknown', 'Unknown');
+}
+
+/* Renders a 10-segment IA bar into the given element */
+function renderIABar(el, score, small) {
+    el.innerHTML = '';
+    const h = small ? 'h-1.5' : 'h-2';
+    for (let i = 1; i <= 10; i++) {
+        const seg = document.createElement('span');
+        seg.className = `flex-1 ${h} rounded-sm ${i <= score ? iaBarColor(score) : 'bg-gray-200 dark:bg-gray-700'}`;
+        el.appendChild(seg);
+    }
+}
+
+/* ------------------------------------------------------------------ */
+/* Bootstrapping                                                       */
+/* ------------------------------------------------------------------ */
+
 document.addEventListener('DOMContentLoaded', function () {
-    loadCertificates();
-    loadPendingCredentials();
-    loadOwnCertificate();
+    loadAll();
 
     setInterval(() => {
-        const importModal = document.getElementById('import-modal');
-        const detailsModal = document.getElementById('details-modal');
-        const revokeModal = document.getElementById('revoke-modal');
         const now = Date.now();
+        const anyModalOpen = ['import-modal', 'revoke-modal', 'confirm-modal'].some(id => {
+            const el = document.getElementById(id);
+            return el && !el.classList.contains('hidden');
+        });
 
-        const isAnyModalOpen = (!importModal.classList.contains('hidden')) ||
-            (!detailsModal.classList.contains('hidden')) ||
-            (!revokeModal.classList.contains('hidden'));
-
-        if (!isAnyModalOpen && (now - lastRefreshTime >= REFRESH_INTERVAL)) {
+        if (!anyModalOpen && (now - lastRefreshTime >= REFRESH_INTERVAL)) {
             lastRefreshTime = now;
-            refreshDataSilently();
+            loadAll(true);
         }
     }, 5000);
 });
 
-async function refreshDataSilently() {
+async function loadAll(silent = false) {
     try {
-        await loadPendingCredentials();
-        await loadCertificates(true);
+        await loadOwnPeer();
+        await Promise.all([loadPersons(silent), loadCertificates(silent), loadPendingCredentials()]);
+        renderPeers();
+        // keep / initialise selection
+        if (selectedPersonId && persons.some(p => p.id === selectedPersonId)) {
+            selectPeer(selectedPersonId, true);
+        } else if (persons.length > 0) {
+            selectPeer(persons[0].id, true);
+        }
     } catch (error) {
-        console.error('Silent refresh error:', error);
+        console.error('Error loading PKI data:', error);
     }
 }
 
-function refreshCertificates() {
-    trustLevelCache.clear();
-    lastRefreshTime = 0;
-    loadCertificates();
-    loadPendingCredentials();
-}
-
-async function loadOwnCertificate() {
+async function loadOwnPeer() {
     try {
         const response = await fetch('/snm-webapp/api/peer');
         if (response.ok) {
             const peers = await response.json();
             const activePeer = peers.find(p => p.active);
             if (activePeer) {
-                document.getElementById('your-peer-id').textContent = activePeer.peerId;
+                ownPeerId = activePeer.peerId;
+                const el = document.getElementById('your-peer-id');
+                if (el) el.textContent = activePeer.peerId;
             }
         }
     } catch (error) {
-        console.error('Error loading own certificate:', error);
+        console.error('Error loading own peer:', error);
+    }
+}
+
+async function loadPersons(silent = false) {
+    try {
+        const response = await fetch('/snm-webapp/api/persons');
+        if (!response.ok) throw new Error('Persons API not OK');
+        const data = await response.json();
+        persons = data.persons || [];
+    } catch (error) {
+        if (!silent) {
+            const tbody = document.getElementById('peers-tbody');
+            tbody.innerHTML = `<tr><td colspan="3" class="px-6 py-8 text-center text-red-500">Error: ${escapeHtml(error.message)}</td></tr>`;
+        }
+        persons = [];
     }
 }
 
 async function loadCertificates(silent = false) {
-    const tbody = document.getElementById('certificates-tbody');
-    if (!silent) {
-        tbody.innerHTML = '<tr><td colspan="5" class="px-6 py-8 text-center text-gray-500 dark:text-gray-400">Loading certificates...</td></tr>';
-    }
-
     try {
-        const peersResponse = await fetch('/snm-webapp/api/peer');
-        if (!peersResponse.ok) throw new Error('Peers API not OK');
-
-        const peers = await peersResponse.json();
-        const activePeer = peers.find(p => p.active);
-
-        if (!activePeer) {
-            if (!silent) tbody.innerHTML = '<tr><td colspan="5" class="px-6 py-8 text-center text-gray-500 dark:text-gray-400">No active peer found - Please login first.</td></tr>';
-            return;
-        }
-
-        const certResponse = await fetch(`/snm-webapp/api/pki/certificates?peerId=${encodeURIComponent(activePeer.peerId)}`);
+        if (!ownPeerId) return;
+        const certResponse = await fetch(`/snm-webapp/api/pki/certificates?peerId=${encodeURIComponent(ownPeerId)}`);
         if (!certResponse.ok) throw new Error('Certificate API not OK');
-
         const certData = await certResponse.json();
         certificates = certData.certificates || [];
-        displayCertificates();
-
     } catch (error) {
-        if (!silent) {
-            tbody.innerHTML = `<tr><td colspan="5" class="px-6 py-8 text-center text-red-500">Error: ${escapeHtml(error.message)}</td></tr>`;
-        }
+        if (!silent) console.error('Error loading certificates:', error);
+        certificates = [];
     }
 }
 
-function displayCertificates() {
-    const tbody = document.getElementById('certificates-tbody');
+/* ------------------------------------------------------------------ */
+/* Peers list (left column)                                            */
+/* ------------------------------------------------------------------ */
 
-    if (certificates.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="5" class="px-6 py-8 text-center text-gray-500 dark:text-gray-400">No certificates found</td></tr>';
+function latestCertFor(subjectId) {
+    const certs = certificates.filter(c => (c.subject && c.subject.id) === subjectId);
+    if (certs.length === 0) return null;
+    certs.sort((a, b) => Number(b.validUntil || 0) - Number(a.validUntil || 0));
+    return certs[0];
+}
+
+function renderPeers() {
+    const tbody = document.getElementById('peers-tbody');
+
+    if (persons.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="3" class="px-6 py-8 text-center text-gray-500 dark:text-gray-400 italic">${tl('cert.no_peers', 'No peers known yet.')}</td></tr>`;
         return;
     }
 
     tbody.innerHTML = '';
-    certificates.forEach((cert, index) => {
-        const subjectName = escapeHtml(cert.subject?.name || 'Unknown');
-        const subjectId = escapeHtml(cert.subject?.id || 'Unknown');
-        const issuerName = escapeHtml(cert.issuedBy?.name || 'Unknown');
-        const issuerId = escapeHtml(cert.issuedBy?.id || 'Unknown');
-        const validUntil = formatCertificateDate(cert.validUntil, false);
+    persons.forEach(p => {
+        const ia = (p.identityAssurance && p.identityAssurance.value) || 0;
+        const cert = latestCertFor(p.id);
+        const validUntil = cert ? formatCertificateDate(cert.validUntil, false) : '—';
+        const name = escapeHtml(p.name || 'Unknown');
+        const id = escapeHtml(p.id || '');
+        const isSelected = p.id === selectedPersonId;
 
-        const row = document.createElement('tr');
-        row.className = "hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors";
+        const tr = document.createElement('tr');
+        tr.dataset.personId = p.id;
+        tr.className = `cursor-pointer transition-colors ${isSelected ? 'bg-blue-50 dark:bg-blue-900/20' : 'hover:bg-gray-50 dark:hover:bg-gray-700/50'}`;
+        tr.onclick = () => selectPeer(p.id);
 
-        row.innerHTML = `
-            <td class="px-6 py-4">
-                <div class="font-bold text-gray-900 dark:text-white">${subjectName}</div>
-                <div class="font-mono text-xs text-gray-500 dark:text-gray-400 truncate max-w-[120px] sm:max-w-[150px]" title="${subjectId}">${subjectId}</div>
-            </td>
-            <td class="px-6 py-4">
-                <div class="font-medium text-gray-900 dark:text-gray-300">${issuerName}</div>
-                <div class="font-mono text-xs text-gray-500 dark:text-gray-400 truncate max-w-[120px] sm:max-w-[150px]" title="${issuerId}">${issuerId}</div>
-            </td>
-            <td class="px-6 py-4 text-gray-700 dark:text-gray-300 text-sm whitespace-nowrap">${validUntil}</td>
-            <td class="px-6 py-4 text-center">
-                <span class="px-2.5 py-0.5 text-xs font-bold rounded-full bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400 whitespace-nowrap" id="trust-badge-${index}">
-                    Loading...
-                </span>
-            </td>
-            <td class="px-6 py-4 text-right">
-                <div class="flex justify-end gap-2">
-                    <button class="px-3 py-1.5 text-xs bg-gray-200 hover:bg-gray-300 dark:bg-gray-600 dark:hover:bg-gray-500 rounded transition-colors font-medium text-gray-800 dark:text-gray-200" onclick="showCertificateDetails(${index})">Details</button>
-                    <button class="px-3 py-1.5 text-xs bg-red-100 hover:bg-red-200 text-red-600 dark:bg-red-900/30 dark:text-red-400 dark:hover:bg-red-900/50 rounded transition-colors font-medium" onclick="showRevokeModal('${subjectId}', '${subjectName}')">Revoke</button>
+        tr.innerHTML = `
+            <td class="px-4 md:px-6 py-3.5">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-gray-500 dark:text-gray-400 flex-shrink-0 font-semibold text-xs">${name.charAt(0).toUpperCase()}</div>
+                    <div class="min-w-0">
+                        <div class="font-semibold text-gray-900 dark:text-white truncate">${name}</div>
+                        <div class="font-mono text-xs text-gray-500 dark:text-gray-400 truncate max-w-[140px]" title="${id}">${id}</div>
+                    </div>
                 </div>
             </td>
+            <td class="px-4 md:px-6 py-3.5">
+                <div class="flex items-center gap-2.5">
+                    <div class="flex gap-0.5 w-24 flex-shrink-0" id="ia-bar-${cssSafe(p.id)}"></div>
+                    <span class="font-mono text-sm font-bold ${iaTextColor(ia)}">${ia}</span>
+                </div>
+            </td>
+            <td class="px-4 md:px-6 py-3.5 font-mono text-xs text-gray-600 dark:text-gray-300 whitespace-nowrap">${validUntil}</td>
         `;
-        tbody.appendChild(row);
-        loadTrustLevel(index, subjectId);
+        tbody.appendChild(tr);
+        renderIABar(document.getElementById(`ia-bar-${cssSafe(p.id)}`), ia, true);
     });
 }
 
-async function loadTrustLevel(index, subjectId) {
-    if (trustLevelCache.has(subjectId)) {
-        updateTrustBadge(index, trustLevelCache.get(subjectId));
+function cssSafe(id) {
+    return String(id).replace(/[^a-zA-Z0-9_-]/g, '_');
+}
+
+function filterPeers() {
+    const searchTerm = document.getElementById('peer-search').value.toLowerCase();
+    document.querySelectorAll('#peers-tbody tr').forEach(row => {
+        const text = row.textContent.toLowerCase();
+        row.style.display = text.includes(searchTerm) ? '' : 'none';
+    });
+}
+
+/* ------------------------------------------------------------------ */
+/* Detail panel (right column)                                         */
+/* ------------------------------------------------------------------ */
+
+function selectPeer(personId, keepCertIdx = false) {
+    const p = persons.find(x => x.id === personId);
+    if (!p) return;
+
+    selectedPersonId = personId;
+    if (!keepCertIdx) selectedCertIdx = 0;
+
+    // highlight row
+    document.querySelectorAll('#peers-tbody tr').forEach(row => {
+        const active = row.dataset.personId === personId;
+        row.className = `cursor-pointer transition-colors ${active ? 'bg-blue-50 dark:bg-blue-900/20' : 'hover:bg-gray-50 dark:hover:bg-gray-700/50'}`;
+    });
+
+    document.getElementById('detail-empty').style.display = 'none';
+    const content = document.getElementById('detail-content');
+    content.classList.remove('hidden');
+    content.style.display = 'flex';
+
+    const ia = (p.identityAssurance && p.identityAssurance.value) || 0;
+    const iaText = (p.identityAssurance && p.identityAssurance.explanation) || '';
+    const name = p.name || 'Unknown';
+
+    document.getElementById('detail-avatar').textContent = name.charAt(0).toUpperCase();
+    document.getElementById('detail-name').textContent = name;
+    document.getElementById('detail-peerid').textContent = p.id || '';
+
+    const scoreEl = document.getElementById('detail-score-num');
+    scoreEl.textContent = `${ia}/10`;
+    scoreEl.className = `font-mono text-xl font-bold ${iaTextColor(ia)}`;
+
+    renderIABar(document.getElementById('detail-bar'), ia, false);
+
+    const badge = document.getElementById('detail-label-badge');
+    badge.textContent = iaLabel(ia);
+    badge.className = `inline-flex px-2.5 py-0.5 rounded-full text-xs font-semibold ${iaBadgeClass(ia)}`;
+    document.getElementById('detail-label-desc').textContent = iaText;
+
+    const sf = (p.signingFailureRate !== undefined && p.signingFailureRate !== null) ? p.signingFailureRate : '—';
+    document.getElementById('detail-sf').textContent = `${sf}/10`;
+
+    renderCertCard();
+}
+
+function renderCertCard() {
+    const certs = certificates.filter(c => (c.subject && c.subject.id) === selectedPersonId);
+    const selector = document.getElementById('cert-selector');
+    const body = document.getElementById('cert-body');
+    const none = document.getElementById('cert-none');
+
+    selector.innerHTML = '';
+
+    if (certs.length === 0) {
+        body.classList.add('hidden');
+        none.classList.remove('hidden');
         return;
     }
 
-    try {
-        const response = await fetch(`/snm-webapp/api/pki/identityAssurance?subjectId=${encodeURIComponent(subjectId)}`);
-        if (response.ok) {
-            const data = await response.json();
-            const trustLevel = data.identityAssuranceText || data.identityAssurance || 'Unknown';
-            const trustBadge = getTrustBadgeTailwindClass(data.identityAssurance);
+    body.classList.remove('hidden');
+    none.classList.add('hidden');
 
-            trustLevelCache.set(subjectId, {level: trustLevel, badgeClass: trustBadge});
-            updateTrustBadge(index, trustLevelCache.get(subjectId));
-        }
-    } catch (error) {
-        trustLevelCache.set(subjectId, {
-            level: 'Error',
-            badgeClass: 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400'
+    if (selectedCertIdx >= certs.length) selectedCertIdx = 0;
+
+    // selector chips (only when several certificates exist)
+    if (certs.length > 1) {
+        certs.forEach((c, i) => {
+            const btn = document.createElement('button');
+            btn.textContent = i + 1;
+            btn.className = `w-6 h-6 rounded-md text-xs font-bold transition-colors ${i === selectedCertIdx
+                ? 'bg-blue-600 text-white'
+                : 'bg-gray-200 text-gray-600 dark:bg-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'}`;
+            btn.onclick = () => { selectedCertIdx = i; renderCertCard(); };
+            selector.appendChild(btn);
         });
-        updateTrustBadge(index, trustLevelCache.get(subjectId));
     }
+
+    const cert = certs[selectedCertIdx];
+    const subjectName = cert.subject?.name || 'Unknown';
+    const subjectId = cert.subject?.id || 'Unknown';
+    const issuerName = cert.issuedBy?.name || 'Unknown';
+    const issuerId = cert.issuedBy?.id || 'Unknown';
+
+    document.getElementById('cert-subject-name').textContent = subjectName;
+    document.getElementById('cert-subject-id').textContent = subjectId;
+    document.getElementById('cert-issuer-name').textContent = issuerName;
+    document.getElementById('cert-issuer-id').textContent = issuerId;
+    document.getElementById('cert-issuer-badge').classList.toggle('hidden', !(ownPeerId && issuerId === ownPeerId));
+    document.getElementById('cert-valid-from').textContent = formatCertificateDate(cert.validSince, false);
+    document.getElementById('cert-valid-until').textContent = formatCertificateDate(cert.validUntil, false);
+    document.getElementById('cert-fingerprint').textContent = cert.publicKeyFingerprint || tl('cert.no_fingerprint', 'Not available');
+
+    document.getElementById('cert-revoke-btn').onclick = () => showRevokeModal(subjectId, subjectName);
 }
 
-function updateTrustBadge(index, trustData) {
-    const badgeEl = document.getElementById(`trust-badge-${index}`);
-    if (badgeEl) {
-        badgeEl.textContent = trustData.level;
-        badgeEl.className = `px-2.5 py-0.5 text-xs font-bold rounded-full whitespace-nowrap ${trustData.badgeClass}`;
-    }
-}
-
-function getTrustBadgeTailwindClass(ia) {
-    if (ia === undefined || ia === null) return 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400';
-    if (ia >= 8) return 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400';
-    if (ia >= 4) return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-500';
-    return 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400';
-}
+/* ------------------------------------------------------------------ */
+/* Pending credentials                                                 */
+/* ------------------------------------------------------------------ */
 
 async function loadPendingCredentials() {
     try {
@@ -244,28 +371,45 @@ function displayPendingCredentials() {
     countBadge.textContent = pendingCredentials.length;
 
     if (pendingCredentials.length === 0) {
-        container.innerHTML = '<div class="text-gray-500 dark:text-gray-400 text-sm italic py-4 text-center border border-dashed border-gray-300 dark:border-gray-700 rounded-lg">No pending credential requests</div>';
+        container.innerHTML = `<div class="text-gray-500 dark:text-gray-400 text-sm italic py-2 text-center">${tl('cert.no_pending', 'No pending credential requests')}</div>`;
         return;
     }
 
     container.innerHTML = '';
     pendingCredentials.forEach((cred, index) => {
-        const sender = escapeHtml(cred.credential?.name || cred.credential?.id || 'Unknown Sender');
+        const name = escapeHtml(cred.credential?.name || 'Unknown Sender');
+        const id = escapeHtml(cred.credential?.id || '');
 
         const credDiv = document.createElement('div');
-        credDiv.className = 'flex flex-col sm:flex-row justify-between items-start sm:items-center p-4 border border-gray-200 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-800/50 gap-4';
+        credDiv.className = 'bg-white dark:bg-gray-800 border border-amber-200 dark:border-amber-500/30 rounded-lg p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3';
 
         credDiv.innerHTML = `
-            <div class="w-full">
-                <div class="font-bold text-gray-900 dark:text-white break-all">${sender}</div>
-                <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">Standard Credential Request</div>
+            <div class="flex items-center gap-3 min-w-0">
+                <div class="w-9 h-9 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-gray-500 dark:text-gray-400 flex-shrink-0">
+                    <i class="fas fa-user text-sm"></i>
+                </div>
+                <div class="min-w-0">
+                    <div class="font-semibold text-sm text-gray-900 dark:text-white truncate">${name}</div>
+                    <div class="font-mono text-xs text-gray-500 dark:text-gray-400 truncate">${id}</div>
+                </div>
             </div>
-            <div class="flex gap-2 w-full sm:w-auto">
-                <button class="flex-1 sm:flex-none bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors" onclick="acceptCredential(${index})">Accept</button>
-                <button class="flex-1 sm:flex-none bg-red-100 hover:bg-red-200 text-red-600 dark:bg-red-900/30 dark:text-red-400 dark:hover:bg-red-900/50 px-4 py-2 rounded-lg text-sm font-medium transition-colors" onclick="refuseCredential(${index})">Refuse</button>
+            <div class="flex gap-2 flex-shrink-0 w-full sm:w-auto">
+                <button class="flex-1 sm:flex-none bg-green-600 hover:bg-green-700 text-white px-4 py-1.5 rounded-md text-sm font-semibold transition-colors" onclick="confirmAcceptCredential(${index})">${tl('cert.accept', 'Accept')}</button>
+                <button class="flex-1 sm:flex-none bg-white dark:bg-gray-800 border border-red-400 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 px-4 py-1.5 rounded-md text-sm font-semibold transition-colors" onclick="refuseCredential(${index})">${tl('cert.decline', 'Decline')}</button>
             </div>
         `;
         container.appendChild(credDiv);
+    });
+}
+
+function confirmAcceptCredential(index) {
+    const cred = pendingCredentials[index];
+    const name = cred?.credential?.name || 'this peer';
+    openConfirmModal({
+        title: tl('cert.confirm.accept_title', 'Accept credential?'),
+        message: tl('cert.confirm.accept_msg', 'By accepting you certify that this key really belongs to') + ' "' + name + '". ' + tl('cert.confirm.accept_msg2', 'Other peers may rely on your judgment.'),
+        confirmLabel: tl('cert.accept', 'Accept'),
+        onConfirm: () => acceptCredential(index)
     });
 }
 
@@ -274,9 +418,7 @@ async function acceptCredential(index) {
         const cred = pendingCredentials[index];
         const response = await fetch(`/snm-webapp/api/pki/pendingCredentials/accept?index=${cred.index}`, {method: 'POST'});
         if (response.ok) {
-            trustLevelCache.clear();
-            await loadPendingCredentials();
-            await loadCertificates();
+            await loadAll();
         } else {
             throw new Error('Failed to accept credential');
         }
@@ -299,61 +441,13 @@ async function refuseCredential(index) {
     }
 }
 
-// --- Action Modals ---
-
-function showCertificateDetails(index) {
-    const cert = certificates[index];
-    const detailsDiv = document.getElementById('certificate-details');
-
-    const subjectName = escapeHtml(cert.subject?.name || 'Unknown');
-    const subjectId = escapeHtml(cert.subject?.id || 'Unknown');
-    const issuerName = escapeHtml(cert.issuedBy?.name || 'Unknown');
-    const issuerId = escapeHtml(cert.issuedBy?.id || 'Unknown');
-    const validSince = formatCertificateDate(cert.validSince, true);
-    const validUntil = formatCertificateDate(cert.validUntil, true);
-    const fingerprint = escapeHtml(cert.publicKeyFingerprint || 'Not available');
-
-    // Using grid & break-all to ensure long hashes don't break the modal width on mobile
-    detailsDiv.innerHTML = `
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-y-4 gap-x-6 w-full">
-            <div class="w-full">
-                <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">Subject Name</span>
-                <div class="font-medium text-gray-900 dark:text-white break-all">${subjectName}</div>
-            </div>
-            <div class="w-full">
-                <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">Subject ID</span>
-                <div class="font-mono text-xs break-all bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-300 p-2 rounded border border-gray-200 dark:border-gray-700">${subjectId}</div>
-            </div>
-            <div class="w-full">
-                <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">Issuer Name</span>
-                <div class="font-medium text-gray-900 dark:text-white break-all">${issuerName}</div>
-            </div>
-            <div class="w-full">
-                <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">Issuer ID</span>
-                <div class="font-mono text-xs break-all bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-300 p-2 rounded border border-gray-200 dark:border-gray-700">${issuerId}</div>
-            </div>
-            <div class="w-full">
-                <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">Valid From</span>
-                <div class="text-gray-900 dark:text-white">${validSince}</div>
-            </div>
-            <div class="w-full">
-                <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">Valid Until</span>
-                <div class="text-gray-900 dark:text-white">${validUntil}</div>
-            </div>
-            <div class="sm:col-span-2 w-full">
-                <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">Public Key Fingerprint</span>
-                <div class="font-mono text-xs break-all bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-300 p-2.5 rounded border border-gray-200 dark:border-gray-700">${fingerprint}</div>
-            </div>
-        </div>
-    `;
-
-    document.getElementById('details-modal').classList.remove('hidden');
-}
+/* ------------------------------------------------------------------ */
+/* Actions & modals                                                    */
+/* ------------------------------------------------------------------ */
 
 function exportOwnCertificate() {
-    const peerId = document.getElementById('your-peer-id').textContent;
-    if (peerId && peerId !== 'Loading...') {
-        navigator.clipboard.writeText(`SharkNet Peer ID: ${peerId}`).then(() => {
+    if (ownPeerId) {
+        navigator.clipboard.writeText(`SharkNet Peer ID: ${ownPeerId}`).then(() => {
             alert('Peer ID copied to clipboard!');
         });
     }
@@ -382,8 +476,7 @@ async function revokeCertificate() {
         const response = await fetch(`/snm-webapp/api/pki/revokeCertificate?subjectId=${encodeURIComponent(subjectId)}`, {method: 'POST'});
         if (response.ok) {
             hideRevokeModal();
-            trustLevelCache.clear();
-            await loadCertificates();
+            await loadAll();
         } else {
             throw new Error('Failed to revoke certificate');
         }
@@ -392,92 +485,25 @@ async function revokeCertificate() {
     }
 }
 
-// --- Filtering logic ---
+/* Generic confirmation modal for trust-changing actions */
+let _confirmCallback = null;
 
-function filterCertificates() {
-    const searchTerm = document.getElementById('certificate-search').value.toLowerCase();
-    const rows = document.querySelectorAll('#certificates-tbody tr');
-
-    rows.forEach(row => {
-        const text = row.textContent.toLowerCase();
-        row.style.display = text.includes(searchTerm) ? '' : 'none';
-    });
+function openConfirmModal({title, message, confirmLabel, onConfirm}) {
+    document.getElementById('cm-title').textContent = title;
+    document.getElementById('cm-message').textContent = message;
+    const btn = document.getElementById('cm-confirm-btn');
+    btn.textContent = confirmLabel;
+    _confirmCallback = onConfirm;
+    btn.onclick = () => {
+        closeConfirmModal();
+        if (_confirmCallback) _confirmCallback();
+    };
+    document.getElementById('confirm-modal').classList.remove('hidden');
 }
 
-function onFilterTypeChange() {
-    const type = document.getElementById('filter-type').value;
-
-    document.getElementById('issuer-filter').classList.add('hidden');
-    document.getElementById('subject-filter').classList.add('hidden');
-    document.getElementById('trust-filter').classList.add('hidden');
-
-    if (type === 'issuer') {
-        document.getElementById('issuer-filter').classList.remove('hidden');
-        loadDropdownOptions('issuer-select');
-    } else if (type === 'subject') {
-        document.getElementById('subject-filter').classList.remove('hidden');
-        loadDropdownOptions('subject-select');
-    } else if (type === 'trust') {
-        document.getElementById('trust-filter').classList.remove('hidden');
-    }
+function closeConfirmModal() {
+    document.getElementById('confirm-modal').classList.add('hidden');
 }
-
-async function loadDropdownOptions(elementId) {
-    try {
-        const response = await fetch('/snm-webapp/api/persons');
-        if (!response.ok) return;
-        const data = await response.json();
-        const select = document.getElementById(elementId);
-
-        select.innerHTML = `<option value="">All ${elementId.includes('issuer') ? 'Issuers' : 'Subjects'}</option>`;
-        if (data.persons) {
-            data.persons.forEach(p => {
-                select.innerHTML += `<option value="${escapeHtml(p.id)}">${escapeHtml(p.name || p.id)}</option>`;
-            });
-        }
-    } catch (e) {
-        console.error('Dropdown load error', e);
-    }
-}
-
-async function applyFilter() {
-    const type = document.getElementById('filter-type').value;
-    if (type === 'all') {
-        clearFilter();
-        return;
-    }
-
-    let url = '/snm-webapp/api/pki/certificates';
-    let params = new URLSearchParams();
-
-    if (type === 'issuer') {
-        url = '/snm-webapp/api/pki/certsByIssuer';
-        const val = document.getElementById('issuer-select').value;
-        if (val) params.append('issuerId', val);
-    } else if (type === 'subject') {
-        url = '/snm-webapp/api/pki/certsBySubject';
-        const val = document.getElementById('subject-select').value;
-        if (val) params.append('subjectId', val);
-    }
-
-    try {
-        const response = await fetch(params.toString() ? `${url}?${params.toString()}` : url);
-        if (!response.ok) throw new Error('Filter failed');
-        const data = await response.json();
-        certificates = data.certificates || [];
-        displayCertificates();
-    } catch (e) {
-        console.error(e);
-    }
-}
-
-function clearFilter() {
-    document.getElementById('filter-type').value = 'all';
-    onFilterTypeChange();
-    loadCertificates();
-}
-
-// --- Modal Display Toggles ---
 
 function showImportModal() {
     document.getElementById('import-modal').classList.remove('hidden');
@@ -485,10 +511,6 @@ function showImportModal() {
 
 function hideImportModal() {
     document.getElementById('import-modal').classList.add('hidden');
-}
-
-function hideDetailsModal() {
-    document.getElementById('details-modal').classList.add('hidden');
 }
 
 function showRevokeModal(id, name) {
@@ -505,6 +527,6 @@ function hideRevokeModal() {
 
 window.onclick = function (event) {
     if (event.target === document.getElementById('import-modal')) hideImportModal();
-    if (event.target === document.getElementById('details-modal')) hideDetailsModal();
     if (event.target === document.getElementById('revoke-modal')) hideRevokeModal();
+    if (event.target === document.getElementById('confirm-modal')) closeConfirmModal();
 }

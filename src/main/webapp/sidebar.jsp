@@ -39,11 +39,6 @@
         <span class="sidebar-text transition-opacity duration-200" data-i18n="nav.network">Network Status</span>
     </a>
 
-    <a href="hubs.jsp" class="flex items-center gap-4 px-3 py-3 rounded-lg font-medium transition-colors duration-200 whitespace-nowrap ${activePage == 'hubs' ? 'bg-primary-500 text-white shadow-md' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'}">
-        <span class="text-xl w-8 text-center flex-shrink-0"><i class="fas fa-satellite-dish"></i></span>
-        <span class="sidebar-text transition-opacity duration-200" data-i18n="nav.hubs">ASAP Hubs</span>
-    </a>
-
     <a href="settings.jsp" class="flex items-center gap-4 px-3 py-3 rounded-lg font-medium transition-colors duration-200 whitespace-nowrap ${activePage == 'settings' ? 'bg-primary-500 text-white shadow-md' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'}">
         <span class="text-xl w-8 text-center flex-shrink-0"><i class="fas fa-cog"></i></span>
         <span class="sidebar-text transition-opacity duration-200" data-i18n="nav.settings">Settings</span>
