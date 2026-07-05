@@ -55,6 +55,23 @@
                 <%-- ============================== TAB: TCP ============================== --%>
                 <div id="panel-tcp" class="space-y-4 md:space-y-6">
 
+                    <%-- Encounter status strip (data from /api/peer/status) --%>
+                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4 flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="w-9 h-9 rounded-lg bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 flex items-center justify-center">
+                                <i class="fas fa-handshake"></i>
+                            </div>
+                            <div>
+                                <div class="font-semibold text-sm" data-i18n="net.encounter_status">Encounter Status</div>
+                                <div class="text-xs text-gray-500 dark:text-gray-400" data-i18n="net.encounters_desc">Peer encounters tracked in this session</div>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse inline-block"></span>
+                            <span id="encounters-count" class="font-mono text-xl font-bold">–</span>
+                        </div>
+                    </div>
+
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
 
                         <%-- Option A: Open Port --%>
@@ -148,6 +165,28 @@
 
                 <%-- ============================== TAB: HUB ============================== --%>
                 <div id="panel-hub" class="hidden space-y-4 md:space-y-6">
+
+                    <%-- Hub connection counters, split in two (data from /api/peer/status) --%>
+                    <div class="grid grid-cols-2 gap-4 md:gap-6">
+                        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4 flex items-center gap-3">
+                            <div class="w-9 h-9 rounded-lg bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400 flex items-center justify-center flex-shrink-0">
+                                <i class="fas fa-link"></i>
+                            </div>
+                            <div class="min-w-0">
+                                <div id="hubs-connected-count" class="font-mono text-xl font-bold leading-tight">–</div>
+                                <div class="text-xs text-gray-500 dark:text-gray-400 truncate" data-i18n="hubs.connected_count">Connected hubs</div>
+                            </div>
+                        </div>
+                        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4 flex items-center gap-3">
+                            <div class="w-9 h-9 rounded-lg bg-red-50 dark:bg-red-900/30 text-red-500 dark:text-red-400 flex items-center justify-center flex-shrink-0">
+                                <i class="fas fa-unlink"></i>
+                            </div>
+                            <div class="min-w-0">
+                                <div id="hubs-failed-count" class="font-mono text-xl font-bold leading-tight">–</div>
+                                <div class="text-xs text-gray-500 dark:text-gray-400 truncate" data-i18n="hubs.failed_count">Failed connections</div>
+                            </div>
+                        </div>
+                    </div>
 
                     <%-- Connected Hub Summary Card (backend pending: sync/state per hub) --%>
                     <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4 md:p-6 opacity-60" title="Requires backend support">
@@ -274,10 +313,49 @@
             try { localStorage.setItem('snm-net-tab', tab); } catch (e) { /* ignore */ }
         }
 
+        /**
+         * Human readable relative age from a millisecond timestamp.
+         * @param {number} ms - Epoch milliseconds
+         * @return {string} e.g. "14 min ago" ('' if invalid)
+         */
+        function netRelativeAge(ms) {
+            if (!ms || isNaN(ms)) return '';
+            const diffSec = Math.max(0, Math.floor((Date.now() - Number(ms)) / 1000));
+            if (diffSec < 60) return tl('time.now', 'now');
+            if (diffSec < 3600) return Math.floor(diffSec / 60) + ' ' + tl('time.min', 'min ago');
+            if (diffSec < 86400) return Math.floor(diffSec / 3600) + ' ' + tl('time.hr', 'h ago');
+            return Math.floor(diffSec / 86400) + ' ' + tl('time.day', 'd ago');
+        }
+
+        /**
+         * Fetches peer status (encounters + hub connection counters)
+         * from /api/peer/status/{peerId} and updates the stat widgets.
+         * @return {void}
+         */
+        function loadPeerStatus() {
+            if (!window.currentActivePeerId) return;
+
+            fetch('/snm-webapp/api/peer/status/' + encodeURIComponent(window.currentActivePeerId))
+            .then(r => { if (!r.ok) throw new Error('status ' + r.status); return r.json(); })
+            .then(data => {
+                const enc = (data.encounterStatus && data.encounterStatus.encountersTracked);
+                const hubs = data.hubConnections || {};
+                const set = (id, val) => {
+                    const el = document.getElementById(id);
+                    if (el) el.textContent = (val !== undefined && val !== null) ? val : '–';
+                };
+                set('encounters-count', enc);
+                set('hubs-connected-count', hubs.hubsConnected);
+                set('hubs-failed-count', hubs.failedToConnect);
+            })
+            .catch(err => console.error('Error loading peer status:', err));
+        }
+
         /** Refreshes data for both tabs */
         function refreshAll() {
             refreshData();
             loadActiveHubs();
+            loadPeerStatus();
         }
 
         /**
@@ -334,7 +412,10 @@
                                 </div>
                             </td>
                             <td class="px-6 py-4 font-mono">\${conn.remotePort || '-'}</td>
-                            <td class="px-6 py-4"><span class="px-2.5 py-0.5 bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400 text-xs font-bold rounded-full">\${tl("net.status.connected", "Connected")}</span></td>
+                            <td class="px-6 py-4">
+                                <span class="px-2.5 py-0.5 bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400 text-xs font-bold rounded-full">\${tl("net.status.connected", "Connected")}</span>
+                                \${conn.timestamp ? `<div class="text-[0.7rem] text-gray-400 dark:text-gray-500 mt-1">\${netRelativeAge(conn.timestamp)}</div>` : ''}
+                            </td>
                             <td class="px-6 py-4 text-right">
                                 <button class="px-3 py-1.5 text-xs bg-white dark:bg-gray-800 border border-red-400 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-md transition-colors font-semibold" onclick="closePort(\${conn.remotePort})">\${tl("net.disconnect", "Disconnect")}</button>
                             </td>
@@ -517,6 +598,9 @@
 
         // Fallback execution check loops mapping contexts
         setTimeout(() => { if (window.currentActivePeerId) refreshAll(); }, 500);
+
+        // Live monitoring: auto-refresh both tabs every 15 seconds
+        setInterval(() => { if (window.currentActivePeerId) refreshAll(); }, 15000);
     </script>
 </body>
 </html>

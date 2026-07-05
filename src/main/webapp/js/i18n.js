@@ -403,7 +403,15 @@ const translations = {
         "time.now": "now",
         "time.min": "min ago",
         "time.hr": "h ago",
-        "time.day": "d ago"
+        "time.day": "d ago",
+        "time.today": "Today",
+        "time.yesterday": "Yesterday",
+
+        // Network status widgets (Phase 2a)
+        "net.encounter_status": "Encounter Status",
+        "net.encounters_desc": "Peer encounters tracked in this session",
+        "hubs.connected_count": "Connected hubs",
+        "hubs.failed_count": "Failed connections"
     },
 
 
@@ -806,7 +814,15 @@ const translations = {
         "time.now": "jetzt",
         "time.min": "Min.",
         "time.hr": "Std.",
-        "time.day": "T."
+        "time.day": "T.",
+        "time.today": "Heute",
+        "time.yesterday": "Gestern",
+
+        // Network status widgets (Phase 2a)
+        "net.encounter_status": "Encounter-Status",
+        "net.encounters_desc": "In dieser Sitzung erfasste Peer-Begegnungen",
+        "hubs.connected_count": "Verbundene Hubs",
+        "hubs.failed_count": "Fehlgeschlagene Verbindungen"
     },
     tr: {
         // Common
@@ -1206,7 +1222,15 @@ const translations = {
         "time.now": "şimdi",
         "time.min": "dk önce",
         "time.hr": "sa önce",
-        "time.day": "gün önce"
+        "time.day": "gün önce",
+        "time.today": "Bugün",
+        "time.yesterday": "Dün",
+
+        // Network status widgets (Phase 2a)
+        "net.encounter_status": "Karşılaşma Durumu",
+        "net.encounters_desc": "Bu oturumda izlenen eş karşılaşmaları",
+        "hubs.connected_count": "Bağlı hub'lar",
+        "hubs.failed_count": "Başarısız bağlantılar"
     },
     ar: {
         // Common
@@ -1606,7 +1630,15 @@ const translations = {
         "time.now": "الآن",
         "time.min": "د",
         "time.hr": "س",
-        "time.day": "يوم"
+        "time.day": "يوم",
+        "time.today": "اليوم",
+        "time.yesterday": "أمس",
+
+        // Network status widgets (Phase 2a)
+        "net.encounter_status": "حالة اللقاءات",
+        "net.encounters_desc": "لقاءات النظراء المتتبعة في هذه الجلسة",
+        "hubs.connected_count": "موزّعات متصلة",
+        "hubs.failed_count": "اتصالات فاشلة"
     }
 };
 
