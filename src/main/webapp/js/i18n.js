@@ -406,6 +406,8 @@ const translations = {
         "time.day": "d ago",
         "time.today": "Today",
         "time.yesterday": "Yesterday",
+        "msg.encrypt_needs_receiver": "Encryption requires a specific receiver - select a peer instead of 'Anyone'",
+        "msg.encrypt_tip": "Encrypt so only the selected receiver can read the message",
 
         // Network status widgets (Phase 2a)
         "net.encounter_status": "Encounter Status",
@@ -817,6 +819,8 @@ const translations = {
         "time.day": "T.",
         "time.today": "Heute",
         "time.yesterday": "Gestern",
+        "msg.encrypt_needs_receiver": "Verschlüsselung erfordert einen bestimmten Empfänger - wähle einen Peer statt 'Anyone'",
+        "msg.encrypt_tip": "Verschlüsseln, sodass nur der gewählte Empfänger die Nachricht lesen kann",
 
         // Network status widgets (Phase 2a)
         "net.encounter_status": "Encounter-Status",
@@ -1225,6 +1229,8 @@ const translations = {
         "time.day": "gün önce",
         "time.today": "Bugün",
         "time.yesterday": "Dün",
+        "msg.encrypt_needs_receiver": "Şifreleme belirli bir alıcı gerektirir - 'Anyone' yerine bir eş seçin",
+        "msg.encrypt_tip": "Yalnızca seçilen alıcının okuyabilmesi için şifreleyin",
 
         // Network status widgets (Phase 2a)
         "net.encounter_status": "Karşılaşma Durumu",
@@ -1633,6 +1639,8 @@ const translations = {
         "time.day": "يوم",
         "time.today": "اليوم",
         "time.yesterday": "أمس",
+        "msg.encrypt_needs_receiver": "التشفير يتطلب مستلماً محدداً - اختر نظيراً بدل 'Anyone'",
+        "msg.encrypt_tip": "شفّر بحيث لا يقرأ الرسالة إلا المستلم المحدد",
 
         // Network status widgets (Phase 2a)
         "net.encounter_status": "حالة اللقاءات",
