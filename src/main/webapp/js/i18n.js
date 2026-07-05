@@ -404,6 +404,8 @@ const translations = {
         "time.min": "min ago",
         "time.hr": "h ago",
         "time.day": "d ago",
+        "time.today": "Today",
+        "time.yesterday": "Yesterday",
 
         // Network status widgets (Phase 2a)
         "net.encounter_status": "Encounter Status",
@@ -813,6 +815,8 @@ const translations = {
         "time.min": "Min.",
         "time.hr": "Std.",
         "time.day": "T.",
+        "time.today": "Heute",
+        "time.yesterday": "Gestern",
 
         // Network status widgets (Phase 2a)
         "net.encounter_status": "Encounter-Status",
@@ -1219,6 +1223,8 @@ const translations = {
         "time.min": "dk önce",
         "time.hr": "sa önce",
         "time.day": "gün önce",
+        "time.today": "Bugün",
+        "time.yesterday": "Dün",
 
         // Network status widgets (Phase 2a)
         "net.encounter_status": "Karşılaşma Durumu",
@@ -1625,6 +1631,8 @@ const translations = {
         "time.min": "د",
         "time.hr": "س",
         "time.day": "يوم",
+        "time.today": "اليوم",
+        "time.yesterday": "أمس",
 
         // Network status widgets (Phase 2a)
         "net.encounter_status": "حالة اللقاءات",

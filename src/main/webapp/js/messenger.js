@@ -318,6 +318,31 @@ function relativeAge(timestamp) {
 }
 
 /**
+ * Formats a message timestamp as "Today HH:MM", "Yesterday HH:MM"
+ * or "DD.MM.YYYY HH:MM" for older messages (no milliseconds).
+ * For today's messages the relative age is appended.
+ * @param {string} timestamp - Server format "yyyy-MM-dd HH:mm:ss.SSS"
+ * @return {string} HTML-safe display string
+ */
+function formatMsgDayTime(timestamp) {
+    if (!timestamp) return '';
+    const date = new Date(timestamp.replace(' ', 'T'));
+    if (isNaN(date.getTime())) return escapeHtml(timestamp);
+
+    const hhmm = date.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
+    const startOfDay = d => new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
+    const diffDays = Math.round((startOfDay(new Date()) - startOfDay(date)) / 86400000);
+
+    if (diffDays === 0) {
+        return `${t('time.today', 'Today')} ${hhmm} <span class="text-gray-400">&middot; ${relativeAge(timestamp)}</span>`;
+    }
+    if (diffDays === 1) {
+        return `${t('time.yesterday', 'Yesterday')} ${hhmm}`;
+    }
+    return `${date.toLocaleDateString()} ${hhmm}`;
+}
+
+/**
  * Returns true if any hop of the message travelled over a direct TCP link.
  * @param {Object} msg - Message object (server JSON)
  * @return {boolean}
@@ -406,8 +431,7 @@ function renderMessages(messages, searchTerm = '') {
         line.innerHTML = `
             <div class="mb-4 max-w-[85%] ${isMe ? 'ml-auto text-right' : 'mr-auto text-left'}">
                 <div class="text-[0.7rem] text-gray-500 dark:text-gray-400 mb-1 px-1">
-                    <span title="${escapeHtml(msg.timestamp)}">${escapeHtml(msg.timestamp.split(' ')[1] || msg.timestamp)}</span>
-                    <span class="text-gray-400">&middot; ${relativeAge(msg.timestamp)}</span>
+                    <span title="${escapeHtml(msg.timestamp)}">${formatMsgDayTime(msg.timestamp)}</span>
                     - ${escapeHtml(msg.sender)}
                     ${msg.edited ? '<span class="italic text-gray-400 text-[0.65rem] ml-1">(edited)</span>' : ''}
                 </div>
