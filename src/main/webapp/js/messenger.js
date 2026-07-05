@@ -44,6 +44,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Hide context menu on global click
     document.addEventListener('click', hideContextMenu);
+
+    // Encryption is only possible with a specific receiver
+    const receiverSelect = document.getElementById('message-receiver');
+    if (receiverSelect) {
+        receiverSelect.addEventListener('change', updateEncryptAvailability);
+    }
+    updateEncryptAvailability();
 });
 
 // Hide Create Modal if clicked outside
@@ -573,9 +580,44 @@ function cancelEditMode() {
  * Gathers input and sends (or updates) a message.
  * @return {Promise<void>}
  */
+/**
+ * Encryption requires a specific receiver (their certificate is used as
+ * the encryption key). When "Anyone" is selected, encryption is impossible,
+ * so the Encrypt checkbox is disabled and unchecked.
+ * @return {void}
+ */
+function updateEncryptAvailability() {
+    const receiver = document.getElementById('message-receiver');
+    const encrypt = document.getElementById('encrypt-message');
+    if (!receiver || !encrypt) return;
+
+    const isBroadcast = (receiver.value || 'ANY_SHARKNET_PEER') === 'ANY_SHARKNET_PEER';
+    const label = encrypt.closest('label');
+
+    encrypt.disabled = isBroadcast;
+    if (isBroadcast) {
+        encrypt.checked = false;
+        if (label) {
+            label.classList.add('opacity-50', 'cursor-not-allowed');
+            label.title = t('msg.encrypt_needs_receiver', "Encryption requires a specific receiver - select a peer instead of 'Anyone'");
+        }
+    } else if (label) {
+        label.classList.remove('opacity-50', 'cursor-not-allowed');
+        label.title = t('msg.encrypt_tip', 'Encrypt so only the selected receiver can read the message');
+    }
+}
+
 async function sendMessage() {
     if (currentChannelState.index === null || currentChannelState.index === undefined) {
         alert('Please select a channel from the list first.');
+        return;
+    }
+
+    // Safety net: never send encrypted broadcasts (no certificate for "Anyone")
+    const receiverVal = document.getElementById('message-receiver')?.value || 'ANY_SHARKNET_PEER';
+    const encryptEl = document.getElementById('encrypt-message');
+    if (encryptEl?.checked && receiverVal === 'ANY_SHARKNET_PEER') {
+        alert(t('msg.encrypt_needs_receiver', "Encryption requires a specific receiver - select a peer instead of 'Anyone'"));
         return;
     }
 
