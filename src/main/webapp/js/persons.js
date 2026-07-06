@@ -172,12 +172,12 @@ async function renamePerson() {
     const newName = document.getElementById('new-name').value.trim();
 
     if (!newName) {
-        alert('Please enter a new name');
+        showToast('warning', 'Please enter a new name');
         return;
     }
 
     if (newName === oldName) {
-        alert('New name must be different from current name');
+        showToast('warning', 'New name must be different from current name');
         return;
     }
 
@@ -196,16 +196,16 @@ async function renamePerson() {
         const result = await response.json();
 
         if (response.ok) {
-            alert('Person renamed successfully!');
+            showToast('success', 'Person renamed successfully!');
             hideRenameModal();
             loadPersons(); // Refresh the list
         } else {
-            alert('Error: ' + (result.error || 'Failed to rename person'));
+            showToast('error', 'Error: ' + (result.error || 'Failed to rename person'));
         }
 
     } catch (error) {
         console.error('Error renaming person:', error);
-        alert('Failed to rename person. Please try again.');
+        showToast('error', 'Failed to rename person. Please try again.');
     }
 }
 
@@ -214,7 +214,7 @@ function showPersonDetails(personId) {
     const person = persons.find(p => p.id === personId);
 
     if (!person) {
-        alert('Person not found');
+        showToast('error', 'Person not found');
         return;
     }
 

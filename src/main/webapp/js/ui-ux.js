@@ -221,3 +221,84 @@ document.addEventListener('click', function (e) {
         hideLogoutModal();
     }
 });
+
+/* ==================================================================== */
+/* Toast Notification System                                            */
+/* Styled after the logout modal design language: circular icon badge,  */
+/* dark:bg-dark-card surface, soft shadow, smooth transitions.          */
+/* Replaces the native alert() so every legacy call is styled too.      */
+/* ==================================================================== */
+
+const SNM_TOAST_STYLES = {
+    success: {icon: 'fa-check', badge: 'bg-green-100 dark:bg-green-900/30 text-green-500'},
+    error: {icon: 'fa-exclamation-triangle', badge: 'bg-red-100 dark:bg-red-900/30 text-red-500'},
+    warning: {icon: 'fa-exclamation', badge: 'bg-amber-100 dark:bg-amber-900/30 text-amber-500'},
+    info: {icon: 'fa-info', badge: 'bg-blue-100 dark:bg-blue-900/30 text-blue-500'}
+};
+
+/**
+ * Lazily creates the fixed toast container (top right, below the header).
+ * @return {HTMLElement} The container element
+ */
+function ensureToastContainer() {
+    let container = document.getElementById('snm-toast-container');
+    if (!container) {
+        container = document.createElement('div');
+        container.id = 'snm-toast-container';
+        container.className = 'fixed top-20 right-4 z-[120] flex flex-col gap-2 items-end pointer-events-none';
+        document.body.appendChild(container);
+    }
+    return container;
+}
+
+/**
+ * Shows a styled toast notification.
+ * Usage: showToast('success', 'Saved!') or showToast('Message')
+ * (type is then guessed from the message text).
+ *
+ * @param {string} type - 'success' | 'error' | 'warning' | 'info' (optional)
+ * @param {string} message - The text to display (rendered as plain text, XSS-safe)
+ * @param {number} duration - Auto-dismiss in ms (0 = stays open), default 4000
+ * @return {HTMLElement} The toast element
+ */
+function showToast(type, message, duration = 4000) {
+    if (message === undefined) {
+        message = type;
+        type = null;
+    }
+    if (!type || !SNM_TOAST_STYLES[type]) {
+        type = /error|fail|cannot|could not|invalid|missing|not found|denied|خطأ|فشل|hata|fehler/i.test(String(message)) ? 'error' : 'success';
+    }
+    const style = SNM_TOAST_STYLES[type];
+
+    const toast = document.createElement('div');
+    toast.className = 'pointer-events-auto w-80 max-w-[calc(100vw-2rem)] bg-white dark:bg-dark-card border border-gray-200 dark:border-dark-border rounded-xl shadow-2xl flex items-start gap-3 p-4 transform transition-all duration-300 opacity-0 translate-x-4';
+    toast.innerHTML = `
+        <div class="w-10 h-10 rounded-full ${style.badge} flex items-center justify-center text-base shadow-sm flex-shrink-0">
+            <i class="fas ${style.icon}"></i>
+        </div>
+        <div class="flex-1 min-w-0 text-sm text-gray-700 dark:text-gray-200 leading-relaxed pt-2 break-words"></div>
+        <button class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors flex-shrink-0 pt-1" aria-label="Close">
+            <i class="fas fa-times"></i>
+        </button>`;
+
+    // textContent keeps arbitrary backend messages XSS-safe
+    toast.children[1].textContent = String(message);
+
+    const close = () => {
+        toast.classList.add('opacity-0', 'translate-x-4');
+        setTimeout(() => toast.remove(), 300);
+    };
+    toast.querySelector('button').addEventListener('click', close);
+
+    ensureToastContainer().appendChild(toast);
+    requestAnimationFrame(() => toast.classList.remove('opacity-0', 'translate-x-4'));
+
+    if (duration > 0) setTimeout(close, duration);
+    return toast;
+}
+
+// Route every legacy alert() call through the styled toast
+window.alert = function (message) {
+    showToast(null, String(message));
+};

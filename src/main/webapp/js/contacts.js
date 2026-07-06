@@ -115,7 +115,7 @@ function submitNewPeer() {
     const name = nameInput ? nameInput.value.trim() : '';
 
     if (!name) {
-        alert('Peer Name is required');
+        showToast('warning', 'Peer Name is required');
         if (nameInput) nameInput.focus();
         return;
     }
@@ -126,7 +126,7 @@ function submitNewPeer() {
         body: JSON.stringify({name: name})
     })
         .then(() => location.reload())
-        .catch(err => alert("Error creating peer: " + err));
+        .catch(err => showToast('error', "Error creating peer: " + err));
 }
 
 // Event Listeners Initialization

@@ -437,7 +437,7 @@
             const portInput = document.getElementById('newTcpPort');
             const port = portInput.value;
             if (!port) {
-                alert(tl("net.alert.port", "Please enter a port number."));
+                showToast('warning', tl("net.alert.port", "Please enter a port number."));
                 return;
             }
 
@@ -449,10 +449,10 @@
                     port: parseInt(port)
                 })
             }).then(r => r.json()).then(data => {
-                alert(data.msg);
+                showToast(null, data.msg);
                 refreshAll();
             }).catch(err => {
-                alert("Error opening port: " + err.message);
+                showToast('error', "Error opening port: " + err.message);
             });
         }
 
@@ -465,7 +465,7 @@
             const port = document.getElementById('peerPort').value;
 
             if (!host || !port) {
-                alert(tl("net.alert.address_port", "Please enter both address and port."));
+                showToast('warning', tl("net.alert.address_port", "Please enter both address and port."));
                 return;
             }
 
@@ -481,10 +481,10 @@
                 if (r.ok) return r.json();
                 throw new Error("Connection failed");
             }).then(data => {
-                alert(data.msg);
+                showToast(null, data.msg);
                 refreshAll();
             }).catch(err => {
-                alert(err.message);
+                showToast('error', err.message);
             });
         }
 
@@ -501,10 +501,10 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ peerId: window.currentActivePeerId, port: port })
             }).then(r => r.json()).then(data => {
-                alert(data.msg);
+                showToast(null, data.msg);
                 refreshAll();
             }).catch(err => {
-                alert("Error closing port: " + err.message);
+                showToast('error', "Error closing port: " + err.message);
             });
         }
 
@@ -517,7 +517,7 @@
             const portVal = document.getElementById('hubPort').value.trim();
 
             if (!address || !portVal) {
-                alert(tl("net.alert.address_port", "Please enter both address and port."));
+                showToast('warning', tl("net.alert.address_port", "Please enter both address and port."));
                 return;
             }
 
@@ -533,12 +533,12 @@
                 if (r.ok) return r.json();
                 throw new Error("Connection failed");
             }).then(data => {
-                alert(data.msg);
+                showToast(null, data.msg);
                 document.getElementById('hubAddress').value = '';
                 document.getElementById('hubPort').value = '';
                 refreshAll();
             }).catch(err => {
-                alert(err.message);
+                showToast('error', err.message);
             });
         }
 

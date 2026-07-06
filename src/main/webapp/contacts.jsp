@@ -101,6 +101,6 @@
         </div>
     </div>
 
-    <script src="js/contacts.js?v=4.0"></script>
+    <script src="js/contacts.js?v=4.1"></script>
 </body>
 </html>

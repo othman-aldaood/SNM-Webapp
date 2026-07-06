@@ -352,6 +352,6 @@
         </div>
     </div>
 
-    <script src="js/certificates.js?v=5.0"></script>
+    <script src="js/certificates.js?v=5.1"></script>
 </body>
 </html>

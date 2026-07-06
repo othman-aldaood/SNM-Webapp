@@ -45,7 +45,7 @@ function copyFingerprint() {
     const val = el.getAttribute('data-fingerprint');
     if (val) {
         navigator.clipboard.writeText(val)
-            .then(() => alert("Fingerprint copied to clipboard!"))
+            .then(() => showToast('success', "Fingerprint copied to clipboard!"))
             .catch(err => console.error("Failed to copy text: ", err));
     }
 }
@@ -57,7 +57,7 @@ function copyFingerprint() {
 function exportProfileData() {
     // Validate context existence
     if (!window.PROFILE_CONTEXT) {
-        alert("Cannot export profile data. Context is missing.");
+        showToast('error', "Cannot export profile data. Context is missing.");
         return;
     }
 

@@ -423,7 +423,7 @@ async function acceptCredential(index) {
             throw new Error('Failed to accept credential');
         }
     } catch (error) {
-        alert('Error accepting credential: ' + error.message);
+        showToast('error', 'Error accepting credential: ' + error.message);
     }
 }
 
@@ -437,7 +437,7 @@ async function refuseCredential(index) {
             throw new Error('Failed to refuse credential');
         }
     } catch (error) {
-        alert('Error refusing credential: ' + error.message);
+        showToast('error', 'Error refusing credential: ' + error.message);
     }
 }
 
@@ -448,7 +448,7 @@ async function refuseCredential(index) {
 function exportOwnCertificate() {
     if (ownPeerId) {
         navigator.clipboard.writeText(`SharkNet Peer ID: ${ownPeerId}`).then(() => {
-            alert('Peer ID copied to clipboard!');
+            showToast('success', 'Peer ID copied to clipboard!');
         });
     }
 }
@@ -461,12 +461,12 @@ async function sendCredentials() {
             hideImportModal();
             document.getElementById('import-peer-name').value = '';
             document.getElementById('import-message').value = '';
-            alert('Credentials sent successfully!');
+            showToast('success', 'Credentials sent successfully!');
         } else {
             throw new Error('Failed to send credentials');
         }
     } catch (error) {
-        alert('Error sending credentials: ' + error.message);
+        showToast('error', 'Error sending credentials: ' + error.message);
     }
 }
 
@@ -481,7 +481,7 @@ async function revokeCertificate() {
             throw new Error('Failed to revoke certificate');
         }
     } catch (error) {
-        alert('Error revoking certificate: ' + error.message);
+        showToast('error', 'Error revoking certificate: ' + error.message);
     }
 }
 

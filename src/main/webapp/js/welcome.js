@@ -62,7 +62,7 @@ function navigateNextStep() {
     if (currentOnboardingStep === 1) {
         const nameInput = document.getElementById('ob-displayName').value.trim();
         if (!nameInput) {
-            alert(t("welcome.alert.name_required", "Please input your display name representation to proceed."));
+            showToast('warning', t("welcome.alert.name_required", "Please input your display name representation to proceed."));
             return;
         }
     }
@@ -143,7 +143,7 @@ async function triggerHubConnectAttempt() {
     const port = document.getElementById('ob-hubPort').value.trim();
 
     if (!host || !port) {
-        alert(t("welcome.alert.hub_required", "Please enter both target remote address and operational port mappings."));
+        showToast('warning', t("welcome.alert.hub_required", "Please enter both target remote address and operational port mappings."));
         return;
     }
 
@@ -158,10 +158,10 @@ async function triggerHubConnectAttempt() {
             })
         });
         const output = await response.json();
-        alert(output.msg || "Operation executed.");
+        showToast(null, output.msg || "Operation executed.");
     } catch (error) {
         console.error("Hub deployment link exception:", error);
-        alert(t("welcome.alert.hub_failed", "Failed dispatching operational frame context to target hub."));
+        showToast('error', t("welcome.alert.hub_failed", "Failed dispatching operational frame context to target hub."));
     }
 }
 
@@ -174,7 +174,7 @@ async function completeOnboardingSequenceWorkflow() {
     const channelName = document.getElementById('ob-channelName').value.trim();
 
     if (!channelUri) {
-        alert(t("welcome.alert.uri_required", "A valid active scope target channel URI is required."));
+        showToast('warning', t("welcome.alert.uri_required", "A valid active scope target channel URI is required."));
         return;
     }
 
@@ -194,10 +194,10 @@ async function completeOnboardingSequenceWorkflow() {
             window.location.href = 'index.jsp';
         } else {
             const result = await response.json();
-            alert(t("welcome.alert.channel_failed", "Failed to initialize your first channel: ") + (result.error || 'Unknown error'));
+            showToast('error', t("welcome.alert.channel_failed", "Failed to initialize your first channel: ") + (result.error || 'Unknown error'));
         }
     } catch (error) {
         console.error("Configuration sequence error:", error);
-        alert(t("welcome.alert.save_error", "An error occurred while saving your configuration."));
+        showToast('error', t("welcome.alert.save_error", "An error occurred while saving your configuration."));
     }
 }

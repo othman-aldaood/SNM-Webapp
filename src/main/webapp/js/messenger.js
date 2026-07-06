@@ -609,7 +609,7 @@ function updateEncryptAvailability() {
 
 async function sendMessage() {
     if (currentChannelState.index === null || currentChannelState.index === undefined) {
-        alert('Please select a channel from the list first.');
+        showToast('warning', 'Please select a channel from the list first.');
         return;
     }
 
@@ -617,7 +617,7 @@ async function sendMessage() {
     const receiverVal = document.getElementById('message-receiver')?.value || 'ANY_SHARKNET_PEER';
     const encryptEl = document.getElementById('encrypt-message');
     if (encryptEl?.checked && receiverVal === 'ANY_SHARKNET_PEER') {
-        alert(t('msg.encrypt_needs_receiver', "Encryption requires a specific receiver - select a peer instead of 'Anyone'"));
+        showToast('warning', t('msg.encrypt_needs_receiver', "Encryption requires a specific receiver - select a peer instead of 'Anyone'"));
         return;
     }
 
@@ -682,10 +682,10 @@ async function sendMessage() {
             }, 500);
         } else {
             const result = await response.json();
-            alert('Failed to send message: ' + (result.error || 'Unknown error'));
+            showToast('error', 'Failed to send message: ' + (result.error || 'Unknown error'));
         }
     } catch (error) {
-        alert('Error sending message');
+        showToast('error', 'Error sending message');
     }
 }
 
@@ -726,7 +726,7 @@ async function createChannel() {
     const uri = uriInput.value.trim();
     const name = nameInput.value.trim() || uri;
 
-    if (!uri) return alert('Channel URI is required');
+    if (!uri) return showToast('warning', 'Channel URI is required');
 
     try {
         const response = await fetch('/snm-webapp/api/messenger/channels', {
@@ -740,10 +740,10 @@ async function createChannel() {
             loadChannels();
         } else {
             const result = await response.json();
-            alert('Error: ' + (result.error || 'Unknown error'));
+            showToast('error', 'Error: ' + (result.error || 'Unknown error'));
         }
     } catch (error) {
-        alert('Request failed');
+        showToast('error', 'Request failed');
     }
 }
 
@@ -780,10 +780,10 @@ async function deleteChannel(uri, event) {
             }
             loadChannels();
         } else {
-            alert('Failed to delete channel.');
+            showToast('error', 'Failed to delete channel.');
         }
     } catch (e) {
-        alert('Error deleting channel');
+        showToast('error', 'Error deleting channel');
     }
 }
 
