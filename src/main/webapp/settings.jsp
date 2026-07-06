@@ -146,6 +146,6 @@
         </div>
     </div>
 
-    <script src="js/settings.js?v=6"></script>
+    <script src="js/settings.js?v=7"></script>
 </body>
 </html>

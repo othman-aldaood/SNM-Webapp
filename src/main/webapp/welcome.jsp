@@ -152,6 +152,6 @@
         </div>
     </div>
 
-    <script src="js/welcome.js?v=999"></script>
+    <script src="js/welcome.js?v=1000"></script>
 </body>
 </html>

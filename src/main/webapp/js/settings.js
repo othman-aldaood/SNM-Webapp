@@ -135,7 +135,7 @@ async function saveSettings() {
         displayName: document.getElementById('customDisplayName')?.value || ""
     };
 
-    alert("Settings successfully saved! (Note: Persistence requires backend API)");
+    showToast('success', "Settings successfully saved! (Note: Persistence requires backend API)");
     currentSettings = settingsPayload;
 }
 

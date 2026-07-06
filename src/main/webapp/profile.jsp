@@ -174,6 +174,6 @@
     </script>
 
     <%-- Import the external JavaScript file --%>
-    <script src="js/profile.js?v=1"></script>
+    <script src="js/profile.js?v=2"></script>
 </body>
 </html>
