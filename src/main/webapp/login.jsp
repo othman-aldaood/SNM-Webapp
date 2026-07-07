@@ -21,7 +21,7 @@
                  <button onclick="setLanguage('en'); toggleLoginLangDropdown()" class="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 flex items-center gap-2">🇬🇧 English</button>
                  <button onclick="setLanguage('de'); toggleLoginLangDropdown()" class="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 flex items-center gap-2">🇩🇪 Deutsch</button>
                  <button onclick="setLanguage('tr'); toggleLoginLangDropdown()" class="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 flex items-center gap-2">🇹🇷 Türkçe</button>
-                 <button onclick="setLanguage('ar'); toggleLoginLangDropdown()" class="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 flex items-center gap-2" dir="rtl">🇸🇦 العربية</button>
+                 <button onclick="setLanguage('ar'); toggleLoginLangDropdown()" class="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 flex items-center gap-2">🇸🇦 العربية</button>
              </div>
          </div>
 
