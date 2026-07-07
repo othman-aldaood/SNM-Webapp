@@ -494,7 +494,7 @@ const translations = {
         "nav.peer": "Peer-Kontakte",
         "nav.persons": "Personen",
         "nav.certificates": "Zertifikate",
-        "nav.network": "Netzwerkstatus",
+        "nav.network": "Netzwerk-Status",
         "nav.hubs": "ASAP Hubs",
         "nav.settings": "Einstellungen",
         "nav.profile": "Mein Profil",
