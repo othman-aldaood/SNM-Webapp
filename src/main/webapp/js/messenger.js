@@ -146,7 +146,7 @@ async function loadChannels() {
                     </div>
                     <div class="flex items-center">
                         <span class="text-xs text-gray-400 mr-2 bg-gray-100 dark:bg-gray-700 px-2 py-0.5 rounded-full">${channel.messages || 0}</span>
-                        <button onclick="deleteChannel('${escapeHtml(channel.uri)}', event)" class="text-gray-400 hover:text-red-500 transition-colors" title="Delete Channel">
+                        <button onclick="deleteChannel('${escapeHtml(channel.uri)}', event)" class="text-gray-400 hover:text-red-500 transition-colors" title="${t('msg.delete_channel_tooltip', 'Delete Channel')}" data-i18n-title="msg.delete_channel_tooltip">
                             <i class="fas fa-times"></i>
                         </button>
                     </div>
@@ -156,11 +156,11 @@ async function loadChannels() {
 
             document.getElementById('active-channel-count').textContent = data.channels.length;
         } else {
-            listGroup.innerHTML = `<div class="p-5 text-center text-gray-500 dark:text-gray-400 text-sm">No channels available.<br>Create one using the + button.</div>`;
+            listGroup.innerHTML = `<div class="p-5 text-center text-gray-500 dark:text-gray-400 text-sm" data-i18n="msg.no_channels">${t('msg.no_channels', 'No channels available.<br>Create one using the + button.')}</div>`;
             document.getElementById('active-channel-count').textContent = '0';
         }
     } catch (error) {
-        container.innerHTML = `<div class="p-4 text-center text-red-500 text-sm">Failed to load channels from server.</div>`;
+        container.innerHTML = `<div class="p-4 text-center text-red-500 text-sm" data-i18n="msg.err.load_channels">${t('msg.err.load_channels', 'Failed to load channels from server.')}</div>`;
     }
 }
 
@@ -191,8 +191,15 @@ function selectChannel(element, uri, name, index) {
         element.querySelector('.channel-icon')?.classList.remove('text-gray-400', 'dark:text-gray-500');
     }
 
-    document.getElementById('current-channel-name').textContent = name || uri;
-    document.getElementById('current-channel-pki-status').innerText = 'Connected to ' + escapeHtml(name || uri);
+    // These elements carry data-i18n="msg.select_channel"/"msg.waiting_selection" in the
+    // static markup for the "nothing selected" placeholder; drop it now that real channel
+    // data is shown, otherwise a later language switch would overwrite it with that placeholder.
+    const nameEl = document.getElementById('current-channel-name');
+    nameEl.removeAttribute('data-i18n');
+    nameEl.textContent = name || uri;
+    const statusEl = document.getElementById('current-channel-pki-status');
+    statusEl.removeAttribute('data-i18n');
+    statusEl.innerHTML = `<span data-i18n="msg.connected_to">${t('msg.connected_to', 'Connected to')}</span> ${escapeHtml(name || uri)}`;
 
     const indicator = document.getElementById('status-indicator');
     if (indicator) {
@@ -218,7 +225,7 @@ function selectChannel(element, uri, name, index) {
  */
 async function loadMessages(uri) {
     const chatLog = document.getElementById('chat-log');
-    chatLog.innerHTML = `<div class="flex flex-col items-center justify-center h-full text-center space-y-3 opacity-60"><i class="fas fa-spinner fa-spin text-3xl text-primary-500"></i><p class="text-sm">Loading messages...</p></div>`;
+    chatLog.innerHTML = `<div class="flex flex-col items-center justify-center h-full text-center space-y-3 opacity-60"><i class="fas fa-spinner fa-spin text-3xl text-primary-500"></i><p class="text-sm" data-i18n="msg.loading_messages">${t('msg.loading_messages', 'Loading messages...')}</p></div>`;
 
     try {
         const response = await fetch(`/snm-webapp/api/messenger/messages/?uri=${encodeURIComponent(uri)}`);
@@ -231,10 +238,10 @@ async function loadMessages(uri) {
             applyFilters();
         } else {
             currentMessages = [];
-            chatLog.innerHTML = '<div class="text-center p-5 text-gray-400 text-sm">No messages. Be the first to say hello!</div>';
+            chatLog.innerHTML = `<div class="text-center p-5 text-gray-400 text-sm" data-i18n="msg.no_messages">${t('msg.no_messages', 'No messages. Be the first to say hello!')}</div>`;
         }
     } catch (error) {
-        chatLog.innerHTML = `<div class="text-center text-red-500 p-5 text-sm">Error loading messages.</div>`;
+        chatLog.innerHTML = `<div class="text-center text-red-500 p-5 text-sm" data-i18n="msg.err.load_messages">${t('msg.err.load_messages', 'Error loading messages.')}</div>`;
     }
 }
 
@@ -425,7 +432,7 @@ function renderMessages(messages, searchTerm = '') {
     chatLog.innerHTML = '';
 
     if (messages.length === 0) {
-        chatLog.innerHTML = `<div class="text-center p-5 text-gray-400 text-sm">No matching messages found.</div>`;
+        chatLog.innerHTML = `<div class="text-center p-5 text-gray-400 text-sm" data-i18n="msg.no_matches">${t('msg.no_matches', 'No matching messages found.')}</div>`;
         return;
     }
 
@@ -545,7 +552,7 @@ function startEditMessage(id, content) {
 
     const sendBtn = document.getElementById('send-btn');
     if (sendBtn) {
-        sendBtn.innerHTML = `<i class="fas fa-save text-base"></i><span class="text-xs">Update</span>`;
+        sendBtn.innerHTML = `<i class="fas fa-save text-base"></i><span class="text-xs" data-i18n="msg.update">${t('msg.update', 'Update')}</span>`;
         sendBtn.classList.remove('bg-primary-500', 'hover:bg-primary-600');
         sendBtn.classList.add('bg-yellow-500', 'hover:bg-yellow-600');
     }
@@ -554,7 +561,8 @@ function startEditMessage(id, content) {
         const cancelBtn = document.createElement('button');
         cancelBtn.id = 'cancel-edit-btn';
         cancelBtn.className = 'text-xs text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors font-medium mt-1';
-        cancelBtn.innerText = 'Cancel Edit';
+        cancelBtn.setAttribute('data-i18n', 'msg.cancel_edit');
+        cancelBtn.innerText = t('msg.cancel_edit', 'Cancel Edit');
         cancelBtn.onclick = cancelEditMode;
         document.getElementById('action-buttons-container')?.appendChild(cancelBtn);
     }
@@ -571,7 +579,7 @@ function cancelEditMode() {
 
     const sendBtn = document.getElementById('send-btn');
     if (sendBtn) {
-        sendBtn.innerHTML = `<i class="fas fa-paper-plane text-base"></i><span class="text-xs">Send</span>`;
+        sendBtn.innerHTML = `<i class="fas fa-paper-plane text-base"></i><span class="text-xs" data-i18n="msg.send">${t('msg.send', 'Send')}</span>`;
         sendBtn.classList.add('bg-primary-500', 'hover:bg-primary-600');
         sendBtn.classList.remove('bg-yellow-500', 'hover:bg-yellow-600');
     }
@@ -612,7 +620,7 @@ function updateEncryptAvailability() {
 
 async function sendMessage() {
     if (currentChannelState.index === null || currentChannelState.index === undefined) {
-        alert('Please select a channel from the list first.');
+        alert(t('msg.select_channel_first', 'Please select a channel from the list first.'));
         return;
     }
 
@@ -685,10 +693,10 @@ async function sendMessage() {
             }, 500);
         } else {
             const result = await response.json();
-            alert('Failed to send message: ' + (result.error || 'Unknown error'));
+            alert(t('msg.err.send', 'Failed to send message:') + ' ' + (result.error || t('common.unknown_error', 'Unknown error')));
         }
     } catch (error) {
-        alert('Error sending message');
+        alert(t('msg.err.send_generic', 'Error sending message'));
     }
 }
 
@@ -698,7 +706,7 @@ async function sendMessage() {
  * @return {Promise<void>}
  */
 async function deleteMessage(msgId) {
-    if (!confirm('Are you sure you want to delete this message?')) return;
+    if (!confirm(t('msg.confirm_delete_message', 'Are you sure you want to delete this message?'))) return;
 
     try {
         const response = await fetch(`/snm-webapp/api/messenger/messages?msgId=${encodeURIComponent(msgId)}&channelIndex=${currentChannelState.index}`, {
@@ -729,7 +737,7 @@ async function createChannel() {
     const uri = uriInput.value.trim();
     const name = nameInput.value.trim() || uri;
 
-    if (!uri) return alert('Channel URI is required');
+    if (!uri) return alert(t('msg.channel_uri_required', 'Channel URI is required'));
 
     try {
         const response = await fetch('/snm-webapp/api/messenger/channels', {
@@ -743,10 +751,10 @@ async function createChannel() {
             loadChannels();
         } else {
             const result = await response.json();
-            alert('Error: ' + (result.error || 'Unknown error'));
+            alert(t('common.error', 'Error') + ': ' + (result.error || t('common.unknown_error', 'Unknown error')));
         }
     } catch (error) {
-        alert('Request failed');
+        alert(t('msg.err.request_failed', 'Request failed'));
     }
 }
 
@@ -758,7 +766,7 @@ async function createChannel() {
  */
 async function deleteChannel(uri, event) {
     if (event) event.stopPropagation();
-    if (!confirm(`Are you sure you want to delete the channel:\n${uri}?`)) return;
+    if (!confirm(t('msg.confirm_delete_channel', 'Are you sure you want to delete the channel:') + `\n${uri}?`)) return;
 
     try {
         const response = await fetch('/snm-webapp/api/messenger/channels', {
@@ -769,9 +777,15 @@ async function deleteChannel(uri, event) {
 
         if (response.ok) {
             if (currentChannelState.uri === uri) {
-                document.getElementById('chat-log').innerHTML = '<div class="text-center p-5 text-gray-400 text-sm">Channel deleted.</div>';
-                document.getElementById('current-channel-name').textContent = 'Select a channel';
-                document.getElementById('current-channel-pki-status').innerText = 'Waiting for selection...';
+                document.getElementById('chat-log').innerHTML = `<div class="text-center p-5 text-gray-400 text-sm" data-i18n="msg.channel_deleted">${t('msg.channel_deleted', 'Channel deleted.')}</div>`;
+                // Restore the placeholder data-i18n hooks that selectChannel() strips once a
+                // real channel is active, so this "nothing selected" state stays retranslatable.
+                const nameEl = document.getElementById('current-channel-name');
+                nameEl.setAttribute('data-i18n', 'msg.select_channel');
+                nameEl.textContent = t('msg.select_channel', 'Select a channel');
+                const statusEl = document.getElementById('current-channel-pki-status');
+                statusEl.setAttribute('data-i18n', 'msg.waiting_selection');
+                statusEl.textContent = t('msg.waiting_selection', 'Waiting for selection...');
                 document.getElementById('status-indicator')?.classList.add('bg-gray-400');
                 document.getElementById('status-indicator')?.classList.remove('bg-green-500');
                 currentChannelState = {uri: null, index: null, name: null};
@@ -783,10 +797,10 @@ async function deleteChannel(uri, event) {
             }
             loadChannels();
         } else {
-            alert('Failed to delete channel.');
+            alert(t('msg.err.delete_channel', 'Failed to delete channel.'));
         }
     } catch (e) {
-        alert('Error deleting channel');
+        alert(t('msg.err.delete_channel_generic', 'Error deleting channel'));
     }
 }
 
@@ -798,7 +812,7 @@ function showSendSuccess() {
     const sendBtn = document.getElementById('send-btn');
     if (!sendBtn) return;
     const originalContent = sendBtn.innerHTML;
-    sendBtn.innerHTML = `<i class="fas fa-check text-base"></i><span class="text-xs">Sent!</span>`;
+    sendBtn.innerHTML = `<i class="fas fa-check text-base"></i><span class="text-xs" data-i18n="msg.sent">${t('msg.sent', 'Sent!')}</span>`;
     sendBtn.classList.replace('bg-primary-500', 'bg-green-500');
     sendBtn.classList.replace('hover:bg-primary-600', 'hover:bg-green-600');
     setTimeout(() => {
@@ -819,7 +833,7 @@ async function loadPersonsForRecipient() {
         const data = await response.json();
         const select = document.getElementById('message-receiver');
         if (select && data.persons && data.persons.length > 0) {
-            select.innerHTML = '<option value="ANY_SHARKNET_PEER">Anyone</option>';
+            select.innerHTML = `<option value="ANY_SHARKNET_PEER" data-i18n="msg.anyone">${t('msg.anyone', 'Anyone')}</option>`;
             data.persons.forEach(person => {
                 const option = document.createElement('option');
                 option.value = person.name;

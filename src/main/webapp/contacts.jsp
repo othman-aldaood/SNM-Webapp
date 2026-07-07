@@ -50,7 +50,7 @@
                 <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden w-full">
                     <div class="p-4 md:p-6 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center">
                         <h3 class="text-lg font-bold" data-i18n="contacts.local_peers">Local Peers</h3>
-                        <button class="text-gray-500 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400 transition-colors" onclick="loadContacts()" title="Refresh List">
+                        <button class="text-gray-500 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400 transition-colors" onclick="loadContacts()" title="Refresh List" data-i18n-title="contacts.refresh_tooltip">
                             <i class="fas fa-sync-alt"></i>
                         </button>
                     </div>
@@ -101,6 +101,6 @@
         </div>
     </div>
 
-    <script src="js/contacts.js?v=4.0"></script>
+    <script src="js/contacts.js?v=4.1"></script>
 </body>
 </html>
