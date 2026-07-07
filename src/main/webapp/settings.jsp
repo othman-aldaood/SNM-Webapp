@@ -60,11 +60,17 @@
                     =========================================== --%>
                     <h4 class="font-semibold text-base mb-4 text-gray-800 dark:text-gray-200" data-i18n="settings.lang.title">Language Preference</h4>
                     <div class="flex bg-gray-50 dark:bg-gray-900 p-1 rounded-lg border border-gray-200 dark:border-gray-700 w-fit mb-6">
-                        <button id="lang-btn-en" onclick="setLanguage('en')" class="px-4 py-2 rounded-md text-sm font-bold transition-colors">
+                        <button id="lang-btn-en" type="button" aria-pressed="false" onclick="setLanguage('en')" class="px-4 py-2 rounded-md text-sm font-bold transition-colors">
                             <i class="mr-1">🇬🇧</i> English
                         </button>
-                        <button id="lang-btn-de" onclick="setLanguage('de')" class="px-4 py-2 rounded-md text-sm font-bold transition-colors">
+                        <button id="lang-btn-de" type="button" aria-pressed="false" onclick="setLanguage('de')" class="px-4 py-2 rounded-md text-sm font-bold transition-colors">
                             <i class="mr-1">🇩🇪</i> Deutsch
+                        </button>
+                        <button id="lang-btn-tr" type="button" aria-pressed="false" onclick="setLanguage('tr')" class="px-4 py-2 rounded-md text-sm font-bold transition-colors">
+                            <i class="mr-1">🇹🇷</i> Türkçe
+                        </button>
+                        <button id="lang-btn-ar" type="button" aria-pressed="false" onclick="setLanguage('ar')" class="px-4 py-2 rounded-md text-sm font-bold transition-colors" dir="rtl">
+                            <i class="mr-1">🇸🇦</i> العربية
                         </button>
                     </div>
 

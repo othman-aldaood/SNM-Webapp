@@ -172,6 +172,6 @@
      </script>
 
      <script src="js/login.js?v=6"></script>
-     <script src="js/i18n.js?v=4"></script>
+     <script src="js/i18n.js?v=5"></script>
  </body>
  </html>

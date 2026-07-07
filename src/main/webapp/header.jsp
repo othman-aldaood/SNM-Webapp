@@ -74,7 +74,7 @@
         <!-- I18N Language Switcher Dropdown -->
         <div class="relative">
             <button onclick="toggleLangDropdown()" class="text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 p-2 rounded-lg transition-colors flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 focus:outline-none" title="Language / Sprache">
-                <i class="fas fa-globe text-lg"></i>
+                <i id="lang-icon" class="fas fa-globe text-lg"></i>
             </button>
             <div id="lang-dropdown" class="hidden absolute right-0 mt-2 w-32 bg-white dark:bg-dark-card border border-gray-200 dark:border-dark-border rounded-lg shadow-xl z-50 overflow-hidden">
                 <button onclick="setLanguage('en'); toggleLangDropdown()" class="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 flex items-center gap-2">🇬🇧 English</button>
@@ -140,4 +140,4 @@
     });
 </script>
 <script src="js/ui-ux.js?v=6"></script>
-<script src="js/i18n.js?v=3‚"></script>
+<script src="js/i18n.js?v=5"></script>

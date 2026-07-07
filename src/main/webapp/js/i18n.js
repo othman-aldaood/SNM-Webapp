@@ -1650,6 +1650,41 @@ const translations = {
     }
 };
 
+const LANG_BUTTON_IDS = { en: 'lang-btn-en', de: 'lang-btn-de', tr: 'lang-btn-tr', ar: 'lang-btn-ar' };
+const LANG_BTN_ACTIVE_CLASSES = ['bg-blue-600', 'text-white', 'shadow-sm'];
+const LANG_BTN_INACTIVE_CLASSES = ['text-gray-600', 'dark:text-gray-400', 'hover:bg-gray-200', 'dark:hover:bg-gray-700'];
+const LANG_FLAG_EMOJI = { en: '🇬🇧', de: '🇩🇪', tr: '🇹🇷', ar: '🇸🇦' };
+
+/**
+ * Swaps the header's globe icon for the flag emoji of the active language, if the icon is present.
+ * @param {string} lang - The active language code
+ * @return {void}
+ */
+function updateLangIcon(lang) {
+    const icon = document.getElementById('lang-icon');
+    if (!icon) return;
+    const flag = LANG_FLAG_EMOJI[lang];
+    if (!flag) return;
+    icon.className = 'text-lg';
+    icon.textContent = flag;
+}
+
+/**
+ * Highlights whichever language button (if present on the current page) matches lang.
+ * @param {string} lang - The active language code
+ * @return {void}
+ */
+function updateLangButtonStates(lang) {
+    Object.entries(LANG_BUTTON_IDS).forEach(([code, id]) => {
+        const btn = document.getElementById(id);
+        if (!btn) return;
+        const isActive = code === lang;
+        btn.classList.remove(...LANG_BTN_ACTIVE_CLASSES, ...LANG_BTN_INACTIVE_CLASSES);
+        btn.classList.add(...(isActive ? LANG_BTN_ACTIVE_CLASSES : LANG_BTN_INACTIVE_CLASSES));
+        btn.setAttribute('aria-pressed', String(isActive));
+    });
+}
+
 /**
  * Applies the selected language to all HTML elements with the 'data-i18n' attribute.
  * @param {string} lang - The target language code ('en' or 'de')
@@ -1674,6 +1709,9 @@ function setLanguage(lang) {
             el.setAttribute('placeholder', translations[lang][key]);
         }
     });
+
+    updateLangButtonStates(lang);
+    updateLangIcon(lang);
 }
 
 /**
