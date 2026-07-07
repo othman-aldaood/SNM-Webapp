@@ -543,6 +543,7 @@ const translations = {
         "welcome.alert.hub_failed": "Fehler beim Senden des Betriebskontexts an den Ziel-Hub.",
         "welcome.alert.uri_required": "Eine gültige Kanal-URI ist erforderlich.",
         "welcome.alert.channel_failed": "Fehler beim Initialisieren Ihres ersten Kanals: ",
+        "welcome.alert.save_error": "Beim Speichern Ihrer Konfiguration ist ein Fehler aufgetreten.",
 
         // Onboarding Welcome Page
         "welcome.step.profile": "Profil",
