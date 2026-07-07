@@ -20,8 +20,11 @@ let ctxTargetMsgContent = null;
  * @return {string} Localized text matching environment settings
  */
 function t(key, fallback) {
+    // NOTE: i18n.js declares `translations` with `const` at script top-level, so it
+    // lives in the shared global lexical scope, not as a `window` property - reference
+    // it directly (not via `window.translations`, which is always undefined).
     const lang = localStorage.getItem('snm-lang') || 'en';
-    return (window.translations && window.translations[lang] && window.translations[lang][key]) ? window.translations[lang][key] : fallback;
+    return (typeof translations !== 'undefined' && translations[lang] && translations[lang][key]) ? translations[lang][key] : fallback;
 }
 
 /**

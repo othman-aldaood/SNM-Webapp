@@ -18,8 +18,11 @@ const REFRESH_INTERVAL = 15000;
 /* ------------------------------------------------------------------ */
 
 function tl(key, fallback) {
+    // NOTE: i18n.js declares `translations` with `const` at script top-level, so it
+    // lives in the shared global lexical scope, not as a `window` property - reference
+    // it directly (not via `window.translations`, which is always undefined).
     const currentLang = localStorage.getItem('snm-lang') || 'en';
-    return (window.translations && window.translations[currentLang] && window.translations[currentLang][key]) ? window.translations[currentLang][key] : fallback;
+    return (typeof translations !== 'undefined' && translations[currentLang] && translations[currentLang][key]) ? translations[currentLang][key] : fallback;
 }
 
 function escapeHtml(text) {
