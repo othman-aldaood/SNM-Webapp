@@ -184,7 +184,7 @@
                                     </div>
                                     <div class="flex items-center gap-2">
                                         <div id="detail-sf" class="font-mono text-xl font-bold"></div>
-                                        <button disabled class="text-gray-300 dark:text-gray-600 cursor-not-allowed p-0.5" title="Requires backend support">
+                                        <button disabled class="text-gray-300 dark:text-gray-600 cursor-not-allowed p-0.5" data-i18n-title="cert.requires_backend" title="Requires backend support">
                                             <i class="fas fa-pen text-xs"></i>
                                         </button>
                                     </div>
@@ -196,7 +196,7 @@
                             </div>
 
                             <%-- Trust Chain (requires backend support) --%>
-                            <div class="bg-gray-50 dark:bg-gray-900/50 rounded-lg p-4 opacity-60" title="Requires backend support">
+                            <div class="bg-gray-50 dark:bg-gray-900/50 rounded-lg p-4 opacity-60" data-i18n-title="cert.requires_backend" title="Requires backend support">
                                 <div class="font-semibold text-sm text-gray-500 dark:text-gray-400 mb-2.5 flex items-center gap-1.5">
                                     <span data-i18n="cert.chain_title">Trust Chain</span>
                                     <span class="bg-gray-200 text-gray-600 dark:bg-gray-700 dark:text-gray-400 text-[0.65rem] font-bold px-2 py-0.5 rounded-full" data-i18n="common.coming_soon">Coming soon</span>
@@ -311,11 +311,11 @@
             </div>
             <div class="p-6 space-y-4">
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Subject ID:</label>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1" data-i18n="cert.revoke.subject_id_label">Subject ID:</label>
                     <input type="text" id="revoke-subject-id" class="w-full bg-gray-100 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 rounded-lg p-2.5 text-sm text-gray-500 dark:text-gray-400 cursor-not-allowed font-mono" readonly>
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Certificate Subject:</label>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1" data-i18n="cert.revoke.subject_name_label">Certificate Subject:</label>
                     <input type="text" id="revoke-subject-name" class="w-full bg-gray-100 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 rounded-lg p-2.5 text-sm text-gray-500 dark:text-gray-400 cursor-not-allowed" readonly>
                 </div>
                 <div class="bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 p-3 rounded-lg text-sm border border-red-200 dark:border-red-800/30 leading-relaxed" data-i18n="cert.revoke.warning">
@@ -338,12 +338,12 @@
             </div>
             <div class="p-6 space-y-4">
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Peer ID (optional):</label>
-                    <input type="text" id="import-peer-name" class="w-full bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Leave empty to broadcast">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1" data-i18n="cert.send.peerid_label">Peer ID (optional):</label>
+                    <input type="text" id="import-peer-name" class="w-full bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Leave empty to broadcast" data-i18n-placeholder="cert.send.broadcast_placeholder">
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Message (optional):</label>
-                    <textarea id="import-message" rows="3" class="w-full bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none resize-none" placeholder="Optional message..."></textarea>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1" data-i18n="cert.send.message_label">Message (optional):</label>
+                    <textarea id="import-message" rows="3" class="w-full bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none resize-none" placeholder="Optional message..." data-i18n-placeholder="cert.send.message_placeholder"></textarea>
                 </div>
             </div>
             <div class="p-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700/50 flex flex-col-reverse sm:flex-row justify-end gap-3">

@@ -14,6 +14,8 @@ const translations = {
         "common.loading": "Loading...",
         "common.status": "Status",
         "common.actions": "Actions",
+        "common.unknown": "Unknown",
+        "common.error": "Error",
 
         // Sidebar
         "nav.messenger": "Messenger",
@@ -25,6 +27,7 @@ const translations = {
         "nav.settings": "Settings",
         "nav.profile": "My Profile",
         "nav.help": "Help",
+        "nav.about": "About",
 
         // Header
         "header.internet": "Internet",
@@ -302,6 +305,21 @@ const translations = {
         "cert.tip.ia": "How sure you can be that this contact really is who they claim to be. 10 means you verified them yourself. Lower scores mean you're trusting them through other people.",
         "cert.tip.sf": "Your personal estimate (1–10) of how carefully this contact checks people's identities before vouching for them. A higher number lowers the Identity Assurance of everyone you reach through them.",
         "cert.tip.cert": "A digital signature confirming \"I have verified this person — their key really belongs to them.\" There's no central authority — certificates spread between people as they connect.",
+        "cert.requires_backend": "Requires backend support",
+        "cert.unknown_sender": "Unknown Sender",
+        "cert.this_peer": "this peer",
+        "cert.peerid_copied": "Peer ID copied to clipboard!",
+        "cert.revoke.subject_id_label": "Subject ID:",
+        "cert.revoke.subject_name_label": "Certificate Subject:",
+        "cert.send.peerid_label": "Peer ID (optional):",
+        "cert.send.broadcast_placeholder": "Leave empty to broadcast",
+        "cert.send.message_label": "Message (optional):",
+        "cert.send.message_placeholder": "Optional message...",
+        "cert.send_success": "Credentials sent successfully!",
+        "cert.err.accept": "Error accepting credential:",
+        "cert.err.refuse": "Error refusing credential:",
+        "cert.err.send": "Error sending credentials:",
+        "cert.err.revoke": "Error revoking certificate:",
 
         // PKI tutorial
         "tut.title": "PKI Concepts: Tutorial",
@@ -413,7 +431,18 @@ const translations = {
         "net.encounter_status": "Encounter Status",
         "net.encounters_desc": "Peer encounters tracked in this session",
         "hubs.connected_count": "Connected hubs",
-        "hubs.failed_count": "Failed connections"
+        "hubs.failed_count": "Failed connections",
+
+        // About page
+        "about.title": "About SharkNet Messenger",
+        "about.desc": "A decentralised peer-to-peer messenger built on the ASAP protocol.",
+        "about.version_label": "Version",
+        "about.description": "A decentralised peer-to-peer messenger built on the ASAP protocol",
+        "about.team_label": "Team",
+        "about.supervisor_label": "Supervisor",
+        "about.tech_label": "Technologies Used",
+        "about.source_label": "Source Code",
+        "about.github_link": "View on GitHub"
     },
 
 
@@ -426,6 +455,8 @@ const translations = {
         "common.loading": "Wird geladen...",
         "common.status": "Status",
         "common.actions": "Aktionen",
+        "common.unknown": "Unbekannt",
+        "common.error": "Fehler",
 
         // Sidebar
         "nav.messenger": "Nachrichten",
@@ -437,6 +468,7 @@ const translations = {
         "nav.settings": "Einstellungen",
         "nav.profile": "Mein Profil",
         "nav.help": "Hilfe",
+        "nav.about": "Über",
 
         // Header
         "header.internet": "Internet",
@@ -715,6 +747,21 @@ const translations = {
         "cert.tip.ia": "Wie sicher du sein kannst, dass dieser Kontakt wirklich die Person ist, die er vorgibt zu sein. 10 heißt: selbst verifiziert. Niedrigere Werte bedeuten, dass du über andere Personen vertraust.",
         "cert.tip.sf": "Deine persönliche Einschätzung (1–10), wie sorgfältig dieser Kontakt Identitäten prüft, bevor er für jemanden bürgt. Ein höherer Wert senkt die Identity Assurance aller, die du über ihn erreichst.",
         "cert.tip.cert": "Eine digitale Signatur, die bestätigt: \"Ich habe diese Person überprüft — der Schlüssel gehört wirklich ihr.\" Es gibt keine zentrale Autorität — Zertifikate verbreiten sich von Person zu Person.",
+        "cert.requires_backend": "Erfordert Backend-Unterstützung",
+        "cert.unknown_sender": "Unbekannter Absender",
+        "cert.this_peer": "diesen Peer",
+        "cert.peerid_copied": "Peer-ID in die Zwischenablage kopiert!",
+        "cert.revoke.subject_id_label": "Subjekt-ID:",
+        "cert.revoke.subject_name_label": "Zertifikat-Subjekt:",
+        "cert.send.peerid_label": "Peer-ID (optional):",
+        "cert.send.broadcast_placeholder": "Leer lassen für Broadcast",
+        "cert.send.message_label": "Nachricht (optional):",
+        "cert.send.message_placeholder": "Optionale Nachricht...",
+        "cert.send_success": "Anmeldedaten erfolgreich gesendet!",
+        "cert.err.accept": "Fehler beim Annehmen der Anmeldedaten:",
+        "cert.err.refuse": "Fehler beim Ablehnen der Anmeldedaten:",
+        "cert.err.send": "Fehler beim Senden der Anmeldedaten:",
+        "cert.err.revoke": "Fehler beim Widerrufen des Zertifikats:",
 
         // PKI tutorial
         "tut.title": "PKI-Konzepte: Tutorial",
@@ -826,7 +873,18 @@ const translations = {
         "net.encounter_status": "Encounter-Status",
         "net.encounters_desc": "In dieser Sitzung erfasste Peer-Begegnungen",
         "hubs.connected_count": "Verbundene Hubs",
-        "hubs.failed_count": "Fehlgeschlagene Verbindungen"
+        "hubs.failed_count": "Fehlgeschlagene Verbindungen",
+
+        // About page
+        "about.title": "Über SharkNet Messenger",
+        "about.desc": "Ein dezentraler Peer-to-Peer-Messenger auf Basis des ASAP-Protokolls.",
+        "about.version_label": "Version",
+        "about.description": "Ein dezentraler Peer-to-Peer-Messenger auf Basis des ASAP-Protokolls",
+        "about.team_label": "Team",
+        "about.supervisor_label": "Betreuer",
+        "about.tech_label": "Verwendete Technologien",
+        "about.source_label": "Quellcode",
+        "about.github_link": "Auf GitHub ansehen"
     },
     tr: {
         // Common
@@ -837,6 +895,8 @@ const translations = {
         "common.loading": "Yükleniyor...",
         "common.status": "Durum",
         "common.actions": "İşlemler",
+        "common.unknown": "Bilinmiyor",
+        "common.error": "Hata",
 
         // Sidebar
         "nav.messenger": "Mesajlaşma",
@@ -848,6 +908,7 @@ const translations = {
         "nav.settings": "Ayarlar",
         "nav.profile": "Profilim",
         "nav.help": "Yardım",
+        "nav.about": "Hakkında",
 
         // Header
         "header.internet": "İnternet",
@@ -1125,6 +1186,21 @@ const translations = {
         "cert.tip.ia": "Bu kişinin gerçekten iddia ettiği kişi olduğundan ne kadar emin olabileceğiniz. 10, kendiniz doğruladığınız anlamına gelir. Daha düşük puanlar, başkaları aracılığıyla güvendiğiniz anlamına gelir.",
         "cert.tip.sf": "Bu kişinin, başkalarına kefil olmadan önce kimlikleri ne kadar dikkatli kontrol ettiğine dair kişisel tahmininiz (1–10). Yüksek bir değer, onun üzerinden ulaştığınız herkesin Kimlik Güvencesini düşürür.",
         "cert.tip.cert": "\"Bu kişiyi doğruladım — anahtar gerçekten ona ait\" anlamına gelen dijital bir imza. Merkezi otorite yoktur — sertifikalar insanlar bağlandıkça yayılır.",
+        "cert.requires_backend": "Arka uç desteği gerektirir",
+        "cert.unknown_sender": "Bilinmeyen Gönderen",
+        "cert.this_peer": "bu eş",
+        "cert.peerid_copied": "Eş Kimliği panoya kopyalandı!",
+        "cert.revoke.subject_id_label": "Özne Kimliği:",
+        "cert.revoke.subject_name_label": "Sertifika Öznesi:",
+        "cert.send.peerid_label": "Eş Kimliği (opsiyonel):",
+        "cert.send.broadcast_placeholder": "Yayın yapmak için boş bırakın",
+        "cert.send.message_label": "Mesaj (opsiyonel):",
+        "cert.send.message_placeholder": "İsteğe bağlı mesaj...",
+        "cert.send_success": "Kimlik bilgileri başarıyla gönderildi!",
+        "cert.err.accept": "Kimlik bilgisi kabul edilirken hata oluştu:",
+        "cert.err.refuse": "Kimlik bilgisi reddedilirken hata oluştu:",
+        "cert.err.send": "Kimlik bilgileri gönderilirken hata oluştu:",
+        "cert.err.revoke": "Sertifika iptal edilirken hata oluştu:",
 
         // PKI tutorial
         "tut.title": "PKI Kavramları: Eğitim",
@@ -1236,7 +1312,18 @@ const translations = {
         "net.encounter_status": "Karşılaşma Durumu",
         "net.encounters_desc": "Bu oturumda izlenen eş karşılaşmaları",
         "hubs.connected_count": "Bağlı hub'lar",
-        "hubs.failed_count": "Başarısız bağlantılar"
+        "hubs.failed_count": "Başarısız bağlantılar",
+
+        // About page
+        "about.title": "SharkNet Messenger Hakkında",
+        "about.desc": "ASAP protokolü üzerine inşa edilmiş merkeziyetsiz bir eşler arası (P2P) mesajlaşma uygulaması.",
+        "about.version_label": "Sürüm",
+        "about.description": "ASAP protokolü üzerine inşa edilmiş merkeziyetsiz bir eşler arası (P2P) mesajlaşma uygulaması",
+        "about.team_label": "Ekip",
+        "about.supervisor_label": "Danışman",
+        "about.tech_label": "Kullanılan Teknolojiler",
+        "about.source_label": "Kaynak Kod",
+        "about.github_link": "GitHub'da Görüntüle"
     },
     ar: {
         // Common
@@ -1247,6 +1334,8 @@ const translations = {
         "common.loading": "جاري التحميل...",
         "common.status": "الحالة",
         "common.actions": "الإجراءات",
+        "common.unknown": "غير معروف",
+        "common.error": "خطأ",
 
         // Sidebar
         "nav.messenger": "الدردشة",
@@ -1258,6 +1347,7 @@ const translations = {
         "nav.settings": "الإعدادات",
         "nav.profile": "ملفي الشخصي",
         "nav.help": "المساعدة",
+        "nav.about": "حول",
 
         // Header
         "header.internet": "الإنترنت",
@@ -1535,6 +1625,21 @@ const translations = {
         "cert.tip.ia": "مدى تأكدك من أن هذا الشخص هو فعلاً من يدّعي. 10 تعني أنك تحققت منه بنفسك. الدرجات الأقل تعني أنك تثق به عبر أشخاص آخرين.",
         "cert.tip.sf": "تقديرك الشخصي (1–10) لمدى دقة هذا الشخص في التحقق من هويات الآخرين قبل أن يشهد لهم. الرقم الأعلى يخفض ضمان الهوية لكل من تصل إليه عبره.",
         "cert.tip.cert": "توقيع رقمي يؤكد: \"تحققت من هذا الشخص — مفتاحه يعود إليه فعلاً.\" لا توجد سلطة مركزية — الشهادات تنتشر بين الناس أثناء تواصلهم.",
+        "cert.requires_backend": "يتطلب دعم الخادم الخلفي",
+        "cert.unknown_sender": "مرسل غير معروف",
+        "cert.this_peer": "هذا النظير",
+        "cert.peerid_copied": "تم نسخ معرف النظير إلى الحافظة!",
+        "cert.revoke.subject_id_label": "معرف الموضوع:",
+        "cert.revoke.subject_name_label": "موضوع الشهادة:",
+        "cert.send.peerid_label": "معرف النظير (اختياري):",
+        "cert.send.broadcast_placeholder": "اتركه فارغاً للبث للجميع",
+        "cert.send.message_label": "الرسالة (اختياري):",
+        "cert.send.message_placeholder": "رسالة اختيارية...",
+        "cert.send_success": "تم إرسال بيانات الاعتماد بنجاح!",
+        "cert.err.accept": "خطأ في قبول بيانات الاعتماد:",
+        "cert.err.refuse": "خطأ في رفض بيانات الاعتماد:",
+        "cert.err.send": "خطأ في إرسال بيانات الاعتماد:",
+        "cert.err.revoke": "خطأ في إبطال الشهادة:",
 
         // PKI tutorial
         "tut.title": "مفاهيم PKI: شرح تعليمي",
@@ -1646,7 +1751,18 @@ const translations = {
         "net.encounter_status": "حالة اللقاءات",
         "net.encounters_desc": "لقاءات النظراء المتتبعة في هذه الجلسة",
         "hubs.connected_count": "موزّعات متصلة",
-        "hubs.failed_count": "اتصالات فاشلة"
+        "hubs.failed_count": "اتصالات فاشلة",
+
+        // About page
+        "about.title": "حول SharkNet Messenger",
+        "about.desc": "تطبيق مراسلة لامركزي من نظير إلى نظير مبني على بروتوكول ASAP.",
+        "about.version_label": "الإصدار",
+        "about.description": "تطبيق مراسلة لامركزي من نظير إلى نظير مبني على بروتوكول ASAP",
+        "about.team_label": "الفريق",
+        "about.supervisor_label": "المشرف",
+        "about.tech_label": "التقنيات المستخدمة",
+        "about.source_label": "الكود المصدري",
+        "about.github_link": "عرض على GitHub"
     }
 };
 
@@ -1710,8 +1826,19 @@ function setLanguage(lang) {
         }
     });
 
+    // Update title/tooltip attributes if they have data-i18n-title
+    document.querySelectorAll('[data-i18n-title]').forEach(el => {
+        const key = el.getAttribute('data-i18n-title');
+        if (translations[lang] && translations[lang][key]) {
+            el.setAttribute('title', translations[lang][key]);
+        }
+    });
+
     updateLangButtonStates(lang);
     updateLangIcon(lang);
+
+    // Let pages re-render any JS-templated text (built outside the data-i18n scan above)
+    document.dispatchEvent(new CustomEvent('snm:languagechange', { detail: { lang } }));
 }
 
 /**
