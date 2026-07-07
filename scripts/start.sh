@@ -8,7 +8,7 @@ elif [ -d "/opt/homebrew/opt/tomcat/libexec" ]; then
 elif [ -d "/opt/homebrew/opt/tomcat@9/libexec" ]; then
   TOMCAT_HOME="/opt/homebrew/opt/tomcat@9/libexec"
 elif [ -d "/opt/tomcat" ]; then
-  TOMCAT_HOME="/opt/tomcat"
+  TOMCAT_HOME="/opt/homebrew/opt/tomcat@10/libexec"
 elif command -v catalina.sh &>/dev/null; then
   TOMCAT_HOME="$(dirname $(dirname $(which catalina.sh)))"
 else

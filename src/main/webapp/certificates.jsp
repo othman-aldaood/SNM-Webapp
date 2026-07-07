@@ -34,21 +34,22 @@
         }
         .info-tip__btn:hover, .info-tip__btn:focus-visible { color: #2563eb; }
         .info-tip__tooltip {
-            position: absolute; bottom: calc(100% + 9px); left: 50%; transform: translateX(-50%);
+            /* fixed (not absolute) so ancestor overflow:hidden/auto can't clip it; JS sets --tip-top/left */
+            position: fixed; top: var(--tip-top, -9999px); left: var(--tip-left, -9999px);
             width: max-content; max-width: min(280px, calc(100vw - 32px));
             background: #1e293b; color: #e2e8f0; font-size: 0.775rem; font-weight: 400; line-height: 1.6;
             padding: 10px 13px; border-radius: 8px; box-shadow: 0 6px 20px rgba(0,0,0,0.22);
-            z-index: 200; pointer-events: none; opacity: 0; visibility: hidden;
+            z-index: 9999; pointer-events: none; opacity: 0; visibility: hidden;
             transition: opacity 0.12s ease, visibility 0.12s ease;
             text-transform: none; letter-spacing: normal; white-space: normal; text-align: left;
         }
         .info-tip__tooltip::after {
-            content: ''; position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
-            border: 5px solid transparent; border-top-color: #1e293b;
+            content: ''; position: absolute; left: var(--tip-arrow-left, 50%); transform: translateX(-50%);
+            border: 5px solid transparent;
         }
+        .info-tip__tooltip[data-placement="top"]::after { top: 100%; border-top-color: #1e293b; }
+        .info-tip__tooltip[data-placement="bottom"]::after { bottom: 100%; border-bottom-color: #1e293b; }
         .info-tip:hover .info-tip__tooltip, .info-tip:focus-within .info-tip__tooltip { opacity: 1; visibility: visible; }
-        .info-tip--flip .info-tip__tooltip { left: auto; right: 0; transform: none; }
-        .info-tip--flip .info-tip__tooltip::after { left: auto; right: 8px; transform: none; }
     </style>
 
     <div class="flex flex-col md:flex-row min-h-screen">
@@ -352,6 +353,6 @@
         </div>
     </div>
 
-    <script src="js/certificates.js?v=5.0"></script>
+    <script src="js/certificates.js?v=5.1"></script>
 </body>
 </html>

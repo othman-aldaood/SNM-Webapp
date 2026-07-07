@@ -101,10 +101,61 @@ function renderIABar(el, score, small) {
 }
 
 /* ------------------------------------------------------------------ */
+/* Info-tip tooltips                                                   */
+/* ------------------------------------------------------------------ */
+
+// Tooltip is position:fixed (to escape ancestor overflow clipping), so its offsets must be computed here.
+function positionInfoTip(tip) {
+    const btn = tip.querySelector('.info-tip__btn');
+    const tooltip = tip.querySelector('.info-tip__tooltip');
+    if (!btn || !tooltip) return;
+
+    const margin = 8;
+    const gap = 9;
+    const btnRect = btn.getBoundingClientRect();
+    const tipRect = tooltip.getBoundingClientRect();
+
+    let left = btnRect.left + btnRect.width / 2 - tipRect.width / 2;
+    left = Math.max(margin, Math.min(left, window.innerWidth - tipRect.width - margin));
+
+    let top = btnRect.top - tipRect.height - gap;
+    let placement = 'top';
+    if (top < margin) {
+        top = btnRect.bottom + gap;
+        placement = 'bottom';
+    }
+
+    const arrowLeft = btnRect.left + btnRect.width / 2 - left;
+    tooltip.style.setProperty('--tip-left', left + 'px');
+    tooltip.style.setProperty('--tip-top', top + 'px');
+    tooltip.style.setProperty('--tip-arrow-left', arrowLeft + 'px');
+    tooltip.setAttribute('data-placement', placement);
+}
+
+function initInfoTips() {
+    const tips = document.querySelectorAll('.info-tip');
+    tips.forEach(tip => {
+        const btn = tip.querySelector('.info-tip__btn');
+        if (!btn) return;
+        const update = () => positionInfoTip(tip);
+        btn.addEventListener('mouseenter', update);
+        btn.addEventListener('focus', update);
+    });
+
+    const repositionOpenTip = () => {
+        const open = document.querySelector('.info-tip:hover, .info-tip:focus-within');
+        if (open) positionInfoTip(open);
+    };
+    window.addEventListener('scroll', repositionOpenTip, true);
+    window.addEventListener('resize', repositionOpenTip);
+}
+
+/* ------------------------------------------------------------------ */
 /* Bootstrapping                                                       */
 /* ------------------------------------------------------------------ */
 
 document.addEventListener('DOMContentLoaded', function () {
+    initInfoTips();
     loadAll();
 
     setInterval(() => {
