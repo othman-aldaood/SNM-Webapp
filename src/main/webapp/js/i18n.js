@@ -516,6 +516,13 @@ const translations = {
         // Network status widgets (Phase 2a)
         "net.encounter_status": "Encounter Status",
         "net.encounters_desc": "Peer encounters tracked in this session",
+        "net.encounters_title": "Peer Encounters",
+        "net.th.peer_id": "Peer ID",
+        "net.th.connection_type": "Connection Type",
+        "net.th.duration": "Duration",
+        "net.ongoing": "Ongoing",
+        "net.started": "Started",
+        "net.no_encounters": "No peer encounters recorded yet.",
         "hubs.connected_count": "Connected hubs",
         "hubs.failed_count": "Failed connections",
 
@@ -1045,6 +1052,13 @@ const translations = {
         // Network status widgets (Phase 2a)
         "net.encounter_status": "Encounter-Status",
         "net.encounters_desc": "In dieser Sitzung erfasste Peer-Begegnungen",
+        "net.encounters_title": "Peer-Begegnungen",
+        "net.th.peer_id": "Peer-ID",
+        "net.th.connection_type": "Verbindungstyp",
+        "net.th.duration": "Dauer",
+        "net.ongoing": "Laufend",
+        "net.started": "Gestartet",
+        "net.no_encounters": "Noch keine Peer-Begegnungen erfasst.",
         "hubs.connected_count": "Verbundene Hubs",
         "hubs.failed_count": "Fehlgeschlagene Verbindungen",
 
@@ -1570,6 +1584,13 @@ const translations = {
         // Network status widgets (Phase 2a)
         "net.encounter_status": "Karşılaşma Durumu",
         "net.encounters_desc": "Bu oturumda izlenen eş karşılaşmaları",
+        "net.encounters_title": "Eş Karşılaşmaları",
+        "net.th.peer_id": "Eş Kimliği",
+        "net.th.connection_type": "Bağlantı Türü",
+        "net.th.duration": "Süre",
+        "net.ongoing": "Devam ediyor",
+        "net.started": "Başladı",
+        "net.no_encounters": "Henüz eş karşılaşması kaydedilmedi.",
         "hubs.connected_count": "Bağlı hub'lar",
         "hubs.failed_count": "Başarısız bağlantılar",
 
@@ -2095,6 +2116,13 @@ const translations = {
         // Network status widgets (Phase 2a)
         "net.encounter_status": "حالة اللقاءات",
         "net.encounters_desc": "لقاءات النظراء المتتبعة في هذه الجلسة",
+        "net.encounters_title": "لقاءات النظراء",
+        "net.th.peer_id": "معرّف النظير",
+        "net.th.connection_type": "نوع الاتصال",
+        "net.th.duration": "المدة",
+        "net.ongoing": "جارٍ",
+        "net.started": "بدأ",
+        "net.no_encounters": "لم يتم تسجيل أي لقاءات نظراء بعد.",
         "hubs.connected_count": "موزّعات متصلة",
         "hubs.failed_count": "اتصالات فاشلة",
 
