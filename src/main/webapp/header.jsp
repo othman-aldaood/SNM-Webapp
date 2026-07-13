@@ -191,5 +191,5 @@
         }
     });
 </script>
-<script src="js/ui-ux.js?v=6"></script>
-<script src="js/i18n.js?v=5"></script>
+<script src="js/ui-ux.js?v=7"></script>
+<script src="js/i18n.js?v=6"></script>
