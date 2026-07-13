@@ -88,6 +88,28 @@ public class PeerStatusServlet extends HttpServlet {
         );
         json.add("encounterStatus", encounterStatus);
 
+        // Encounters (one entry per logged encounter, oldest first)
+        JsonArray encountersJson = new JsonArray();
+        List<PeerRuntime.EncounterLog> allEncounters = new java.util.ArrayList<>();
+        for (List<PeerRuntime.EncounterLog> peerLogs : logs.values()) {
+            allEncounters.addAll(peerLogs);
+        }
+        allEncounters.sort(java.util.Comparator.comparingLong(e -> e.startTime));
+
+        for (PeerRuntime.EncounterLog encounter : allEncounters) {
+            JsonObject encounterJson = new JsonObject();
+            encounterJson.addProperty("peerID", encounter.peerID.toString());
+            encounterJson.addProperty("connectionType", connectionTypeLabel(encounter.type));
+            encounterJson.addProperty("startTime", encounter.startTime);
+            if (encounter.stopTime >= 0) {
+                encounterJson.addProperty("stopTime", encounter.stopTime);
+            } else {
+                encounterJson.add("stopTime", com.google.gson.JsonNull.INSTANCE);
+            }
+            encountersJson.add(encounterJson);
+        }
+        json.add("encounters", encountersJson);
+
         resp.setStatus(HttpServletResponse.SC_OK);
         resp.getWriter().write(gson.toJson(json));
     }
@@ -96,5 +118,15 @@ public class PeerStatusServlet extends HttpServlet {
         JsonObject o = new JsonObject();
         o.addProperty("msg", msg);
         return gson.toJson(o);
+    }
+
+    private String connectionTypeLabel(ASAPEncounterConnectionType type) {
+        return switch (type) {
+            case INTERNET -> "TCP";
+            case ASAP_HUB -> "HUB";
+            case AD_HOC_LAYER_2_NETWORK -> "Ad-Hoc";
+            case ONION_NETWORK -> "Onion";
+            default -> "Unknown";
+        };
     }
 }
