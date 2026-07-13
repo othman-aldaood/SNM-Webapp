@@ -77,6 +77,37 @@
                             </div>
                         </ui:card>
 
+                        <%-- Presence Status Panel: Active/Away/DND/Invisible selector + lock toggle --%>
+                        <ui:card title="Presence Status" icon="fas fa-circle-dot" key="prof.status_title">
+                            <div class="space-y-3">
+                                <div class="grid grid-cols-2 gap-2">
+                                    <button onclick="setPeerStatus('active')" class="status-option flex items-center gap-2 px-3 py-2.5 rounded-lg border border-gray-200 dark:border-dark-border text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors" data-status="active">
+                                        <span class="w-2.5 h-2.5 rounded-full bg-green-500 flex-shrink-0"></span> <span data-i18n="status.active">Active</span>
+                                    </button>
+                                    <button onclick="setPeerStatus('away')" class="status-option flex items-center gap-2 px-3 py-2.5 rounded-lg border border-gray-200 dark:border-dark-border text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors" data-status="away">
+                                        <span class="w-2.5 h-2.5 rounded-full bg-yellow-500 flex-shrink-0"></span> <span data-i18n="status.away">Away</span>
+                                    </button>
+                                    <button onclick="setPeerStatus('dnd')" class="status-option flex items-center gap-2 px-3 py-2.5 rounded-lg border border-gray-200 dark:border-dark-border text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors" data-status="dnd">
+                                        <span class="w-2.5 h-2.5 rounded-full bg-red-500 flex-shrink-0"></span> <span data-i18n="status.dnd">Do Not Disturb</span>
+                                    </button>
+                                    <button onclick="setPeerStatus('invisible')" class="status-option flex items-center gap-2 px-3 py-2.5 rounded-lg border border-gray-200 dark:border-dark-border text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors" data-status="invisible">
+                                        <span class="w-2.5 h-2.5 rounded-full bg-gray-400 flex-shrink-0"></span> <span data-i18n="status.invisible">Invisible</span>
+                                    </button>
+                                </div>
+
+                                <hr class="border-gray-100 dark:border-dark-border">
+
+                                <label class="flex items-center justify-between cursor-pointer">
+                                    <span class="text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center gap-1.5">
+                                        <i class="fas fa-lock text-xs text-gray-400"></i> <span data-i18n="status.lock_status">Lock Status</span>
+                                    </span>
+                                    <input type="checkbox" class="status-lock-checkbox sr-only peer" onchange="setStatusLocked(this.checked)">
+                                    <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600 shrink-0"></div>
+                                </label>
+                                <p class="text-xs text-gray-400 dark:text-gray-500" data-i18n="status.lock_desc">Locked status won't change automatically (e.g. when you're away).</p>
+                            </div>
+                        </ui:card>
+
                         <%-- Cryptographic Identity Panel configured with valid i18n key tracking --%>
                         <ui:card title="Cryptographic Identity" icon="fas fa-fingerprint" key="prof.crypto_id">
                             <div class="space-y-4 text-sm">

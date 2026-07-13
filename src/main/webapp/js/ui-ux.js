@@ -156,7 +156,161 @@ document.addEventListener('DOMContentLoaded', () => {
                 globalPeerCountEl.innerText = "Offline";
             });
     }
+
+    renderStatusUI();
 });
+
+document.addEventListener('snm:languagechange', renderStatusUI);
+
+// ==========================================
+// Presence Status (Active / Away / DND / Invisible) + Lock
+// ==========================================
+// Stored in localStorage (no backend endpoint exists yet for peer presence
+// settings) so status/lock survive reloads and stay in sync across every
+// page via the shared header markup this file already drives.
+
+const STATUS_KEY = 'snm-status';
+const STATUS_LOCK_KEY = 'snm-status-locked';
+const VALID_STATUSES = ['active', 'away', 'dnd', 'invisible'];
+const STATUS_DOT_CLASSES = {
+    active: 'bg-green-500',
+    away: 'bg-yellow-500',
+    dnd: 'bg-red-500',
+    invisible: 'bg-gray-400'
+};
+const STATUS_I18N_KEYS = {
+    active: 'status.active',
+    away: 'status.away',
+    dnd: 'status.dnd',
+    invisible: 'status.invisible'
+};
+const ALL_STATUS_DOT_CLASSES = Object.values(STATUS_DOT_CLASSES);
+
+/**
+ * Local i18n lookup mirroring the t()/tl() helpers used elsewhere - kept local
+ * since this file loads before i18n.js but only ever calls this from
+ * event-driven code (after both scripts have executed).
+ * @param {string} key - Dictionary translation key
+ * @param {string} fallback - Default text if no translation is found
+ * @return {string}
+ */
+function statusT(key, fallback) {
+    const lang = localStorage.getItem('snm-lang') || 'en';
+    return (typeof translations !== 'undefined' && translations[lang] && translations[lang][key]) ? translations[lang][key] : fallback;
+}
+
+/**
+ * Reads the currently stored presence status, defaulting to 'active'.
+ * @return {string}
+ */
+function getPeerStatus() {
+    const s = localStorage.getItem(STATUS_KEY);
+    return VALID_STATUSES.includes(s) ? s : 'active';
+}
+
+/**
+ * Whether the status is locked against automatic (system-driven) changes.
+ * @return {boolean}
+ */
+function isStatusLocked() {
+    return localStorage.getItem(STATUS_LOCK_KEY) === 'true';
+}
+
+/**
+ * Sets the peer's presence status and re-renders every status indicator/selector
+ * present on the current page (header dot + dropdown, profile page selector).
+ * @param {string} status - one of VALID_STATUSES
+ * @param {Object} [opts]
+ * @param {boolean} [opts.auto=false] - true for automatic/system-driven changes
+ *   (e.g. idle detection). Automatic changes are ignored while locked; manual
+ *   changes (the user explicitly picking a status) always go through.
+ * @return {void}
+ */
+function setPeerStatus(status, opts) {
+    opts = opts || {};
+    if (!VALID_STATUSES.includes(status)) return;
+    if (opts.auto && isStatusLocked()) return;
+    localStorage.setItem(STATUS_KEY, status);
+    renderStatusUI();
+}
+
+/**
+ * Locks/unlocks the status against automatic changes, and re-renders.
+ * @param {boolean} locked
+ * @return {void}
+ */
+function setStatusLocked(locked) {
+    localStorage.setItem(STATUS_LOCK_KEY, locked ? 'true' : 'false');
+    renderStatusUI();
+}
+
+/**
+ * Re-renders every status dot, option list, and lock toggle present in the
+ * current DOM (header + profile page share the same class/data hooks).
+ * @return {void}
+ */
+function renderStatusUI() {
+    const status = getPeerStatus();
+    const locked = isStatusLocked();
+    const dotClass = STATUS_DOT_CLASSES[status] || STATUS_DOT_CLASSES.active;
+    const label = statusT(STATUS_I18N_KEYS[status], status);
+
+    document.querySelectorAll('.status-indicator-dot').forEach(el => {
+        el.classList.remove(...ALL_STATUS_DOT_CLASSES);
+        el.classList.add(dotClass);
+        el.title = label;
+    });
+
+    document.querySelectorAll('.status-option').forEach(btn => {
+        const isActive = btn.dataset.status === status;
+        btn.classList.toggle('bg-gray-100', isActive);
+        btn.classList.toggle('dark:bg-gray-800', isActive);
+        btn.classList.toggle('ring-1', isActive);
+        btn.classList.toggle('ring-primary-500', isActive);
+    });
+
+    document.querySelectorAll('.status-lock-checkbox').forEach(cb => {
+        cb.checked = locked;
+    });
+}
+
+/**
+ * Idle-based auto-away: after 5 minutes without mouse/keyboard/touch activity,
+ * automatically switches to 'away' (unless the status is locked). Restores
+ * 'active' on the next interaction, but only if this script is the one that
+ * set 'away' in the first place - a manually chosen 'away'/'dnd'/'invisible'
+ * status is left alone.
+ * @return {void}
+ */
+function initIdleAutoAway() {
+    const IDLE_MS = 5 * 60 * 1000;
+    let idleTimer = null;
+    let autoAway = false;
+
+    function scheduleIdle() {
+        clearTimeout(idleTimer);
+        idleTimer = setTimeout(() => {
+            if (getPeerStatus() === 'active') {
+                autoAway = true;
+                setPeerStatus('away', {auto: true});
+            }
+        }, IDLE_MS);
+    }
+
+    ['mousemove', 'keydown', 'click', 'touchstart'].forEach(evt => {
+        document.addEventListener(evt, () => {
+            if (autoAway && getPeerStatus() === 'away') {
+                autoAway = false;
+                setPeerStatus('active', {auto: true});
+            }
+            scheduleIdle();
+        }, {passive: true});
+    });
+
+    scheduleIdle();
+}
+
+initIdleAutoAway();
 
 // ==========================================
 // Custom Logout Modal Logic

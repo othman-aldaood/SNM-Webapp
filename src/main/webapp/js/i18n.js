@@ -39,6 +39,15 @@ const translations = {
         "header.logout_confirm": "Confirm Logout",
         "header.logout_desc": "Are you sure you want to log out?<br>This will stop the active peer and redirect you to the login screen.",
 
+        // Presence Status (header + profile)
+        "status.set_status": "Set Status",
+        "status.active": "Active",
+        "status.away": "Away",
+        "status.dnd": "Do Not Disturb",
+        "status.invisible": "Invisible",
+        "status.lock_status": "Lock Status",
+        "status.lock_desc": "Locked status won't change automatically (e.g. when you're away).",
+
         // Settings Page
         "settings.title": "Settings & Configuration",
         "settings.desc": "Manage peer configuration and application settings.",
@@ -265,6 +274,7 @@ const translations = {
         "prof.title": "Peer Profile",
         "prof.desc": "Manage your decentralized identity and view network metrics.",
         "prof.active_identity": "Active Identity",
+        "prof.status_title": "Presence Status",
         "prof.export": "Export Identity",
         "prof.crypto_id": "Cryptographic Identity",
         "prof.peer_id": "Peer ID",
@@ -573,6 +583,15 @@ const translations = {
         "header.logout_confirm": "Abmeldung bestätigen",
         "header.logout_desc": "Möchten Sie sich wirklich abmelden?<br>Dies stoppt den aktiven Peer und leitet Sie zur Anmeldeseite weiter.",
 
+        // Presence Status (header + profile)
+        "status.set_status": "Status festlegen",
+        "status.active": "Aktiv",
+        "status.away": "Abwesend",
+        "status.dnd": "Nicht stören",
+        "status.invisible": "Unsichtbar",
+        "status.lock_status": "Status sperren",
+        "status.lock_desc": "Gesperrter Status ändert sich nicht automatisch (z. B. bei Abwesenheit).",
+
         // Settings Page
         "settings.title": "Einstellungen & Konfiguration",
         "settings.desc": "Verwalten Sie Peer-Konfigurationen und Anwendungseinstellungen.",
@@ -801,6 +820,7 @@ const translations = {
         "prof.title": "Peer-Profil",
         "prof.desc": "Verwalten Sie Ihre dezentrale Identität und zeigen Sie Netzwerkmetriken an.",
         "prof.active_identity": "Aktive Identität",
+        "prof.status_title": "Anwesenheitsstatus",
         "prof.export": "Identität exportieren",
         "prof.crypto_id": "Kryptografische Identität",
         "prof.peer_id": "Peer-ID",
@@ -1107,6 +1127,15 @@ const translations = {
         "header.logout_confirm": "Çıkışı Onayla",
         "header.logout_desc": "Çıkış yapmak istediğinizden emin misiniz?<br>Bu, aktif eşi durduracak ve sizi giriş ekranına yönlendirecektir.",
 
+        // Presence Status (header + profile)
+        "status.set_status": "Durum Belirle",
+        "status.active": "Aktif",
+        "status.away": "Uzakta",
+        "status.dnd": "Rahatsız Etmeyin",
+        "status.invisible": "Görünmez",
+        "status.lock_status": "Durumu Kilitle",
+        "status.lock_desc": "Kilitli durum otomatik olarak değişmez (örn. uzaktayken).",
+
         // Settings Page
         "settings.title": "Ayarlar & Konfigürasyon",
         "settings.desc": "Eş konfigürasyonunu ve uygulama ayarlarını yönetin.",
@@ -1159,6 +1188,7 @@ const translations = {
         "prof.title": "Eş Profili",
         "prof.desc": "Merkezi olmayan kimliğinizi yönetin ve ağ metriklerini görüntüleyin.",
         "prof.active_identity": "Aktif Kimlik",
+        "prof.status_title": "Bulunma Durumu",
         "prof.export": "Kimliği Dışa Aktar",
         "prof.crypto_id": "Kriptografik Kimlik",
         "prof.peer_id": "Eş Kimliği (Peer ID)",
@@ -1639,6 +1669,15 @@ const translations = {
         "header.logout_confirm": "تأكيد تسجيل الخروج",
         "header.logout_desc": "هل أنت متأكد أنك تريد تسجيل الخروج؟<br>سيؤدي هذا إلى إيقاف النظير النشط وتوجيهك إلى شاشة تسجيل الدخول.",
 
+        // Presence Status (header + profile)
+        "status.set_status": "تعيين الحالة",
+        "status.active": "نشط",
+        "status.away": "بعيد",
+        "status.dnd": "عدم الإزعاج",
+        "status.invisible": "غير مرئي",
+        "status.lock_status": "قفل الحالة",
+        "status.lock_desc": "لن تتغير الحالة المقفلة تلقائيًا (مثلاً عند الابتعاد).",
+
         // Settings Page
         "settings.title": "الإعدادات والتهيئة",
         "settings.desc": "إدارة تكوين النظير وإعدادات التطبيق.",
@@ -1691,6 +1730,7 @@ const translations = {
         "prof.title": "ملف النظير",
         "prof.desc": "إدارة هويتك اللامركزية وعرض مقاييس الشبكة.",
         "prof.active_identity": "الهوية النشطة",
+        "prof.status_title": "حالة الحضور",
         "prof.export": "تصدير الهوية",
         "prof.crypto_id": "الهوية المشفرة",
         "prof.peer_id": "معرف النظير",
