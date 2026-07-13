@@ -34,21 +34,22 @@
         }
         .info-tip__btn:hover, .info-tip__btn:focus-visible { color: #2563eb; }
         .info-tip__tooltip {
-            position: absolute; bottom: calc(100% + 9px); left: 50%; transform: translateX(-50%);
+            /* fixed (not absolute) so ancestor overflow:hidden/auto can't clip it; JS sets --tip-top/left */
+            position: fixed; top: var(--tip-top, -9999px); left: var(--tip-left, -9999px);
             width: max-content; max-width: min(280px, calc(100vw - 32px));
             background: #1e293b; color: #e2e8f0; font-size: 0.775rem; font-weight: 400; line-height: 1.6;
             padding: 10px 13px; border-radius: 8px; box-shadow: 0 6px 20px rgba(0,0,0,0.22);
-            z-index: 200; pointer-events: none; opacity: 0; visibility: hidden;
+            z-index: 9999; pointer-events: none; opacity: 0; visibility: hidden;
             transition: opacity 0.12s ease, visibility 0.12s ease;
             text-transform: none; letter-spacing: normal; white-space: normal; text-align: left;
         }
         .info-tip__tooltip::after {
-            content: ''; position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
-            border: 5px solid transparent; border-top-color: #1e293b;
+            content: ''; position: absolute; left: var(--tip-arrow-left, 50%); transform: translateX(-50%);
+            border: 5px solid transparent;
         }
+        .info-tip__tooltip[data-placement="top"]::after { top: 100%; border-top-color: #1e293b; }
+        .info-tip__tooltip[data-placement="bottom"]::after { bottom: 100%; border-bottom-color: #1e293b; }
         .info-tip:hover .info-tip__tooltip, .info-tip:focus-within .info-tip__tooltip { opacity: 1; visibility: visible; }
-        .info-tip--flip .info-tip__tooltip { left: auto; right: 0; transform: none; }
-        .info-tip--flip .info-tip__tooltip::after { left: auto; right: 8px; transform: none; }
     </style>
 
     <div class="flex flex-col md:flex-row min-h-screen">
@@ -183,7 +184,7 @@
                                     </div>
                                     <div class="flex items-center gap-2">
                                         <div id="detail-sf" class="font-mono text-xl font-bold"></div>
-                                        <button disabled class="text-gray-300 dark:text-gray-600 cursor-not-allowed p-0.5" title="Requires backend support">
+                                        <button disabled class="text-gray-300 dark:text-gray-600 cursor-not-allowed p-0.5" data-i18n-title="cert.requires_backend" title="Requires backend support">
                                             <i class="fas fa-pen text-xs"></i>
                                         </button>
                                     </div>
@@ -195,7 +196,7 @@
                             </div>
 
                             <%-- Trust Chain (requires backend support) --%>
-                            <div class="bg-gray-50 dark:bg-gray-900/50 rounded-lg p-4 opacity-60" title="Requires backend support">
+                            <div class="bg-gray-50 dark:bg-gray-900/50 rounded-lg p-4 opacity-60" data-i18n-title="cert.requires_backend" title="Requires backend support">
                                 <div class="font-semibold text-sm text-gray-500 dark:text-gray-400 mb-2.5 flex items-center gap-1.5">
                                     <span data-i18n="cert.chain_title">Trust Chain</span>
                                     <span class="bg-gray-200 text-gray-600 dark:bg-gray-700 dark:text-gray-400 text-[0.65rem] font-bold px-2 py-0.5 rounded-full" data-i18n="common.coming_soon">Coming soon</span>
@@ -310,11 +311,11 @@
             </div>
             <div class="p-6 space-y-4">
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Subject ID:</label>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1" data-i18n="cert.revoke.subject_id_label">Subject ID:</label>
                     <input type="text" id="revoke-subject-id" class="w-full bg-gray-100 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 rounded-lg p-2.5 text-sm text-gray-500 dark:text-gray-400 cursor-not-allowed font-mono" readonly>
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Certificate Subject:</label>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1" data-i18n="cert.revoke.subject_name_label">Certificate Subject:</label>
                     <input type="text" id="revoke-subject-name" class="w-full bg-gray-100 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 rounded-lg p-2.5 text-sm text-gray-500 dark:text-gray-400 cursor-not-allowed" readonly>
                 </div>
                 <div class="bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 p-3 rounded-lg text-sm border border-red-200 dark:border-red-800/30 leading-relaxed" data-i18n="cert.revoke.warning">
@@ -337,12 +338,12 @@
             </div>
             <div class="p-6 space-y-4">
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Peer ID (optional):</label>
-                    <input type="text" id="import-peer-name" class="w-full bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Leave empty to broadcast">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1" data-i18n="cert.send.peerid_label">Peer ID (optional):</label>
+                    <input type="text" id="import-peer-name" class="w-full bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Leave empty to broadcast" data-i18n-placeholder="cert.send.broadcast_placeholder">
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Message (optional):</label>
-                    <textarea id="import-message" rows="3" class="w-full bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none resize-none" placeholder="Optional message..."></textarea>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1" data-i18n="cert.send.message_label">Message (optional):</label>
+                    <textarea id="import-message" rows="3" class="w-full bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none resize-none" placeholder="Optional message..." data-i18n-placeholder="cert.send.message_placeholder"></textarea>
                 </div>
             </div>
             <div class="p-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700/50 flex flex-col-reverse sm:flex-row justify-end gap-3">
@@ -352,6 +353,6 @@
         </div>
     </div>
 
-    <script src="js/certificates.js?v=5.0"></script>
+    <script src="js/certificates.js?v=5.1"></script>
 </body>
 </html>

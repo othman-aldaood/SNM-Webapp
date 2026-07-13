@@ -6,6 +6,14 @@
 let peers = [];
 let selectedPeerId = null;
 
+// NOTE: `translations` is declared with `const` at the top level of i18n.js, so it
+// lives in the shared global lexical scope, not as a `window` property - reference
+// it directly (not via `window.translations`, which would always be undefined).
+function tl(key, fallback) {
+    const lang = localStorage.getItem('snm-lang') || 'en';
+    return (typeof translations !== 'undefined' && translations[lang] && translations[lang][key]) ? translations[lang][key] : fallback;
+}
+
 // Initialize and load existing peers on page load
 document.addEventListener('DOMContentLoaded', function () {
     loadExistingPeers();
@@ -65,7 +73,7 @@ function updatePeerDropdown() {
     if (!peers || !Array.isArray(peers) || peers.length === 0) {
         const noPeersOption = document.createElement('div');
         noPeersOption.className = 'px-4 py-3 text-sm text-gray-500 dark:text-gray-400 cursor-default text-center italic';
-        noPeersOption.textContent = '-- No peers available --';
+        noPeersOption.textContent = tl('login.no_peers_available', '-- No peers available --');
         optionsContainer.appendChild(noPeersOption);
         return;
     }
@@ -75,8 +83,8 @@ function updatePeerDropdown() {
         // Tailwind classes for dropdown items
         option.className = 'px-4 py-3 text-sm cursor-pointer border-b border-gray-100 dark:border-dark-border last:border-0 hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-900 dark:text-white transition-colors flex justify-between items-center';
 
-        const displayName = peer.name || peer.peerId || 'Unnamed Peer';
-        const activeBadge = peer.active ? '<span class="px-2 py-0.5 bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 text-[10px] uppercase font-bold rounded-full">Active</span>' : '';
+        const displayName = peer.name || peer.peerId || tl('login.unnamed_peer', 'Unnamed Peer');
+        const activeBadge = peer.active ? `<span class="px-2 py-0.5 bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 text-[10px] uppercase font-bold rounded-full">${tl('common.active', 'Active')}</span>` : '';
 
         option.innerHTML = `<span class="truncate pr-2">${escapeHtml(displayName)}</span> ${activeBadge}`;
 
@@ -104,7 +112,7 @@ function selectPeerFromDropdown(peerId, peerName) {
  */
 function selectExistingPeer() {
     if (!selectedPeerId) {
-        showError('Please select a peer from the list first.');
+        showError(tl('login.select_peer_first', 'Please select a peer from the list first.'));
         return;
     }
 
@@ -113,7 +121,7 @@ function selectExistingPeer() {
     fetch(`/snm-webapp/api/start/${encodeURIComponent(selectedPeerId)}`, { method: 'POST' })
         .then(response => {
             if (response.ok) {
-                showSuccess('Peer activated successfully! Redirecting...');
+                showSuccess(tl('login.peer_activated', 'Peer activated successfully! Redirecting...'));
                 setTimeout(() => { window.location.href = '/snm-webapp/'; }, 1000);
             } else {
                 throw new Error('Failed to activate peer');
@@ -121,7 +129,7 @@ function selectExistingPeer() {
         })
         .catch(error => {
             console.error('Error activating peer:', error);
-            showError('Failed to activate peer. Please try again.');
+            showError(tl('login.err.activate_failed', 'Failed to activate peer. Please try again.'));
             showLoading(false);
         });
 }
@@ -133,12 +141,12 @@ function createNewPeer() {
     const peerName = document.getElementById('peer-name').value.trim();
 
     if (!peerName) {
-        showError('Please enter a peer name.');
+        showError(tl('login.enter_peer_name', 'Please enter a peer name.'));
         return;
     }
 
     if (peerName.length < 2) {
-        showError('Peer name must be at least 2 characters long.');
+        showError(tl('login.peer_name_min_length', 'Peer name must be at least 2 characters long.'));
         return;
     }
 
@@ -154,12 +162,12 @@ function createNewPeer() {
             throw new Error('Failed to create peer');
         })
         .then(() => {
-            showSuccess('Peer created successfully! Redirecting...');
+            showSuccess(tl('login.peer_created', 'Peer created successfully! Redirecting...'));
             setTimeout(() => { window.location.href = '/snm-webapp/'; }, 1000);
         })
         .catch(error => {
             console.error('Error creating peer:', error);
-            showError('Failed to create peer. Please try again.');
+            showError(tl('login.err.create_failed', 'Failed to create peer. Please try again.'));
             showLoading(false);
         });
 }
@@ -169,7 +177,7 @@ function createNewPeer() {
  */
 function refreshPeers() {
     loadExistingPeers();
-    showSuccess('Peer list refreshed successfully!');
+    showSuccess(tl('login.peer_list_refreshed', 'Peer list refreshed successfully!'));
 }
 
 /**

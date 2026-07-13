@@ -14,6 +14,12 @@ const translations = {
         "common.loading": "Loading...",
         "common.status": "Status",
         "common.actions": "Actions",
+        "common.unknown": "Unknown",
+        "common.error": "Error",
+        "common.active": "Active",
+        "common.inactive": "Inactive",
+        "common.yes": "Yes",
+        "common.no": "No",
 
         // Sidebar
         "nav.messenger": "Messenger",
@@ -25,12 +31,22 @@ const translations = {
         "nav.settings": "Settings",
         "nav.profile": "My Profile",
         "nav.help": "Help",
+        "nav.about": "About",
 
         // Header
         "header.internet": "Internet",
         "header.logout": "Logout",
         "header.logout_confirm": "Confirm Logout",
         "header.logout_desc": "Are you sure you want to log out?<br>This will stop the active peer and redirect you to the login screen.",
+
+        // Presence Status (header + profile)
+        "status.set_status": "Set Status",
+        "status.active": "Active",
+        "status.away": "Away",
+        "status.dnd": "Do Not Disturb",
+        "status.invisible": "Invisible",
+        "status.lock_status": "Lock Status",
+        "status.lock_desc": "Locked status won't change automatically (e.g. when you're away).",
 
         // Settings Page
         "settings.title": "Settings & Configuration",
@@ -44,6 +60,25 @@ const translations = {
         "settings.remember_hubs_desc": "Automatically save and reconnect to previously used hub connections.",
         "settings.reconnect_hubs": "Enable hub reconnection",
         "settings.reconnect_hubs_desc": "Automatically attempt to reconnect to hubs when connection is lost.",
+        "settings.save_changes_btn": "Save Changes",
+        "settings.peer_status_title": "Peer Status",
+        "settings.loading_peer_status": "Loading peer status...",
+        "settings.pki_status_title": "PKI Status",
+        "settings.loading_pki_status": "Loading PKI status...",
+        "settings.loading_network_status": "Loading network status...",
+        "settings.display_prefs_title": "Display Preferences",
+        "settings.display_name_label": "Peer Display Name Customization",
+        "settings.display_name_placeholder": "Enter custom display name...",
+        "settings.lang.title": "Language Preference",
+        "settings.peer_name_label": "Peer Name:",
+        "settings.peer_id_label": "Peer ID:",
+        "settings.err.peer_status": "Failed to load peer status:",
+        "settings.known_persons_label": "Known Persons:",
+        "settings.certificates_label": "Certificates:",
+        "settings.connected_hubs_label": "Connected Hubs:",
+        "settings.failed_hub_connections_label": "Failed Hub Connections:",
+        "settings.encounters_tracked_label": "Encounters Tracked:",
+        "settings.save_success": "Settings successfully saved! (Note: Persistence requires backend API)",
 
         // Messenger Page
         "msg.channels": "Channels",
@@ -138,6 +173,14 @@ const translations = {
         "contacts.th.status": "Status",
         "contacts.th.details": "Peer Details",
         "contacts.loading": "Loading peers...",
+        "contacts.no_peers": "No peers found. Create one to get started.",
+        "contacts.stop": "Stop",
+        "contacts.start": "Start",
+        "contacts.delete": "Delete",
+        "contacts.err.load": "Error loading data.",
+        "contacts.err.name_required": "Peer Name is required",
+        "contacts.confirm_delete": "Are you sure you want to delete this peer?",
+        "contacts.err.create": "Error creating peer:",
         "contacts.modal.title": "Create New Peer",
         "contacts.modal.label": "Peer Name",
         "contacts.modal.placeholder": "e.g. My Local Node",
@@ -153,6 +196,16 @@ const translations = {
         "login.peer_name_placeholder": "Enter peer name...",
         "login.btn_create": "Create New Peer",
         "login.btn_refresh": "Refresh Peer List",
+        "login.peer_activated": "Peer activated successfully! Redirecting...",
+        "login.no_peers_available": "-- No peers available --",
+        "login.unnamed_peer": "Unnamed Peer",
+        "login.select_peer_first": "Please select a peer from the list first.",
+        "login.err.activate_failed": "Failed to activate peer. Please try again.",
+        "login.enter_peer_name": "Please enter a peer name.",
+        "login.peer_name_min_length": "Peer name must be at least 2 characters long.",
+        "login.peer_created": "Peer created successfully! Redirecting...",
+        "login.err.create_failed": "Failed to create peer. Please try again.",
+        "login.peer_list_refreshed": "Peer list refreshed successfully!",
 
         // ASAP Hub Management Localization Mapping
         "hubs.title": "ASAP Hub Management",
@@ -221,6 +274,7 @@ const translations = {
         "prof.title": "Peer Profile",
         "prof.desc": "Manage your decentralized identity and view network metrics.",
         "prof.active_identity": "Active Identity",
+        "prof.status_title": "Presence Status",
         "prof.export": "Export Identity",
         "prof.crypto_id": "Cryptographic Identity",
         "prof.peer_id": "Peer ID",
@@ -302,6 +356,21 @@ const translations = {
         "cert.tip.ia": "How sure you can be that this contact really is who they claim to be. 10 means you verified them yourself. Lower scores mean you're trusting them through other people.",
         "cert.tip.sf": "Your personal estimate (1–10) of how carefully this contact checks people's identities before vouching for them. A higher number lowers the Identity Assurance of everyone you reach through them.",
         "cert.tip.cert": "A digital signature confirming \"I have verified this person — their key really belongs to them.\" There's no central authority — certificates spread between people as they connect.",
+        "cert.requires_backend": "Requires backend support",
+        "cert.unknown_sender": "Unknown Sender",
+        "cert.this_peer": "this peer",
+        "cert.peerid_copied": "Peer ID copied to clipboard!",
+        "cert.revoke.subject_id_label": "Subject ID:",
+        "cert.revoke.subject_name_label": "Certificate Subject:",
+        "cert.send.peerid_label": "Peer ID (optional):",
+        "cert.send.broadcast_placeholder": "Leave empty to broadcast",
+        "cert.send.message_label": "Message (optional):",
+        "cert.send.message_placeholder": "Optional message...",
+        "cert.send_success": "Credentials sent successfully!",
+        "cert.err.accept": "Error accepting credential:",
+        "cert.err.refuse": "Error refusing credential:",
+        "cert.err.send": "Error sending credentials:",
+        "cert.err.revoke": "Error revoking certificate:",
 
         // PKI tutorial
         "tut.title": "PKI Concepts: Tutorial",
@@ -400,6 +469,21 @@ const translations = {
         "msg.hops_tip": "Hop list (sender [connection] encrypted/verified)",
         "msg.hops_none": "direct",
         "msg.hops_none_tip": "Received directly - no intermediate hops",
+
+        // Messenger trust badge & hop popover (Phase 2)
+        "msg.trust.bad": "bad",
+        "msg.trust.enough": "enough",
+        "msg.trust.perfect": "perfect",
+        "msg.trust.tip": "Click for trust and hop details",
+        "msg.trust.title": "Trust Details",
+        "msg.trust.sender": "Sender",
+        "msg.trust.encrypted": "Encrypted",
+        "msg.trust.signed": "Signed",
+        "msg.trust.verified": "Verified",
+        "msg.trust.ia": "iA",
+        "msg.trust.hop_list": "Hop list",
+        "msg.trust.no_hops": "No hops - received directly",
+        "msg.trust.connection": "Connection",
         "time.now": "now",
         "time.min": "min ago",
         "time.hr": "h ago",
@@ -409,11 +493,59 @@ const translations = {
         "msg.encrypt_needs_receiver": "Encryption requires a specific receiver - select a peer instead of 'Anyone'",
         "msg.encrypt_tip": "Encrypt so only the selected receiver can read the message",
 
+        // Messenger dynamic states (JS-rendered)
+        "common.unknown_error": "Unknown error",
+        "msg.welcome_title": "Welcome to SharkNet Messenger",
+        "msg.select_channel": "Select a channel",
+        "msg.waiting_selection": "Waiting for selection...",
+        "msg.connected_to": "Connected to",
+        "msg.anyone": "Anyone",
+        "msg.sign_tip": "Attach your digital signature so the receiver can verify the sender",
+        "msg.no_channels": "No channels available.<br>Create one using the + button.",
+        "msg.err.load_channels": "Failed to load channels from server.",
+        "msg.delete_channel_tooltip": "Delete Channel",
+        "msg.loading_messages": "Loading messages...",
+        "msg.no_messages": "No messages. Be the first to say hello!",
+        "msg.err.load_messages": "Error loading messages.",
+        "msg.no_matches": "No matching messages found.",
+        "msg.update": "Update",
+        "msg.cancel_edit": "Cancel Edit",
+        "msg.sent": "Sent!",
+        "msg.select_channel_first": "Please select a channel from the list first.",
+        "msg.err.send": "Failed to send message:",
+        "msg.err.send_generic": "Error sending message",
+        "msg.confirm_delete_message": "Are you sure you want to delete this message?",
+        "msg.channel_uri_required": "Channel URI is required",
+        "msg.err.request_failed": "Request failed",
+        "msg.confirm_delete_channel": "Are you sure you want to delete the channel:",
+        "msg.channel_deleted": "Channel deleted.",
+        "msg.err.delete_channel": "Failed to delete channel.",
+        "msg.err.delete_channel_generic": "Error deleting channel",
+        "contacts.refresh_tooltip": "Refresh List",
+
         // Network status widgets (Phase 2a)
         "net.encounter_status": "Encounter Status",
         "net.encounters_desc": "Peer encounters tracked in this session",
+        "net.encounters_title": "Peer Encounters",
+        "net.th.peer_id": "Peer ID",
+        "net.th.connection_type": "Connection Type",
+        "net.th.duration": "Duration",
+        "net.ongoing": "Ongoing",
+        "net.started": "Started",
+        "net.no_encounters": "No peer encounters recorded yet.",
         "hubs.connected_count": "Connected hubs",
-        "hubs.failed_count": "Failed connections"
+        "hubs.failed_count": "Failed connections",
+
+        // About page
+        "about.title": "About SharkNet Messenger",
+        "about.desc": "A decentralised peer-to-peer messenger built on the ASAP protocol.",
+        "about.version_label": "Version",
+        "about.description": "A decentralised peer-to-peer messenger built on the ASAP protocol",
+        "about.team_label": "Team",
+        "about.supervisor_label": "Supervisor",
+        "about.tech_label": "Technologies Used",
+        "about.source_label": "Source Code",
+        "about.github_link": "View on GitHub"
     },
 
 
@@ -426,23 +558,39 @@ const translations = {
         "common.loading": "Wird geladen...",
         "common.status": "Status",
         "common.actions": "Aktionen",
+        "common.unknown": "Unbekannt",
+        "common.error": "Fehler",
+        "common.active": "Aktiv",
+        "common.inactive": "Inaktiv",
+        "common.yes": "Ja",
+        "common.no": "Nein",
 
         // Sidebar
         "nav.messenger": "Nachrichten",
         "nav.peer": "Peer-Kontakte",
         "nav.persons": "Personen",
         "nav.certificates": "Zertifikate",
-        "nav.network": "Netzwerkstatus",
+        "nav.network": "Netzwerk-Status",
         "nav.hubs": "ASAP Hubs",
         "nav.settings": "Einstellungen",
         "nav.profile": "Mein Profil",
         "nav.help": "Hilfe",
+        "nav.about": "Über",
 
         // Header
         "header.internet": "Internet",
         "header.logout": "Abmelden",
         "header.logout_confirm": "Abmeldung bestätigen",
         "header.logout_desc": "Möchten Sie sich wirklich abmelden?<br>Dies stoppt den aktiven Peer und leitet Sie zur Anmeldeseite weiter.",
+
+        // Presence Status (header + profile)
+        "status.set_status": "Status festlegen",
+        "status.active": "Aktiv",
+        "status.away": "Abwesend",
+        "status.dnd": "Nicht stören",
+        "status.invisible": "Unsichtbar",
+        "status.lock_status": "Status sperren",
+        "status.lock_desc": "Gesperrter Status ändert sich nicht automatisch (z. B. bei Abwesenheit).",
 
         // Settings Page
         "settings.title": "Einstellungen & Konfiguration",
@@ -456,6 +604,25 @@ const translations = {
         "settings.remember_hubs_desc": "Zuvor genutzte Hub-Verbindungen automatisch speichern und wiederverbinden.",
         "settings.reconnect_hubs": "Hub-Wiederverbindung aktivieren",
         "settings.reconnect_hubs_desc": "Automatisch versuchen, die Verbindung zu Hubs wiederherzustellen, wenn diese abbricht.",
+        "settings.save_changes_btn": "Änderungen speichern",
+        "settings.peer_status_title": "Peer-Status",
+        "settings.loading_peer_status": "Peer-Status wird geladen...",
+        "settings.pki_status_title": "PKI-Status",
+        "settings.loading_pki_status": "PKI-Status wird geladen...",
+        "settings.loading_network_status": "Netzwerkstatus wird geladen...",
+        "settings.display_prefs_title": "Anzeigeeinstellungen",
+        "settings.display_name_label": "Anpassung des Peer-Anzeigenamens",
+        "settings.display_name_placeholder": "Benutzerdefinierten Anzeigenamen eingeben...",
+        "settings.lang.title": "Sprachpräferenz",
+        "settings.peer_name_label": "Peer-Name:",
+        "settings.peer_id_label": "Peer-ID:",
+        "settings.err.peer_status": "Peer-Status konnte nicht geladen werden:",
+        "settings.known_persons_label": "Bekannte Personen:",
+        "settings.certificates_label": "Zertifikate:",
+        "settings.connected_hubs_label": "Verbundene Hubs:",
+        "settings.failed_hub_connections_label": "Fehlgeschlagene Hub-Verbindungen:",
+        "settings.encounters_tracked_label": "Erfasste Begegnungen:",
+        "settings.save_success": "Einstellungen erfolgreich gespeichert! (Hinweis: Persistenz erfordert Backend-API)",
 
         // Messenger Page
         "msg.channels": "Kanäle",
@@ -479,6 +646,7 @@ const translations = {
         "welcome.alert.hub_failed": "Fehler beim Senden des Betriebskontexts an den Ziel-Hub.",
         "welcome.alert.uri_required": "Eine gültige Kanal-URI ist erforderlich.",
         "welcome.alert.channel_failed": "Fehler beim Initialisieren Ihres ersten Kanals: ",
+        "welcome.alert.save_error": "Beim Speichern Ihrer Konfiguration ist ein Fehler aufgetreten.",
 
         // Onboarding Welcome Page
         "welcome.step.profile": "Profil",
@@ -549,6 +717,14 @@ const translations = {
         "contacts.th.status": "Status",
         "contacts.th.details": "Peer-Details",
         "contacts.loading": "Peers werden geladen...",
+        "contacts.no_peers": "Keine Peers gefunden. Erstellen Sie einen, um zu beginnen.",
+        "contacts.stop": "Stopp",
+        "contacts.start": "Start",
+        "contacts.delete": "Löschen",
+        "contacts.err.load": "Fehler beim Laden der Daten.",
+        "contacts.err.name_required": "Peer-Name ist erforderlich",
+        "contacts.confirm_delete": "Möchten Sie diesen Peer wirklich löschen?",
+        "contacts.err.create": "Fehler beim Erstellen des Peers:",
         "contacts.modal.title": "Neuen Peer erstellen",
         "contacts.modal.label": "Peer-Name",
         "contacts.modal.placeholder": "z.B. Mein lokaler Knoten",
@@ -565,6 +741,16 @@ const translations = {
         "login.peer_name_placeholder": "Peer-Namen eingeben...",
         "login.btn_create": "Neuen Peer erstellen",
         "login.btn_refresh": "Peer-Liste aktualisieren",
+        "login.peer_activated": "Peer erfolgreich aktiviert! Weiterleitung...",
+        "login.no_peers_available": "-- Keine Peers verfügbar --",
+        "login.unnamed_peer": "Unbenannter Peer",
+        "login.select_peer_first": "Bitte wählen Sie zuerst einen Peer aus der Liste aus.",
+        "login.err.activate_failed": "Peer konnte nicht aktiviert werden. Bitte versuchen Sie es erneut.",
+        "login.enter_peer_name": "Bitte geben Sie einen Peer-Namen ein.",
+        "login.peer_name_min_length": "Der Peer-Name muss mindestens 2 Zeichen lang sein.",
+        "login.peer_created": "Peer erfolgreich erstellt! Weiterleitung...",
+        "login.err.create_failed": "Peer konnte nicht erstellt werden. Bitte versuchen Sie es erneut.",
+        "login.peer_list_refreshed": "Peer-Liste erfolgreich aktualisiert!",
 
         // ASAP Hub Management Localization Mapping
         "hubs.title": "ASAP-Hub-Verwaltung",
@@ -634,6 +820,7 @@ const translations = {
         "prof.title": "Peer-Profil",
         "prof.desc": "Verwalten Sie Ihre dezentrale Identität und zeigen Sie Netzwerkmetriken an.",
         "prof.active_identity": "Aktive Identität",
+        "prof.status_title": "Anwesenheitsstatus",
         "prof.export": "Identität exportieren",
         "prof.crypto_id": "Kryptografische Identität",
         "prof.peer_id": "Peer-ID",
@@ -715,6 +902,21 @@ const translations = {
         "cert.tip.ia": "Wie sicher du sein kannst, dass dieser Kontakt wirklich die Person ist, die er vorgibt zu sein. 10 heißt: selbst verifiziert. Niedrigere Werte bedeuten, dass du über andere Personen vertraust.",
         "cert.tip.sf": "Deine persönliche Einschätzung (1–10), wie sorgfältig dieser Kontakt Identitäten prüft, bevor er für jemanden bürgt. Ein höherer Wert senkt die Identity Assurance aller, die du über ihn erreichst.",
         "cert.tip.cert": "Eine digitale Signatur, die bestätigt: \"Ich habe diese Person überprüft — der Schlüssel gehört wirklich ihr.\" Es gibt keine zentrale Autorität — Zertifikate verbreiten sich von Person zu Person.",
+        "cert.requires_backend": "Erfordert Backend-Unterstützung",
+        "cert.unknown_sender": "Unbekannter Absender",
+        "cert.this_peer": "diesen Peer",
+        "cert.peerid_copied": "Peer-ID in die Zwischenablage kopiert!",
+        "cert.revoke.subject_id_label": "Subjekt-ID:",
+        "cert.revoke.subject_name_label": "Zertifikat-Subjekt:",
+        "cert.send.peerid_label": "Peer-ID (optional):",
+        "cert.send.broadcast_placeholder": "Leer lassen für Broadcast",
+        "cert.send.message_label": "Nachricht (optional):",
+        "cert.send.message_placeholder": "Optionale Nachricht...",
+        "cert.send_success": "Anmeldedaten erfolgreich gesendet!",
+        "cert.err.accept": "Fehler beim Annehmen der Anmeldedaten:",
+        "cert.err.refuse": "Fehler beim Ablehnen der Anmeldedaten:",
+        "cert.err.send": "Fehler beim Senden der Anmeldedaten:",
+        "cert.err.revoke": "Fehler beim Widerrufen des Zertifikats:",
 
         // PKI tutorial
         "tut.title": "PKI-Konzepte: Tutorial",
@@ -813,6 +1015,21 @@ const translations = {
         "msg.hops_tip": "Hop-Liste (Absender [Verbindung] verschlüsselt/verifiziert)",
         "msg.hops_none": "direkt",
         "msg.hops_none_tip": "Direkt empfangen - keine Zwischenstationen",
+
+        // Messenger trust badge & hop popover (Phase 2)
+        "msg.trust.bad": "schlecht",
+        "msg.trust.enough": "ausreichend",
+        "msg.trust.perfect": "perfekt",
+        "msg.trust.tip": "Klicken für Vertrauens- und Hop-Details",
+        "msg.trust.title": "Vertrauens-Details",
+        "msg.trust.sender": "Absender",
+        "msg.trust.encrypted": "Verschlüsselt",
+        "msg.trust.signed": "Signiert",
+        "msg.trust.verified": "Verifiziert",
+        "msg.trust.ia": "iA",
+        "msg.trust.hop_list": "Hop-Liste",
+        "msg.trust.no_hops": "Keine Hops - direkt empfangen",
+        "msg.trust.connection": "Verbindung",
         "time.now": "jetzt",
         "time.min": "Min.",
         "time.hr": "Std.",
@@ -822,11 +1039,59 @@ const translations = {
         "msg.encrypt_needs_receiver": "Verschlüsselung erfordert einen bestimmten Empfänger - wähle einen Peer statt 'Anyone'",
         "msg.encrypt_tip": "Verschlüsseln, sodass nur der gewählte Empfänger die Nachricht lesen kann",
 
+        // Messenger dynamic states (JS-rendered)
+        "common.unknown_error": "Unbekannter Fehler",
+        "msg.welcome_title": "Willkommen bei SharkNet Messenger",
+        "msg.select_channel": "Kanal auswählen",
+        "msg.waiting_selection": "Warten auf Auswahl...",
+        "msg.connected_to": "Verbunden mit",
+        "msg.anyone": "Jeder",
+        "msg.sign_tip": "Ihre digitale Signatur anhängen, damit der Empfänger den Absender verifizieren kann",
+        "msg.no_channels": "Keine Kanäle verfügbar.<br>Erstellen Sie einen über die +-Schaltfläche.",
+        "msg.err.load_channels": "Kanäle konnten nicht vom Server geladen werden.",
+        "msg.delete_channel_tooltip": "Kanal löschen",
+        "msg.loading_messages": "Nachrichten werden geladen...",
+        "msg.no_messages": "Keine Nachrichten. Seien Sie der Erste, der Hallo sagt!",
+        "msg.err.load_messages": "Fehler beim Laden der Nachrichten.",
+        "msg.no_matches": "Keine passenden Nachrichten gefunden.",
+        "msg.update": "Aktualisieren",
+        "msg.cancel_edit": "Bearbeitung abbrechen",
+        "msg.sent": "Gesendet!",
+        "msg.select_channel_first": "Bitte wählen Sie zuerst einen Kanal aus der Liste aus.",
+        "msg.err.send": "Nachricht konnte nicht gesendet werden:",
+        "msg.err.send_generic": "Fehler beim Senden der Nachricht",
+        "msg.confirm_delete_message": "Möchten Sie diese Nachricht wirklich löschen?",
+        "msg.channel_uri_required": "Kanal-URI ist erforderlich",
+        "msg.err.request_failed": "Anfrage fehlgeschlagen",
+        "msg.confirm_delete_channel": "Möchten Sie den Kanal wirklich löschen:",
+        "msg.channel_deleted": "Kanal gelöscht.",
+        "msg.err.delete_channel": "Kanal konnte nicht gelöscht werden.",
+        "msg.err.delete_channel_generic": "Fehler beim Löschen des Kanals",
+        "contacts.refresh_tooltip": "Liste aktualisieren",
+
         // Network status widgets (Phase 2a)
         "net.encounter_status": "Encounter-Status",
         "net.encounters_desc": "In dieser Sitzung erfasste Peer-Begegnungen",
+        "net.encounters_title": "Peer-Begegnungen",
+        "net.th.peer_id": "Peer-ID",
+        "net.th.connection_type": "Verbindungstyp",
+        "net.th.duration": "Dauer",
+        "net.ongoing": "Laufend",
+        "net.started": "Gestartet",
+        "net.no_encounters": "Noch keine Peer-Begegnungen erfasst.",
         "hubs.connected_count": "Verbundene Hubs",
-        "hubs.failed_count": "Fehlgeschlagene Verbindungen"
+        "hubs.failed_count": "Fehlgeschlagene Verbindungen",
+
+        // About page
+        "about.title": "Über SharkNet Messenger",
+        "about.desc": "Ein dezentraler Peer-to-Peer-Messenger auf Basis des ASAP-Protokolls.",
+        "about.version_label": "Version",
+        "about.description": "Ein dezentraler Peer-to-Peer-Messenger auf Basis des ASAP-Protokolls",
+        "about.team_label": "Team",
+        "about.supervisor_label": "Betreuer",
+        "about.tech_label": "Verwendete Technologien",
+        "about.source_label": "Quellcode",
+        "about.github_link": "Auf GitHub ansehen"
     },
     tr: {
         // Common
@@ -837,6 +1102,12 @@ const translations = {
         "common.loading": "Yükleniyor...",
         "common.status": "Durum",
         "common.actions": "İşlemler",
+        "common.unknown": "Bilinmiyor",
+        "common.error": "Hata",
+        "common.active": "Aktif",
+        "common.inactive": "Pasif",
+        "common.yes": "Evet",
+        "common.no": "Hayır",
 
         // Sidebar
         "nav.messenger": "Mesajlaşma",
@@ -848,12 +1119,22 @@ const translations = {
         "nav.settings": "Ayarlar",
         "nav.profile": "Profilim",
         "nav.help": "Yardım",
+        "nav.about": "Hakkında",
 
         // Header
         "header.internet": "İnternet",
         "header.logout": "Çıkış Yap",
         "header.logout_confirm": "Çıkışı Onayla",
         "header.logout_desc": "Çıkış yapmak istediğinizden emin misiniz?<br>Bu, aktif eşi durduracak ve sizi giriş ekranına yönlendirecektir.",
+
+        // Presence Status (header + profile)
+        "status.set_status": "Durum Belirle",
+        "status.active": "Aktif",
+        "status.away": "Uzakta",
+        "status.dnd": "Rahatsız Etmeyin",
+        "status.invisible": "Görünmez",
+        "status.lock_status": "Durumu Kilitle",
+        "status.lock_desc": "Kilitli durum otomatik olarak değişmez (örn. uzaktayken).",
 
         // Settings Page
         "settings.title": "Ayarlar & Konfigürasyon",
@@ -867,6 +1148,25 @@ const translations = {
         "settings.remember_hubs_desc": "Önceden kullanılmış hub bağlantılarını otomatik olarak kaydet ve yeniden bağlan.",
         "settings.reconnect_hubs": "Hub yeniden bağlantısını etkinleştir",
         "settings.reconnect_hubs_desc": "Bağlantı koptuğunda hub'lara otomatik olarak yeniden bağlanmaya çalış.",
+        "settings.save_changes_btn": "Değişiklikleri Kaydet",
+        "settings.peer_status_title": "Eş Durumu",
+        "settings.loading_peer_status": "Eş durumu yükleniyor...",
+        "settings.pki_status_title": "PKI Durumu",
+        "settings.loading_pki_status": "PKI durumu yükleniyor...",
+        "settings.loading_network_status": "Ağ durumu yükleniyor...",
+        "settings.display_prefs_title": "Görüntüleme Tercihleri",
+        "settings.display_name_label": "Eş Görünen Adı Özelleştirmesi",
+        "settings.display_name_placeholder": "Özel görünen ad girin...",
+        "settings.lang.title": "Dil Tercihi",
+        "settings.peer_name_label": "Eş Adı:",
+        "settings.peer_id_label": "Eş Kimliği:",
+        "settings.err.peer_status": "Eş durumu yüklenemedi:",
+        "settings.known_persons_label": "Bilinen Kişiler:",
+        "settings.certificates_label": "Sertifikalar:",
+        "settings.connected_hubs_label": "Bağlı Hub'lar:",
+        "settings.failed_hub_connections_label": "Başarısız Hub Bağlantıları:",
+        "settings.encounters_tracked_label": "İzlenen Karşılaşmalar:",
+        "settings.save_success": "Ayarlar başarıyla kaydedildi! (Not: Kalıcılık için arka uç API'si gereklidir)",
 
         // Messenger Page
         "msg.channels": "Kanallar",
@@ -888,6 +1188,7 @@ const translations = {
         "prof.title": "Eş Profili",
         "prof.desc": "Merkezi olmayan kimliğinizi yönetin ve ağ metriklerini görüntüleyin.",
         "prof.active_identity": "Aktif Kimlik",
+        "prof.status_title": "Bulunma Durumu",
         "prof.export": "Kimliği Dışa Aktar",
         "prof.crypto_id": "Kriptografik Kimlik",
         "prof.peer_id": "Eş Kimliği (Peer ID)",
@@ -981,6 +1282,14 @@ const translations = {
         "contacts.th.status": "Durum",
         "contacts.th.details": "Eş Detayları",
         "contacts.loading": "Eşler yükleniyor...",
+        "contacts.no_peers": "Eş bulunamadı. Başlamak için bir tane oluşturun.",
+        "contacts.stop": "Durdur",
+        "contacts.start": "Başlat",
+        "contacts.delete": "Sil",
+        "contacts.err.load": "Veri yüklenirken hata oluştu.",
+        "contacts.err.name_required": "Eş Adı gereklidir",
+        "contacts.confirm_delete": "Bu eşi silmek istediğinizden emin misiniz?",
+        "contacts.err.create": "Eş oluşturulurken hata oluştu:",
         "contacts.modal.title": "Yeni Eş Oluştur",
         "contacts.modal.label": "Eş Adı",
         "contacts.modal.placeholder": "örn. Yerel Düğümüm",
@@ -996,6 +1305,16 @@ const translations = {
         "login.peer_name_placeholder": "Eş adını girin...",
         "login.btn_create": "Yeni Eş Oluştur",
         "login.btn_refresh": "Eş Listesini Yenile",
+        "login.peer_activated": "Eş başarıyla etkinleştirildi! Yönlendiriliyor...",
+        "login.no_peers_available": "-- Kullanılabilir eş yok --",
+        "login.unnamed_peer": "Adsız Eş",
+        "login.select_peer_first": "Lütfen önce listeden bir eş seçin.",
+        "login.err.activate_failed": "Eş etkinleştirilemedi. Lütfen tekrar deneyin.",
+        "login.enter_peer_name": "Lütfen bir eş adı girin.",
+        "login.peer_name_min_length": "Eş adı en az 2 karakter uzunluğunda olmalıdır.",
+        "login.peer_created": "Eş başarıyla oluşturuldu! Yönlendiriliyor...",
+        "login.err.create_failed": "Eş oluşturulamadı. Lütfen tekrar deneyin.",
+        "login.peer_list_refreshed": "Eş listesi başarıyla yenilendi!",
 
         // ASAP Hub Management Localization Mapping
         "hubs.title": "ASAP Hub Yönetimi",
@@ -1125,6 +1444,21 @@ const translations = {
         "cert.tip.ia": "Bu kişinin gerçekten iddia ettiği kişi olduğundan ne kadar emin olabileceğiniz. 10, kendiniz doğruladığınız anlamına gelir. Daha düşük puanlar, başkaları aracılığıyla güvendiğiniz anlamına gelir.",
         "cert.tip.sf": "Bu kişinin, başkalarına kefil olmadan önce kimlikleri ne kadar dikkatli kontrol ettiğine dair kişisel tahmininiz (1–10). Yüksek bir değer, onun üzerinden ulaştığınız herkesin Kimlik Güvencesini düşürür.",
         "cert.tip.cert": "\"Bu kişiyi doğruladım — anahtar gerçekten ona ait\" anlamına gelen dijital bir imza. Merkezi otorite yoktur — sertifikalar insanlar bağlandıkça yayılır.",
+        "cert.requires_backend": "Arka uç desteği gerektirir",
+        "cert.unknown_sender": "Bilinmeyen Gönderen",
+        "cert.this_peer": "bu eş",
+        "cert.peerid_copied": "Eş Kimliği panoya kopyalandı!",
+        "cert.revoke.subject_id_label": "Özne Kimliği:",
+        "cert.revoke.subject_name_label": "Sertifika Öznesi:",
+        "cert.send.peerid_label": "Eş Kimliği (opsiyonel):",
+        "cert.send.broadcast_placeholder": "Yayın yapmak için boş bırakın",
+        "cert.send.message_label": "Mesaj (opsiyonel):",
+        "cert.send.message_placeholder": "İsteğe bağlı mesaj...",
+        "cert.send_success": "Kimlik bilgileri başarıyla gönderildi!",
+        "cert.err.accept": "Kimlik bilgisi kabul edilirken hata oluştu:",
+        "cert.err.refuse": "Kimlik bilgisi reddedilirken hata oluştu:",
+        "cert.err.send": "Kimlik bilgileri gönderilirken hata oluştu:",
+        "cert.err.revoke": "Sertifika iptal edilirken hata oluştu:",
 
         // PKI tutorial
         "tut.title": "PKI Kavramları: Eğitim",
@@ -1223,6 +1557,21 @@ const translations = {
         "msg.hops_tip": "Sıçrama listesi (gönderen [bağlantı] şifreli/doğrulanmış)",
         "msg.hops_none": "doğrudan",
         "msg.hops_none_tip": "Doğrudan alındı - ara sıçrama yok",
+
+        // Messenger trust badge & hop popover (Phase 2)
+        "msg.trust.bad": "kötü",
+        "msg.trust.enough": "yeterli",
+        "msg.trust.perfect": "mükemmel",
+        "msg.trust.tip": "Güven ve sıçrama detayları için tıklayın",
+        "msg.trust.title": "Güven Detayları",
+        "msg.trust.sender": "Gönderen",
+        "msg.trust.encrypted": "Şifreli",
+        "msg.trust.signed": "İmzalı",
+        "msg.trust.verified": "Doğrulandı",
+        "msg.trust.ia": "iA",
+        "msg.trust.hop_list": "Sıçrama listesi",
+        "msg.trust.no_hops": "Sıçrama yok - doğrudan alındı",
+        "msg.trust.connection": "Bağlantı",
         "time.now": "şimdi",
         "time.min": "dk önce",
         "time.hr": "sa önce",
@@ -1232,11 +1581,59 @@ const translations = {
         "msg.encrypt_needs_receiver": "Şifreleme belirli bir alıcı gerektirir - 'Anyone' yerine bir eş seçin",
         "msg.encrypt_tip": "Yalnızca seçilen alıcının okuyabilmesi için şifreleyin",
 
+        // Messenger dynamic states (JS-rendered)
+        "common.unknown_error": "Bilinmeyen hata",
+        "msg.welcome_title": "SharkNet Messenger'a Hoş Geldiniz",
+        "msg.select_channel": "Bir kanal seçin",
+        "msg.waiting_selection": "Seçim bekleniyor...",
+        "msg.connected_to": "Bağlandı:",
+        "msg.anyone": "Herkes",
+        "msg.sign_tip": "Alıcının göndereni doğrulayabilmesi için dijital imzanızı ekleyin",
+        "msg.no_channels": "Kullanılabilir kanal yok.<br>+ düğmesini kullanarak bir tane oluşturun.",
+        "msg.err.load_channels": "Kanallar sunucudan yüklenemedi.",
+        "msg.delete_channel_tooltip": "Kanalı Sil",
+        "msg.loading_messages": "Mesajlar yükleniyor...",
+        "msg.no_messages": "Mesaj yok. Merhaba diyen ilk kişi olun!",
+        "msg.err.load_messages": "Mesajlar yüklenirken hata oluştu.",
+        "msg.no_matches": "Eşleşen mesaj bulunamadı.",
+        "msg.update": "Güncelle",
+        "msg.cancel_edit": "Düzenlemeyi İptal Et",
+        "msg.sent": "Gönderildi!",
+        "msg.select_channel_first": "Lütfen önce listeden bir kanal seçin.",
+        "msg.err.send": "Mesaj gönderilemedi:",
+        "msg.err.send_generic": "Mesaj gönderilirken hata oluştu",
+        "msg.confirm_delete_message": "Bu mesajı silmek istediğinizden emin misiniz?",
+        "msg.channel_uri_required": "Kanal URI'si gereklidir",
+        "msg.err.request_failed": "İstek başarısız oldu",
+        "msg.confirm_delete_channel": "Bu kanalı silmek istediğinizden emin misiniz:",
+        "msg.channel_deleted": "Kanal silindi.",
+        "msg.err.delete_channel": "Kanal silinemedi.",
+        "msg.err.delete_channel_generic": "Kanal silinirken hata oluştu",
+        "contacts.refresh_tooltip": "Listeyi Yenile",
+
         // Network status widgets (Phase 2a)
         "net.encounter_status": "Karşılaşma Durumu",
         "net.encounters_desc": "Bu oturumda izlenen eş karşılaşmaları",
+        "net.encounters_title": "Eş Karşılaşmaları",
+        "net.th.peer_id": "Eş Kimliği",
+        "net.th.connection_type": "Bağlantı Türü",
+        "net.th.duration": "Süre",
+        "net.ongoing": "Devam ediyor",
+        "net.started": "Başladı",
+        "net.no_encounters": "Henüz eş karşılaşması kaydedilmedi.",
         "hubs.connected_count": "Bağlı hub'lar",
-        "hubs.failed_count": "Başarısız bağlantılar"
+        "hubs.failed_count": "Başarısız bağlantılar",
+
+        // About page
+        "about.title": "SharkNet Messenger Hakkında",
+        "about.desc": "ASAP protokolü üzerine inşa edilmiş merkeziyetsiz bir eşler arası (P2P) mesajlaşma uygulaması.",
+        "about.version_label": "Sürüm",
+        "about.description": "ASAP protokolü üzerine inşa edilmiş merkeziyetsiz bir eşler arası (P2P) mesajlaşma uygulaması",
+        "about.team_label": "Ekip",
+        "about.supervisor_label": "Danışman",
+        "about.tech_label": "Kullanılan Teknolojiler",
+        "about.source_label": "Kaynak Kod",
+        "about.github_link": "GitHub'da Görüntüle"
     },
     ar: {
         // Common
@@ -1247,6 +1644,12 @@ const translations = {
         "common.loading": "جاري التحميل...",
         "common.status": "الحالة",
         "common.actions": "الإجراءات",
+        "common.unknown": "غير معروف",
+        "common.error": "خطأ",
+        "common.active": "نشط",
+        "common.inactive": "غير نشط",
+        "common.yes": "نعم",
+        "common.no": "لا",
 
         // Sidebar
         "nav.messenger": "الدردشة",
@@ -1258,12 +1661,22 @@ const translations = {
         "nav.settings": "الإعدادات",
         "nav.profile": "ملفي الشخصي",
         "nav.help": "المساعدة",
+        "nav.about": "حول",
 
         // Header
         "header.internet": "الإنترنت",
         "header.logout": "تسجيل الخروج",
         "header.logout_confirm": "تأكيد تسجيل الخروج",
         "header.logout_desc": "هل أنت متأكد أنك تريد تسجيل الخروج؟<br>سيؤدي هذا إلى إيقاف النظير النشط وتوجيهك إلى شاشة تسجيل الدخول.",
+
+        // Presence Status (header + profile)
+        "status.set_status": "تعيين الحالة",
+        "status.active": "نشط",
+        "status.away": "بعيد",
+        "status.dnd": "عدم الإزعاج",
+        "status.invisible": "غير مرئي",
+        "status.lock_status": "قفل الحالة",
+        "status.lock_desc": "لن تتغير الحالة المقفلة تلقائيًا (مثلاً عند الابتعاد).",
 
         // Settings Page
         "settings.title": "الإعدادات والتهيئة",
@@ -1277,6 +1690,25 @@ const translations = {
         "settings.remember_hubs_desc": "حفظ اتصالات الموزع المستخدمة مسبقًا وإعادة الاتصال بها تلقائيًا.",
         "settings.reconnect_hubs": "تمكين إعادة الاتصال بالموزع",
         "settings.reconnect_hubs_desc": "محاولة إعادة الاتصال بالموزعات تلقائيًا عند فقدان الاتصال.",
+        "settings.save_changes_btn": "حفظ التغييرات",
+        "settings.peer_status_title": "حالة النظير",
+        "settings.loading_peer_status": "جارٍ تحميل حالة النظير...",
+        "settings.pki_status_title": "حالة PKI",
+        "settings.loading_pki_status": "جارٍ تحميل حالة PKI...",
+        "settings.loading_network_status": "جارٍ تحميل حالة الشبكة...",
+        "settings.display_prefs_title": "تفضيلات العرض",
+        "settings.display_name_label": "تخصيص اسم عرض النظير",
+        "settings.display_name_placeholder": "أدخل اسم عرض مخصص...",
+        "settings.lang.title": "تفضيل اللغة",
+        "settings.peer_name_label": "اسم النظير:",
+        "settings.peer_id_label": "معرف النظير:",
+        "settings.err.peer_status": "فشل تحميل حالة النظير:",
+        "settings.known_persons_label": "الأشخاص المعروفون:",
+        "settings.certificates_label": "الشهادات:",
+        "settings.connected_hubs_label": "الموزعات المتصلة:",
+        "settings.failed_hub_connections_label": "اتصالات الموزع الفاشلة:",
+        "settings.encounters_tracked_label": "اللقاءات المتتبعة:",
+        "settings.save_success": "تم حفظ الإعدادات بنجاح! (ملاحظة: الاستمرارية تتطلب واجهة برمجة تطبيقات خلفية)",
 
         // Messenger Page
         "msg.channels": "القنوات",
@@ -1298,6 +1730,7 @@ const translations = {
         "prof.title": "ملف النظير",
         "prof.desc": "إدارة هويتك اللامركزية وعرض مقاييس الشبكة.",
         "prof.active_identity": "الهوية النشطة",
+        "prof.status_title": "حالة الحضور",
         "prof.export": "تصدير الهوية",
         "prof.crypto_id": "الهوية المشفرة",
         "prof.peer_id": "معرف النظير",
@@ -1391,6 +1824,14 @@ const translations = {
         "contacts.th.status": "الحالة",
         "contacts.th.details": "تفاصيل النظير",
         "contacts.loading": "جاري تحميل النظراء...",
+        "contacts.no_peers": "لم يتم العثور على نظراء. أنشئ واحداً للبدء.",
+        "contacts.stop": "إيقاف",
+        "contacts.start": "بدء",
+        "contacts.delete": "حذف",
+        "contacts.err.load": "خطأ في تحميل البيانات.",
+        "contacts.err.name_required": "اسم النظير مطلوب",
+        "contacts.confirm_delete": "هل أنت متأكد أنك تريد حذف هذا النظير؟",
+        "contacts.err.create": "خطأ في إنشاء النظير:",
         "contacts.modal.title": "إنشاء نظير جديد",
         "contacts.modal.label": "اسم النظير",
         "contacts.modal.placeholder": "مثال: العقدة المحلية الخاصة بي",
@@ -1406,6 +1847,16 @@ const translations = {
         "login.peer_name_placeholder": "أدخل اسم النظير...",
         "login.btn_create": "إنشاء نظير جديد",
         "login.btn_refresh": "تحديث قائمة النظراء",
+        "login.peer_activated": "تم تفعيل النظير بنجاح! جارٍ إعادة التوجيه...",
+        "login.no_peers_available": "-- لا يوجد نظراء متاحون --",
+        "login.unnamed_peer": "نظير بدون اسم",
+        "login.select_peer_first": "يرجى اختيار نظير من القائمة أولاً.",
+        "login.err.activate_failed": "فشل تفعيل النظير. يرجى المحاولة مرة أخرى.",
+        "login.enter_peer_name": "يرجى إدخال اسم النظير.",
+        "login.peer_name_min_length": "يجب أن يتكون اسم النظير من حرفين على الأقل.",
+        "login.peer_created": "تم إنشاء النظير بنجاح! جارٍ إعادة التوجيه...",
+        "login.err.create_failed": "فشل إنشاء النظير. يرجى المحاولة مرة أخرى.",
+        "login.peer_list_refreshed": "تم تحديث قائمة النظراء بنجاح!",
 
         // ASAP Hub Management Localization Mapping
         "hubs.title": "إدارة موزعات ASAP",
@@ -1535,6 +1986,21 @@ const translations = {
         "cert.tip.ia": "مدى تأكدك من أن هذا الشخص هو فعلاً من يدّعي. 10 تعني أنك تحققت منه بنفسك. الدرجات الأقل تعني أنك تثق به عبر أشخاص آخرين.",
         "cert.tip.sf": "تقديرك الشخصي (1–10) لمدى دقة هذا الشخص في التحقق من هويات الآخرين قبل أن يشهد لهم. الرقم الأعلى يخفض ضمان الهوية لكل من تصل إليه عبره.",
         "cert.tip.cert": "توقيع رقمي يؤكد: \"تحققت من هذا الشخص — مفتاحه يعود إليه فعلاً.\" لا توجد سلطة مركزية — الشهادات تنتشر بين الناس أثناء تواصلهم.",
+        "cert.requires_backend": "يتطلب دعم الخادم الخلفي",
+        "cert.unknown_sender": "مرسل غير معروف",
+        "cert.this_peer": "هذا النظير",
+        "cert.peerid_copied": "تم نسخ معرف النظير إلى الحافظة!",
+        "cert.revoke.subject_id_label": "معرف الموضوع:",
+        "cert.revoke.subject_name_label": "موضوع الشهادة:",
+        "cert.send.peerid_label": "معرف النظير (اختياري):",
+        "cert.send.broadcast_placeholder": "اتركه فارغاً للبث للجميع",
+        "cert.send.message_label": "الرسالة (اختياري):",
+        "cert.send.message_placeholder": "رسالة اختيارية...",
+        "cert.send_success": "تم إرسال بيانات الاعتماد بنجاح!",
+        "cert.err.accept": "خطأ في قبول بيانات الاعتماد:",
+        "cert.err.refuse": "خطأ في رفض بيانات الاعتماد:",
+        "cert.err.send": "خطأ في إرسال بيانات الاعتماد:",
+        "cert.err.revoke": "خطأ في إبطال الشهادة:",
 
         // PKI tutorial
         "tut.title": "مفاهيم PKI: شرح تعليمي",
@@ -1633,6 +2099,21 @@ const translations = {
         "msg.hops_tip": "قائمة القفزات (المرسل [الاتصال] مشفرة/موثقة)",
         "msg.hops_none": "مباشرة",
         "msg.hops_none_tip": "استُلمت مباشرة - بدون قفزات وسيطة",
+
+        // Messenger trust badge & hop popover (Phase 2)
+        "msg.trust.bad": "سيء",
+        "msg.trust.enough": "كافٍ",
+        "msg.trust.perfect": "ممتاز",
+        "msg.trust.tip": "انقر لعرض تفاصيل الثقة والقفزات",
+        "msg.trust.title": "تفاصيل الثقة",
+        "msg.trust.sender": "المرسل",
+        "msg.trust.encrypted": "مشفرة",
+        "msg.trust.signed": "موقعة",
+        "msg.trust.verified": "موثقة",
+        "msg.trust.ia": "iA",
+        "msg.trust.hop_list": "قائمة القفزات",
+        "msg.trust.no_hops": "لا قفزات - استُلمت مباشرة",
+        "msg.trust.connection": "الاتصال",
         "time.now": "الآن",
         "time.min": "د",
         "time.hr": "س",
@@ -1642,13 +2123,96 @@ const translations = {
         "msg.encrypt_needs_receiver": "التشفير يتطلب مستلماً محدداً - اختر نظيراً بدل 'Anyone'",
         "msg.encrypt_tip": "شفّر بحيث لا يقرأ الرسالة إلا المستلم المحدد",
 
+        // Messenger dynamic states (JS-rendered)
+        "common.unknown_error": "خطأ غير معروف",
+        "msg.welcome_title": "مرحباً بك في SharkNet Messenger",
+        "msg.select_channel": "اختر قناة",
+        "msg.waiting_selection": "في انتظار الاختيار...",
+        "msg.connected_to": "متصل بـ",
+        "msg.anyone": "أي شخص",
+        "msg.sign_tip": "أرفق توقيعك الرقمي حتى يتمكن المستلم من التحقق من المرسل",
+        "msg.no_channels": "لا توجد قنوات متاحة.<br>أنشئ واحدة باستخدام زر +.",
+        "msg.err.load_channels": "فشل تحميل القنوات من الخادم.",
+        "msg.delete_channel_tooltip": "حذف القناة",
+        "msg.loading_messages": "جارٍ تحميل الرسائل...",
+        "msg.no_messages": "لا توجد رسائل. كن أول من يقول مرحباً!",
+        "msg.err.load_messages": "خطأ في تحميل الرسائل.",
+        "msg.no_matches": "لم يتم العثور على رسائل مطابقة.",
+        "msg.update": "تحديث",
+        "msg.cancel_edit": "إلغاء التعديل",
+        "msg.sent": "تم الإرسال!",
+        "msg.select_channel_first": "يرجى اختيار قناة من القائمة أولاً.",
+        "msg.err.send": "فشل إرسال الرسالة:",
+        "msg.err.send_generic": "خطأ في إرسال الرسالة",
+        "msg.confirm_delete_message": "هل أنت متأكد أنك تريد حذف هذه الرسالة؟",
+        "msg.channel_uri_required": "معرف القناة (URI) مطلوب",
+        "msg.err.request_failed": "فشل الطلب",
+        "msg.confirm_delete_channel": "هل أنت متأكد أنك تريد حذف القناة:",
+        "msg.channel_deleted": "تم حذف القناة.",
+        "msg.err.delete_channel": "فشل حذف القناة.",
+        "msg.err.delete_channel_generic": "خطأ في حذف القناة",
+        "contacts.refresh_tooltip": "تحديث القائمة",
+
         // Network status widgets (Phase 2a)
         "net.encounter_status": "حالة اللقاءات",
         "net.encounters_desc": "لقاءات النظراء المتتبعة في هذه الجلسة",
+        "net.encounters_title": "لقاءات النظراء",
+        "net.th.peer_id": "معرّف النظير",
+        "net.th.connection_type": "نوع الاتصال",
+        "net.th.duration": "المدة",
+        "net.ongoing": "جارٍ",
+        "net.started": "بدأ",
+        "net.no_encounters": "لم يتم تسجيل أي لقاءات نظراء بعد.",
         "hubs.connected_count": "موزّعات متصلة",
-        "hubs.failed_count": "اتصالات فاشلة"
+        "hubs.failed_count": "اتصالات فاشلة",
+
+        // About page
+        "about.title": "حول SharkNet Messenger",
+        "about.desc": "تطبيق مراسلة لامركزي من نظير إلى نظير مبني على بروتوكول ASAP.",
+        "about.version_label": "الإصدار",
+        "about.description": "تطبيق مراسلة لامركزي من نظير إلى نظير مبني على بروتوكول ASAP",
+        "about.team_label": "الفريق",
+        "about.supervisor_label": "المشرف",
+        "about.tech_label": "التقنيات المستخدمة",
+        "about.source_label": "الكود المصدري",
+        "about.github_link": "عرض على GitHub"
     }
 };
+
+const LANG_BUTTON_IDS = { en: 'lang-btn-en', de: 'lang-btn-de', tr: 'lang-btn-tr', ar: 'lang-btn-ar' };
+const LANG_BTN_ACTIVE_CLASSES = ['bg-blue-600', 'text-white', 'shadow-sm'];
+const LANG_BTN_INACTIVE_CLASSES = ['text-gray-600', 'dark:text-gray-400', 'hover:bg-gray-200', 'dark:hover:bg-gray-700'];
+const LANG_FLAG_EMOJI = { en: '🇬🇧', de: '🇩🇪', tr: '🇹🇷', ar: '🇸🇦' };
+
+/**
+ * Swaps the header's globe icon for the flag emoji of the active language, if the icon is present.
+ * @param {string} lang - The active language code
+ * @return {void}
+ */
+function updateLangIcon(lang) {
+    const icon = document.getElementById('lang-icon');
+    if (!icon) return;
+    const flag = LANG_FLAG_EMOJI[lang];
+    if (!flag) return;
+    icon.className = 'text-lg';
+    icon.textContent = flag;
+}
+
+/**
+ * Highlights whichever language button (if present on the current page) matches lang.
+ * @param {string} lang - The active language code
+ * @return {void}
+ */
+function updateLangButtonStates(lang) {
+    Object.entries(LANG_BUTTON_IDS).forEach(([code, id]) => {
+        const btn = document.getElementById(id);
+        if (!btn) return;
+        const isActive = code === lang;
+        btn.classList.remove(...LANG_BTN_ACTIVE_CLASSES, ...LANG_BTN_INACTIVE_CLASSES);
+        btn.classList.add(...(isActive ? LANG_BTN_ACTIVE_CLASSES : LANG_BTN_INACTIVE_CLASSES));
+        btn.setAttribute('aria-pressed', String(isActive));
+    });
+}
 
 /**
  * Applies the selected language to all HTML elements with the 'data-i18n' attribute.
@@ -1674,6 +2238,20 @@ function setLanguage(lang) {
             el.setAttribute('placeholder', translations[lang][key]);
         }
     });
+
+    // Update title/tooltip attributes if they have data-i18n-title
+    document.querySelectorAll('[data-i18n-title]').forEach(el => {
+        const key = el.getAttribute('data-i18n-title');
+        if (translations[lang] && translations[lang][key]) {
+            el.setAttribute('title', translations[lang][key]);
+        }
+    });
+
+    updateLangButtonStates(lang);
+    updateLangIcon(lang);
+
+    // Let pages re-render any JS-templated text (built outside the data-i18n scan above)
+    document.dispatchEvent(new CustomEvent('snm:languagechange', { detail: { lang } }));
 }
 
 /**

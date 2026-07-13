@@ -49,4 +49,9 @@
         <span class="sidebar-text transition-opacity duration-200" data-i18n="nav.help">Help</span>
     </a>
 
+    <a href="about.jsp" class="flex items-center gap-4 px-3 py-3 rounded-lg font-medium transition-colors duration-200 whitespace-nowrap ${activePage == 'about' ? 'bg-primary-500 text-white shadow-md' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'}">
+        <span class="text-xl w-8 text-center flex-shrink-0"><i class="fas fa-info-circle text-lg"></i></span>
+        <span class="sidebar-text transition-opacity duration-200" data-i18n="nav.about">About</span>
+    </a>
+
 </nav>

@@ -18,8 +18,11 @@ const REFRESH_INTERVAL = 15000;
 /* ------------------------------------------------------------------ */
 
 function tl(key, fallback) {
+    // NOTE: i18n.js declares `translations` with `const` at script top-level, so it
+    // lives in the shared global lexical scope, not as a `window` property - reference
+    // it directly (not via `window.translations`, which is always undefined).
     const currentLang = localStorage.getItem('snm-lang') || 'en';
-    return (window.translations && window.translations[currentLang] && window.translations[currentLang][key]) ? window.translations[currentLang][key] : fallback;
+    return (typeof translations !== 'undefined' && translations[currentLang] && translations[currentLang][key]) ? translations[currentLang][key] : fallback;
 }
 
 function escapeHtml(text) {
@@ -101,10 +104,74 @@ function renderIABar(el, score, small) {
 }
 
 /* ------------------------------------------------------------------ */
+/* Info-tip tooltips                                                   */
+/* ------------------------------------------------------------------ */
+
+// Tooltip is position:fixed (to escape ancestor overflow clipping), so its offsets must be computed here.
+function positionInfoTip(tip) {
+    const btn = tip.querySelector('.info-tip__btn');
+    const tooltip = tip.querySelector('.info-tip__tooltip');
+    if (!btn || !tooltip) return;
+
+    const margin = 8;
+    const gap = 9;
+    const btnRect = btn.getBoundingClientRect();
+    const tipRect = tooltip.getBoundingClientRect();
+
+    let left = btnRect.left + btnRect.width / 2 - tipRect.width / 2;
+    left = Math.max(margin, Math.min(left, window.innerWidth - tipRect.width - margin));
+
+    let top = btnRect.top - tipRect.height - gap;
+    let placement = 'top';
+    if (top < margin) {
+        top = btnRect.bottom + gap;
+        placement = 'bottom';
+    }
+
+    const arrowLeft = btnRect.left + btnRect.width / 2 - left;
+    tooltip.style.setProperty('--tip-left', left + 'px');
+    tooltip.style.setProperty('--tip-top', top + 'px');
+    tooltip.style.setProperty('--tip-arrow-left', arrowLeft + 'px');
+    tooltip.setAttribute('data-placement', placement);
+}
+
+function initInfoTips() {
+    const tips = document.querySelectorAll('.info-tip');
+    tips.forEach(tip => {
+        const btn = tip.querySelector('.info-tip__btn');
+        if (!btn) return;
+        const update = () => positionInfoTip(tip);
+        btn.addEventListener('mouseenter', update);
+        btn.addEventListener('focus', update);
+    });
+
+    const repositionOpenTip = () => {
+        const open = document.querySelector('.info-tip:hover, .info-tip:focus-within');
+        if (open) positionInfoTip(open);
+    };
+    window.addEventListener('scroll', repositionOpenTip, true);
+    window.addEventListener('resize', repositionOpenTip);
+}
+
+/* ------------------------------------------------------------------ */
+/* Language change reactivity                                          */
+/* ------------------------------------------------------------------ */
+
+// setLanguage() (i18n.js) only retranslates static [data-i18n] elements; the
+// peers table, pending-credentials list and detail panel are built from JS
+// templates, so re-render them from already-cached data on a live switch.
+document.addEventListener('snm:languagechange', function () {
+    renderPeers();
+    displayPendingCredentials();
+    if (selectedPersonId) selectPeer(selectedPersonId, true);
+});
+
+/* ------------------------------------------------------------------ */
 /* Bootstrapping                                                       */
 /* ------------------------------------------------------------------ */
 
 document.addEventListener('DOMContentLoaded', function () {
+    initInfoTips();
     loadAll();
 
     setInterval(() => {
@@ -163,7 +230,7 @@ async function loadPersons(silent = false) {
     } catch (error) {
         if (!silent) {
             const tbody = document.getElementById('peers-tbody');
-            tbody.innerHTML = `<tr><td colspan="3" class="px-6 py-8 text-center text-red-500">Error: ${escapeHtml(error.message)}</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="3" class="px-6 py-8 text-center text-red-500">${tl('common.error', 'Error')}: ${escapeHtml(error.message)}</td></tr>`;
         }
         persons = [];
     }
@@ -206,7 +273,7 @@ function renderPeers() {
         const ia = (p.identityAssurance && p.identityAssurance.value) || 0;
         const cert = latestCertFor(p.id);
         const validUntil = cert ? formatCertificateDate(cert.validUntil, false) : '—';
-        const name = escapeHtml(p.name || 'Unknown');
+        const name = escapeHtml(p.name || tl('common.unknown', 'Unknown'));
         const id = escapeHtml(p.id || '');
         const isSelected = p.id === selectedPersonId;
 
@@ -274,7 +341,7 @@ function selectPeer(personId, keepCertIdx = false) {
 
     const ia = (p.identityAssurance && p.identityAssurance.value) || 0;
     const iaText = (p.identityAssurance && p.identityAssurance.explanation) || '';
-    const name = p.name || 'Unknown';
+    const name = p.name || tl('common.unknown', 'Unknown');
 
     document.getElementById('detail-avatar').textContent = name.charAt(0).toUpperCase();
     document.getElementById('detail-name').textContent = name;
@@ -330,10 +397,10 @@ function renderCertCard() {
     }
 
     const cert = certs[selectedCertIdx];
-    const subjectName = cert.subject?.name || 'Unknown';
-    const subjectId = cert.subject?.id || 'Unknown';
-    const issuerName = cert.issuedBy?.name || 'Unknown';
-    const issuerId = cert.issuedBy?.id || 'Unknown';
+    const subjectName = cert.subject?.name || tl('common.unknown', 'Unknown');
+    const subjectId = cert.subject?.id || tl('common.unknown', 'Unknown');
+    const issuerName = cert.issuedBy?.name || tl('common.unknown', 'Unknown');
+    const issuerId = cert.issuedBy?.id || tl('common.unknown', 'Unknown');
 
     document.getElementById('cert-subject-name').textContent = subjectName;
     document.getElementById('cert-subject-id').textContent = subjectId;
@@ -377,7 +444,7 @@ function displayPendingCredentials() {
 
     container.innerHTML = '';
     pendingCredentials.forEach((cred, index) => {
-        const name = escapeHtml(cred.credential?.name || 'Unknown Sender');
+        const name = escapeHtml(cred.credential?.name || tl('cert.unknown_sender', 'Unknown Sender'));
         const id = escapeHtml(cred.credential?.id || '');
 
         const credDiv = document.createElement('div');
@@ -404,7 +471,7 @@ function displayPendingCredentials() {
 
 function confirmAcceptCredential(index) {
     const cred = pendingCredentials[index];
-    const name = cred?.credential?.name || 'this peer';
+    const name = cred?.credential?.name || tl('cert.this_peer', 'this peer');
     openConfirmModal({
         title: tl('cert.confirm.accept_title', 'Accept credential?'),
         message: tl('cert.confirm.accept_msg', 'By accepting you certify that this key really belongs to') + ' "' + name + '". ' + tl('cert.confirm.accept_msg2', 'Other peers may rely on your judgment.'),
@@ -423,7 +490,7 @@ async function acceptCredential(index) {
             throw new Error('Failed to accept credential');
         }
     } catch (error) {
-        alert('Error accepting credential: ' + error.message);
+        alert(tl('cert.err.accept', 'Error accepting credential:') + ' ' + error.message);
     }
 }
 
@@ -437,7 +504,7 @@ async function refuseCredential(index) {
             throw new Error('Failed to refuse credential');
         }
     } catch (error) {
-        alert('Error refusing credential: ' + error.message);
+        alert(tl('cert.err.refuse', 'Error refusing credential:') + ' ' + error.message);
     }
 }
 
@@ -448,7 +515,7 @@ async function refuseCredential(index) {
 function exportOwnCertificate() {
     if (ownPeerId) {
         navigator.clipboard.writeText(`SharkNet Peer ID: ${ownPeerId}`).then(() => {
-            alert('Peer ID copied to clipboard!');
+            alert(tl('cert.peerid_copied', 'Peer ID copied to clipboard!'));
         });
     }
 }
@@ -461,12 +528,12 @@ async function sendCredentials() {
             hideImportModal();
             document.getElementById('import-peer-name').value = '';
             document.getElementById('import-message').value = '';
-            alert('Credentials sent successfully!');
+            alert(tl('cert.send_success', 'Credentials sent successfully!'));
         } else {
             throw new Error('Failed to send credentials');
         }
     } catch (error) {
-        alert('Error sending credentials: ' + error.message);
+        alert(tl('cert.err.send', 'Error sending credentials:') + ' ' + error.message);
     }
 }
 
@@ -481,7 +548,7 @@ async function revokeCertificate() {
             throw new Error('Failed to revoke certificate');
         }
     } catch (error) {
-        alert('Error revoking certificate: ' + error.message);
+        alert(tl('cert.err.revoke', 'Error revoking certificate:') + ' ' + error.message);
     }
 }
 

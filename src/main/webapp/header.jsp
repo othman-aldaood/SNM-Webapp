@@ -56,6 +56,7 @@
             <!-- Profile Link -->
             <a href="profile.jsp" class="flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full bg-blue-50 hover:bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:hover:bg-blue-900/50 dark:text-blue-400 border border-blue-100 dark:border-blue-800/50 shadow-sm transition-colors cursor-pointer" title="View Profile">
                 <i class="fas fa-user-circle text-sm"></i> <span id="activePeerName"><%= activePeerName %></span>
+                <span class="status-indicator-dot w-2 h-2 rounded-full bg-green-500 inline-block flex-shrink-0"></span>
             </a>
 
             <div class="flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full bg-green-50 text-green-700 dark:bg-green-900/30 dark:text-green-400 border border-green-100 dark:border-green-800/50 shadow-sm">
@@ -67,20 +68,55 @@
         </div>
 
         <!-- Mobile Profile Link -->
-        <a href="profile.jsp" class="lg:hidden flex items-center justify-center text-gray-500 hover:text-primary-600 dark:text-gray-400 dark:hover:text-primary-400 hover:bg-gray-100 dark:hover:bg-gray-800 p-2 rounded-lg transition-colors w-9 h-9 sm:w-10 sm:h-10 focus:outline-none" title="My Profile">
+        <a href="profile.jsp" class="lg:hidden relative flex items-center justify-center text-gray-500 hover:text-primary-600 dark:text-gray-400 dark:hover:text-primary-400 hover:bg-gray-100 dark:hover:bg-gray-800 p-2 rounded-lg transition-colors w-9 h-9 sm:w-10 sm:h-10 focus:outline-none" title="My Profile">
             <i class="fas fa-id-card text-lg"></i>
+            <span class="status-indicator-dot absolute bottom-1.5 right-1.5 w-2 h-2 rounded-full bg-green-500 ring-2 ring-white dark:ring-dark-card"></span>
         </a>
+
+        <!-- Presence Status Selector Dropdown -->
+        <div class="relative">
+            <button onclick="toggleStatusDropdown()" class="text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 p-2 rounded-lg transition-colors flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 focus:outline-none" title="Set Status" data-i18n-title="status.set_status">
+                <span class="status-indicator-dot w-3 h-3 rounded-full bg-green-500 inline-block"></span>
+            </button>
+            <div id="status-dropdown" class="hidden absolute right-0 mt-2 w-60 bg-white dark:bg-dark-card border border-gray-200 dark:border-dark-border rounded-lg shadow-xl z-50 overflow-hidden">
+                <div class="px-4 py-2 text-[0.65rem] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider border-b border-gray-100 dark:border-dark-border" data-i18n="status.set_status">Set Status</div>
+
+                <button onclick="setPeerStatus('active'); toggleStatusDropdown()" class="status-option w-full text-left px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 flex items-center gap-2.5 transition-colors" data-status="active">
+                    <span class="w-2.5 h-2.5 rounded-full bg-green-500 inline-block flex-shrink-0"></span> <span data-i18n="status.active">Active</span>
+                </button>
+                <button onclick="setPeerStatus('away'); toggleStatusDropdown()" class="status-option w-full text-left px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 flex items-center gap-2.5 transition-colors" data-status="away">
+                    <span class="w-2.5 h-2.5 rounded-full bg-yellow-500 inline-block flex-shrink-0"></span> <span data-i18n="status.away">Away</span>
+                </button>
+                <button onclick="setPeerStatus('dnd'); toggleStatusDropdown()" class="status-option w-full text-left px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 flex items-center gap-2.5 transition-colors" data-status="dnd">
+                    <span class="w-2.5 h-2.5 rounded-full bg-red-500 inline-block flex-shrink-0"></span> <span data-i18n="status.dnd">Do Not Disturb</span>
+                </button>
+                <button onclick="setPeerStatus('invisible'); toggleStatusDropdown()" class="status-option w-full text-left px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 flex items-center gap-2.5 transition-colors" data-status="invisible">
+                    <span class="w-2.5 h-2.5 rounded-full bg-gray-400 inline-block flex-shrink-0"></span> <span data-i18n="status.invisible">Invisible</span>
+                </button>
+
+                <div class="border-t border-gray-200 dark:border-dark-border px-4 py-3 flex items-center justify-between gap-2">
+                    <span class="text-xs font-medium text-gray-600 dark:text-gray-300 flex items-center gap-1.5">
+                        <i class="fas fa-lock text-[0.65rem]"></i> <span data-i18n="status.lock_status">Lock Status</span>
+                    </span>
+                    <label class="inline-flex items-center cursor-pointer">
+                        <input type="checkbox" class="status-lock-checkbox sr-only peer" onchange="setStatusLocked(this.checked)">
+                        <div class="relative w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600 shrink-0"></div>
+                    </label>
+                </div>
+                <div class="px-4 py-2 text-[0.65rem] text-gray-400 dark:text-gray-500 border-t border-gray-100 dark:border-dark-border" data-i18n="status.lock_desc">Locked status won't change automatically (e.g. when you're away).</div>
+            </div>
+        </div>
 
         <!-- I18N Language Switcher Dropdown -->
         <div class="relative">
             <button onclick="toggleLangDropdown()" class="text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 p-2 rounded-lg transition-colors flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 focus:outline-none" title="Language / Sprache">
-                <i class="fas fa-globe text-lg"></i>
+                <i id="lang-icon" class="fas fa-globe text-lg"></i>
             </button>
             <div id="lang-dropdown" class="hidden absolute right-0 mt-2 w-32 bg-white dark:bg-dark-card border border-gray-200 dark:border-dark-border rounded-lg shadow-xl z-50 overflow-hidden">
                 <button onclick="setLanguage('en'); toggleLangDropdown()" class="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 flex items-center gap-2">🇬🇧 English</button>
                 <button onclick="setLanguage('de'); toggleLangDropdown()" class="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 flex items-center gap-2">🇩🇪 Deutsch</button>
                 <button onclick="setLanguage('tr'); toggleLangDropdown()" class="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 flex items-center gap-2">🇹🇷 Türkçe</button>
-                <button onclick="setLanguage('ar'); toggleLangDropdown()" class="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 flex items-center gap-2" dir="rtl">🇸🇦 العربية</button>
+                <button onclick="setLanguage('ar'); toggleLangDropdown()" class="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 flex items-center gap-2">🇸🇦 العربية</button>
             </div>
         </div>
 
@@ -130,14 +166,30 @@
         }
     }
 
-    // Close language dropdown when clicking outside
+    /**
+     * Toggles the presence status dropdown visibility in the header.
+     * @return {void}
+     */
+    function toggleStatusDropdown() {
+        const dropdown = document.getElementById('status-dropdown');
+        if (dropdown) {
+            dropdown.classList.toggle('hidden');
+        }
+    }
+
+    // Close language / status dropdowns when clicking outside
     document.addEventListener('click', function(event) {
         const dropdown = document.getElementById('lang-dropdown');
         const btn = event.target.closest('button[title="Language / Sprache"]');
         if (dropdown && !dropdown.classList.contains('hidden') && !btn && !event.target.closest('#lang-dropdown')) {
             dropdown.classList.add('hidden');
         }
+
+        const statusDropdown = document.getElementById('status-dropdown');
+        if (statusDropdown && !statusDropdown.classList.contains('hidden') && !event.target.closest('#status-dropdown') && !event.target.closest('button[onclick="toggleStatusDropdown()"]')) {
+            statusDropdown.classList.add('hidden');
+        }
     });
 </script>
-<script src="js/ui-ux.js?v=6"></script>
-<script src="js/i18n.js?v=3‚"></script>
+<script src="js/ui-ux.js?v=7"></script>
+<script src="js/i18n.js?v=6"></script>

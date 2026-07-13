@@ -20,8 +20,11 @@ let ctxTargetMsgContent = null;
  * @return {string} Localized text matching environment settings
  */
 function t(key, fallback) {
+    // NOTE: i18n.js declares `translations` with `const` at script top-level, so it
+    // lives in the shared global lexical scope, not as a `window` property - reference
+    // it directly (not via `window.translations`, which is always undefined).
     const lang = localStorage.getItem('snm-lang') || 'en';
-    return (window.translations && window.translations[lang] && window.translations[lang][key]) ? window.translations[lang][key] : fallback;
+    return (typeof translations !== 'undefined' && translations[lang] && translations[lang][key]) ? translations[lang][key] : fallback;
 }
 
 /**
@@ -65,6 +68,12 @@ document.addEventListener('click', function (e) {
     // Hide filter panel if clicking outside of it
     if (filterPanel && !filterPanel.classList.contains('hidden') && !e.target.closest('#filter-panel') && !e.target.closest('#filter-toggle-btn')) {
         filterPanel.classList.add('hidden');
+    }
+
+    // Hide trust popover if clicking outside of it
+    const trustPopover = document.getElementById('trust-popover');
+    if (trustPopover && !trustPopover.classList.contains('hidden') && !e.target.closest('#trust-popover') && !e.target.closest('.trust-badge-btn')) {
+        hideTrustPopover();
     }
 });
 
@@ -143,7 +152,7 @@ async function loadChannels() {
                     </div>
                     <div class="flex items-center">
                         <span class="text-xs text-gray-400 mr-2 bg-gray-100 dark:bg-gray-700 px-2 py-0.5 rounded-full">${channel.messages || 0}</span>
-                        <button onclick="deleteChannel('${escapeHtml(channel.uri)}', event)" class="text-gray-400 hover:text-red-500 transition-colors" title="Delete Channel">
+                        <button onclick="deleteChannel('${escapeHtml(channel.uri)}', event)" class="text-gray-400 hover:text-red-500 transition-colors" title="${t('msg.delete_channel_tooltip', 'Delete Channel')}" data-i18n-title="msg.delete_channel_tooltip">
                             <i class="fas fa-times"></i>
                         </button>
                     </div>
@@ -153,11 +162,11 @@ async function loadChannels() {
 
             document.getElementById('active-channel-count').textContent = data.channels.length;
         } else {
-            listGroup.innerHTML = `<div class="p-5 text-center text-gray-500 dark:text-gray-400 text-sm">No channels available.<br>Create one using the + button.</div>`;
+            listGroup.innerHTML = `<div class="p-5 text-center text-gray-500 dark:text-gray-400 text-sm" data-i18n="msg.no_channels">${t('msg.no_channels', 'No channels available.<br>Create one using the + button.')}</div>`;
             document.getElementById('active-channel-count').textContent = '0';
         }
     } catch (error) {
-        container.innerHTML = `<div class="p-4 text-center text-red-500 text-sm">Failed to load channels from server.</div>`;
+        container.innerHTML = `<div class="p-4 text-center text-red-500 text-sm" data-i18n="msg.err.load_channels">${t('msg.err.load_channels', 'Failed to load channels from server.')}</div>`;
     }
 }
 
@@ -188,8 +197,15 @@ function selectChannel(element, uri, name, index) {
         element.querySelector('.channel-icon')?.classList.remove('text-gray-400', 'dark:text-gray-500');
     }
 
-    document.getElementById('current-channel-name').textContent = name || uri;
-    document.getElementById('current-channel-pki-status').innerText = 'Connected to ' + escapeHtml(name || uri);
+    // These elements carry data-i18n="msg.select_channel"/"msg.waiting_selection" in the
+    // static markup for the "nothing selected" placeholder; drop it now that real channel
+    // data is shown, otherwise a later language switch would overwrite it with that placeholder.
+    const nameEl = document.getElementById('current-channel-name');
+    nameEl.removeAttribute('data-i18n');
+    nameEl.textContent = name || uri;
+    const statusEl = document.getElementById('current-channel-pki-status');
+    statusEl.removeAttribute('data-i18n');
+    statusEl.innerHTML = `<span data-i18n="msg.connected_to">${t('msg.connected_to', 'Connected to')}</span> ${escapeHtml(name || uri)}`;
 
     const indicator = document.getElementById('status-indicator');
     if (indicator) {
@@ -214,8 +230,9 @@ function selectChannel(element, uri, name, index) {
  * @return {Promise<void>}
  */
 async function loadMessages(uri) {
+    hideTrustPopover();
     const chatLog = document.getElementById('chat-log');
-    chatLog.innerHTML = `<div class="flex flex-col items-center justify-center h-full text-center space-y-3 opacity-60"><i class="fas fa-spinner fa-spin text-3xl text-primary-500"></i><p class="text-sm">Loading messages...</p></div>`;
+    chatLog.innerHTML = `<div class="flex flex-col items-center justify-center h-full text-center space-y-3 opacity-60"><i class="fas fa-spinner fa-spin text-3xl text-primary-500"></i><p class="text-sm" data-i18n="msg.loading_messages">${t('msg.loading_messages', 'Loading messages...')}</p></div>`;
 
     try {
         const response = await fetch(`/snm-webapp/api/messenger/messages/?uri=${encodeURIComponent(uri)}`);
@@ -228,10 +245,10 @@ async function loadMessages(uri) {
             applyFilters();
         } else {
             currentMessages = [];
-            chatLog.innerHTML = '<div class="text-center p-5 text-gray-400 text-sm">No messages. Be the first to say hello!</div>';
+            chatLog.innerHTML = `<div class="text-center p-5 text-gray-400 text-sm" data-i18n="msg.no_messages">${t('msg.no_messages', 'No messages. Be the first to say hello!')}</div>`;
         }
     } catch (error) {
-        chatLog.innerHTML = `<div class="text-center text-red-500 p-5 text-sm">Error loading messages.</div>`;
+        chatLog.innerHTML = `<div class="text-center text-red-500 p-5 text-sm" data-i18n="msg.err.load_messages">${t('msg.err.load_messages', 'Error loading messages.')}</div>`;
     }
 }
 
@@ -376,8 +393,7 @@ function securityBadgesHTML(msg) {
     }
 
     if (sec.signed && sec.verified) {
-        const iaTip = sec.ia ? ` — IA: ${escapeHtml(sec.ia)}` : '';
-        badges.push(`<span class="${base} bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400" title="${t('msg.sec.verified_tip', 'Signature verified')}${iaTip}"><i class="fas fa-check-circle"></i> ${t('msg.sec.verified', 'Verified')}</span>`);
+        badges.push(`<span class="${base} bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400" title="${t('msg.sec.verified_tip', 'Signature verified')}"><i class="fas fa-check-circle"></i> ${t('msg.sec.verified', 'Verified')}</span>`);
     } else if (sec.signed && !sec.verified) {
         const viaTcp = hasTcpHop(msg) ? ` ${t('msg.sec.via_tcp', 'via TCP')}` : '';
         badges.push(`<span class="${base} bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400" title="${t('msg.sec.unverified_tip', 'Signed, but the signature could not be verified')}"><i class="fas fa-exclamation-triangle"></i> ${t('msg.sec.unverified', 'Unverified')}${viaTcp}</span>`);
@@ -411,6 +427,125 @@ function hopsChipHTML(msg) {
     return `<span class="${base}" title="${t('msg.hops_tip', 'Hop list (sender [connection] encrypted/verified)')}:&#10;${escapeHtml(lines)}"><i class="fas fa-route"></i> ${hops.length} ${t('msg.hops', 'hops')}</span>`;
 }
 
+// --- Trust Badge & Hop Popover ---
+
+let trustPopoverMsgId = null;
+
+/**
+ * Buckets a raw identity assurance value (0-10) into a trust category.
+ * @param {number} ia - Identity assurance value
+ * @return {{key: string, classes: string}} Category key and its badge color classes
+ */
+function iaCategory(ia) {
+    if (ia >= 8) return {key: 'perfect', classes: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'};
+    if (ia >= 1) return {key: 'enough', classes: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400'};
+    return {key: 'bad', classes: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'};
+}
+
+/**
+ * Builds the small clickable trust badge shown below every message bubble.
+ * @param {Object} msg - Message object (server JSON)
+ * @param {string} msgId - Resolved message ID (id or timestamp fallback)
+ * @return {string} HTML string
+ */
+function trustBadgeHTML(msg, msgId) {
+    const ia = Number.isInteger(msg.e2eSecurity?.ia) ? msg.e2eSecurity.ia : 0;
+    const cat = iaCategory(ia);
+    const label = t(`msg.trust.${cat.key}`, cat.key);
+
+    return `<button type="button" onclick="showTrustPopover(event, '${escapeHtml(msgId)}')" class="trust-badge-btn inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[0.62rem] font-semibold ${cat.classes} hover:brightness-95 transition-all cursor-pointer" title="${t('msg.trust.tip', 'Click for trust and hop details')}">
+        <i class="fas fa-shield-alt"></i> ${t('msg.trust.ia', 'iA')}: ${ia}/10 &mdash; ${label}
+    </button>`;
+}
+
+/**
+ * Renders the "P2P security" line plus hop-by-hop detail rows for the trust popover.
+ * @param {Object} msg - Message object (server JSON)
+ * @return {string} HTML string
+ */
+function buildTrustPopoverContent(msg) {
+    const sec = msg.e2eSecurity || {};
+    const ia = Number.isInteger(sec.ia) ? sec.ia : 0;
+    const yesNo = v => v ? t('common.yes', 'Yes') : t('common.no', 'No');
+    const hops = msg.hopingList;
+
+    let hopsHtml;
+    if (!Array.isArray(hops) || hops.length === 0) {
+        hopsHtml = `<div class="text-gray-500 dark:text-gray-400">${t('msg.trust.no_hops', 'No hops - received directly')}</div>`;
+    } else {
+        hopsHtml = '<div class="space-y-1.5">' + hops.map((h, i) => `
+            <div class="bg-gray-50 dark:bg-gray-800/50 rounded p-1.5">
+                <div class="font-mono break-all">${i}: ${t('msg.trust.sender', 'Sender')}: ${escapeHtml(h.sender)}</div>
+                <div class="text-gray-600 dark:text-gray-300">${t('msg.trust.encrypted', 'Encrypted')}: ${yesNo(h.encrypted)} &middot; ${t('msg.trust.verified', 'Verified')}: ${yesNo(h.verified)} &middot; ${t('msg.trust.connection', 'Connection')}: ${escapeHtml(h.via)}</div>
+            </div>
+        `).join('') + '</div>';
+    }
+
+    return `
+        <div class="text-xs space-y-2">
+            <div class="font-bold text-gray-700 dark:text-gray-200 border-b border-gray-100 dark:border-dark-border pb-1">${t('msg.trust.title', 'Trust Details')}</div>
+            <div><span class="text-gray-500 dark:text-gray-400">${t('msg.trust.sender', 'Sender')}:</span> <span class="font-mono break-all">${escapeHtml(msg.sender)}</span></div>
+            <div class="flex flex-wrap gap-x-3 gap-y-1 text-gray-600 dark:text-gray-300">
+                <span>${t('msg.trust.encrypted', 'Encrypted')}: ${yesNo(sec.encrypted)}</span>
+                <span>${t('msg.trust.signed', 'Signed')}: ${yesNo(sec.signed)}</span>
+                <span>${t('msg.trust.verified', 'Verified')}: ${yesNo(sec.verified)}</span>
+                <span>${t('msg.trust.ia', 'iA')}: ${ia}/10</span>
+            </div>
+            <div class="font-semibold text-gray-700 dark:text-gray-200 pt-1 border-t border-gray-100 dark:border-dark-border">${t('msg.trust.hop_list', 'Hop list')}</div>
+            ${hopsHtml}
+        </div>
+    `;
+}
+
+/**
+ * Shows (or toggles closed) the trust popover for a given message, positioned
+ * relative to the badge that triggered it.
+ * @param {Event} event - The click event on the trust badge
+ * @param {string} msgId - The ID of the message
+ * @return {void}
+ */
+function showTrustPopover(event, msgId) {
+    event.stopPropagation();
+
+    const popover = document.getElementById('trust-popover');
+    if (!popover) return;
+
+    if (trustPopoverMsgId === msgId && !popover.classList.contains('hidden')) {
+        hideTrustPopover();
+        return;
+    }
+
+    const msg = currentMessages.find(m => (m.id || m.timestamp) === msgId);
+    if (!msg) return;
+
+    popover.innerHTML = buildTrustPopoverContent(msg);
+    popover.classList.remove('hidden');
+    trustPopoverMsgId = msgId;
+
+    const rect = event.currentTarget.getBoundingClientRect();
+    let left = rect.left;
+    let top = rect.bottom + 6;
+
+    if (left + popover.offsetWidth > window.innerWidth) left = window.innerWidth - popover.offsetWidth - 8;
+    if (left < 8) left = 8;
+    if (top + popover.offsetHeight > window.innerHeight) top = rect.top - popover.offsetHeight - 6;
+
+    popover.style.left = `${left}px`;
+    popover.style.top = `${top}px`;
+}
+
+/**
+ * Hides the trust popover.
+ * @return {void}
+ */
+function hideTrustPopover() {
+    const popover = document.getElementById('trust-popover');
+    if (popover && !popover.classList.contains('hidden')) {
+        popover.classList.add('hidden');
+    }
+    trustPopoverMsgId = null;
+}
+
 /**
  * Renders the messages to the DOM.
  * @param {Array} messages - Array of message objects
@@ -422,7 +557,7 @@ function renderMessages(messages, searchTerm = '') {
     chatLog.innerHTML = '';
 
     if (messages.length === 0) {
-        chatLog.innerHTML = `<div class="text-center p-5 text-gray-400 text-sm">No matching messages found.</div>`;
+        chatLog.innerHTML = `<div class="text-center p-5 text-gray-400 text-sm" data-i18n="msg.no_matches">${t('msg.no_matches', 'No matching messages found.')}</div>`;
         return;
     }
 
@@ -445,10 +580,13 @@ function renderMessages(messages, searchTerm = '') {
                 <div class="mb-1 px-1 flex flex-wrap gap-1 ${isMe ? 'justify-end' : 'justify-start'}">
                     ${securityBadgesHTML(msg)} ${hopsChipHTML(msg)}
                 </div>
-                <div oncontextmenu="handleContextMenu(event, '${escapeHtml(msgId)}', '${escapedContentForJS}', ${isMeStr})" 
+                <div oncontextmenu="handleContextMenu(event, '${escapeHtml(msgId)}', '${escapedContentForJS}', ${isMeStr})"
                      class="${isMe ? 'cursor-context-menu bg-primary-500 text-white rounded-l-xl rounded-tr-xl hover:brightness-110' : 'bg-white dark:bg-dark-card border border-gray-200 dark:border-dark-border text-gray-800 dark:text-gray-200 rounded-r-xl rounded-tl-xl'} px-4 py-2 inline-block text-sm shadow-sm text-left break-words max-w-full transition-all"
                      title="${isMe ? 'Right-click to Edit or Delete' : ''}">
                     ${highlightedContent}
+                </div>
+                <div class="mt-1 px-1 flex ${isMe ? 'justify-end' : 'justify-start'}">
+                    ${trustBadgeHTML(msg, msgId)}
                 </div>
             </div>
         `;
@@ -542,7 +680,7 @@ function startEditMessage(id, content) {
 
     const sendBtn = document.getElementById('send-btn');
     if (sendBtn) {
-        sendBtn.innerHTML = `<i class="fas fa-save text-base"></i><span class="text-xs">Update</span>`;
+        sendBtn.innerHTML = `<i class="fas fa-save text-base"></i><span class="text-xs" data-i18n="msg.update">${t('msg.update', 'Update')}</span>`;
         sendBtn.classList.remove('bg-primary-500', 'hover:bg-primary-600');
         sendBtn.classList.add('bg-yellow-500', 'hover:bg-yellow-600');
     }
@@ -551,7 +689,8 @@ function startEditMessage(id, content) {
         const cancelBtn = document.createElement('button');
         cancelBtn.id = 'cancel-edit-btn';
         cancelBtn.className = 'text-xs text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors font-medium mt-1';
-        cancelBtn.innerText = 'Cancel Edit';
+        cancelBtn.setAttribute('data-i18n', 'msg.cancel_edit');
+        cancelBtn.innerText = t('msg.cancel_edit', 'Cancel Edit');
         cancelBtn.onclick = cancelEditMode;
         document.getElementById('action-buttons-container')?.appendChild(cancelBtn);
     }
@@ -568,7 +707,7 @@ function cancelEditMode() {
 
     const sendBtn = document.getElementById('send-btn');
     if (sendBtn) {
-        sendBtn.innerHTML = `<i class="fas fa-paper-plane text-base"></i><span class="text-xs">Send</span>`;
+        sendBtn.innerHTML = `<i class="fas fa-paper-plane text-base"></i><span class="text-xs" data-i18n="msg.send">${t('msg.send', 'Send')}</span>`;
         sendBtn.classList.add('bg-primary-500', 'hover:bg-primary-600');
         sendBtn.classList.remove('bg-yellow-500', 'hover:bg-yellow-600');
     }
@@ -609,7 +748,7 @@ function updateEncryptAvailability() {
 
 async function sendMessage() {
     if (currentChannelState.index === null || currentChannelState.index === undefined) {
-        alert('Please select a channel from the list first.');
+        alert(t('msg.select_channel_first', 'Please select a channel from the list first.'));
         return;
     }
 
@@ -682,10 +821,10 @@ async function sendMessage() {
             }, 500);
         } else {
             const result = await response.json();
-            alert('Failed to send message: ' + (result.error || 'Unknown error'));
+            alert(t('msg.err.send', 'Failed to send message:') + ' ' + (result.error || t('common.unknown_error', 'Unknown error')));
         }
     } catch (error) {
-        alert('Error sending message');
+        alert(t('msg.err.send_generic', 'Error sending message'));
     }
 }
 
@@ -695,7 +834,7 @@ async function sendMessage() {
  * @return {Promise<void>}
  */
 async function deleteMessage(msgId) {
-    if (!confirm('Are you sure you want to delete this message?')) return;
+    if (!confirm(t('msg.confirm_delete_message', 'Are you sure you want to delete this message?'))) return;
 
     try {
         const response = await fetch(`/snm-webapp/api/messenger/messages?msgId=${encodeURIComponent(msgId)}&channelIndex=${currentChannelState.index}`, {
@@ -726,7 +865,7 @@ async function createChannel() {
     const uri = uriInput.value.trim();
     const name = nameInput.value.trim() || uri;
 
-    if (!uri) return alert('Channel URI is required');
+    if (!uri) return alert(t('msg.channel_uri_required', 'Channel URI is required'));
 
     try {
         const response = await fetch('/snm-webapp/api/messenger/channels', {
@@ -740,10 +879,10 @@ async function createChannel() {
             loadChannels();
         } else {
             const result = await response.json();
-            alert('Error: ' + (result.error || 'Unknown error'));
+            alert(t('common.error', 'Error') + ': ' + (result.error || t('common.unknown_error', 'Unknown error')));
         }
     } catch (error) {
-        alert('Request failed');
+        alert(t('msg.err.request_failed', 'Request failed'));
     }
 }
 
@@ -755,7 +894,7 @@ async function createChannel() {
  */
 async function deleteChannel(uri, event) {
     if (event) event.stopPropagation();
-    if (!confirm(`Are you sure you want to delete the channel:\n${uri}?`)) return;
+    if (!confirm(t('msg.confirm_delete_channel', 'Are you sure you want to delete the channel:') + `\n${uri}?`)) return;
 
     try {
         const response = await fetch('/snm-webapp/api/messenger/channels', {
@@ -766,9 +905,15 @@ async function deleteChannel(uri, event) {
 
         if (response.ok) {
             if (currentChannelState.uri === uri) {
-                document.getElementById('chat-log').innerHTML = '<div class="text-center p-5 text-gray-400 text-sm">Channel deleted.</div>';
-                document.getElementById('current-channel-name').textContent = 'Select a channel';
-                document.getElementById('current-channel-pki-status').innerText = 'Waiting for selection...';
+                document.getElementById('chat-log').innerHTML = `<div class="text-center p-5 text-gray-400 text-sm" data-i18n="msg.channel_deleted">${t('msg.channel_deleted', 'Channel deleted.')}</div>`;
+                // Restore the placeholder data-i18n hooks that selectChannel() strips once a
+                // real channel is active, so this "nothing selected" state stays retranslatable.
+                const nameEl = document.getElementById('current-channel-name');
+                nameEl.setAttribute('data-i18n', 'msg.select_channel');
+                nameEl.textContent = t('msg.select_channel', 'Select a channel');
+                const statusEl = document.getElementById('current-channel-pki-status');
+                statusEl.setAttribute('data-i18n', 'msg.waiting_selection');
+                statusEl.textContent = t('msg.waiting_selection', 'Waiting for selection...');
                 document.getElementById('status-indicator')?.classList.add('bg-gray-400');
                 document.getElementById('status-indicator')?.classList.remove('bg-green-500');
                 currentChannelState = {uri: null, index: null, name: null};
@@ -780,10 +925,10 @@ async function deleteChannel(uri, event) {
             }
             loadChannels();
         } else {
-            alert('Failed to delete channel.');
+            alert(t('msg.err.delete_channel', 'Failed to delete channel.'));
         }
     } catch (e) {
-        alert('Error deleting channel');
+        alert(t('msg.err.delete_channel_generic', 'Error deleting channel'));
     }
 }
 
@@ -795,7 +940,7 @@ function showSendSuccess() {
     const sendBtn = document.getElementById('send-btn');
     if (!sendBtn) return;
     const originalContent = sendBtn.innerHTML;
-    sendBtn.innerHTML = `<i class="fas fa-check text-base"></i><span class="text-xs">Sent!</span>`;
+    sendBtn.innerHTML = `<i class="fas fa-check text-base"></i><span class="text-xs" data-i18n="msg.sent">${t('msg.sent', 'Sent!')}</span>`;
     sendBtn.classList.replace('bg-primary-500', 'bg-green-500');
     sendBtn.classList.replace('hover:bg-primary-600', 'hover:bg-green-600');
     setTimeout(() => {
@@ -816,7 +961,7 @@ async function loadPersonsForRecipient() {
         const data = await response.json();
         const select = document.getElementById('message-receiver');
         if (select && data.persons && data.persons.length > 0) {
-            select.innerHTML = '<option value="ANY_SHARKNET_PEER">Anyone</option>';
+            select.innerHTML = `<option value="ANY_SHARKNET_PEER" data-i18n="msg.anyone">${t('msg.anyone', 'Anyone')}</option>`;
             data.persons.forEach(person => {
                 const option = document.createElement('option');
                 option.value = person.name;

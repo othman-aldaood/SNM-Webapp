@@ -58,10 +58,10 @@
 
                     <div class="p-4 border-b border-gray-200 dark:border-dark-border bg-gray-50 dark:bg-gray-800/50 rounded-t-xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 relative">
                         <div>
-                            <div class="font-bold text-lg text-gray-800 dark:text-white" id="current-channel-name">Select a channel</div>
+                            <div class="font-bold text-lg text-gray-800 dark:text-white" id="current-channel-name" data-i18n="msg.select_channel">Select a channel</div>
                             <div class="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400 mt-1">
                                 <span class="w-2 h-2 rounded-full bg-gray-400" id="status-indicator"></span>
-                                <span id="current-channel-pki-status">Waiting for selection...</span>
+                                <span id="current-channel-pki-status" data-i18n="msg.waiting_selection">Waiting for selection...</span>
                             </div>
                         </div>
 
@@ -101,7 +101,7 @@
                     <div class="flex-1 overflow-y-auto chat-scroll p-4 bg-gray-50/50 dark:bg-dark-bg/50 relative" id="chat-log">
                         <div class="flex flex-col items-center justify-center h-full text-center space-y-3 opacity-60">
                             <i class="fas fa-comments text-5xl text-primary-500"></i>
-                            <h3 class="text-xl font-bold">Welcome to SharkNet Messenger</h3>
+                            <h3 class="text-xl font-bold" data-i18n="msg.welcome_title">Welcome to SharkNet Messenger</h3>
                         </div>
                     </div>
 
@@ -109,7 +109,7 @@
                     <div class="p-3 border-t border-gray-200 dark:border-dark-border bg-white dark:bg-dark-card rounded-b-xl relative z-10">
                         <div class="flex flex-wrap items-center gap-4 mb-2 text-sm">
                             <select id="message-receiver" class="bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-dark-border text-gray-700 dark:text-gray-300 rounded px-2 py-1 outline-none focus:ring-1 focus:ring-primary-500 cursor-pointer">
-                                <option value="ANY_SHARKNET_PEER">Anyone</option>
+                                <option value="ANY_SHARKNET_PEER" data-i18n="msg.anyone">Anyone</option>
                             </select>
 
                             <%-- E2E security options group --%>
@@ -117,11 +117,11 @@
                                 <span class="text-xs font-semibold text-gray-500 dark:text-gray-400 flex items-center gap-1.5">
                                     <i class="fas fa-shield-alt text-primary-500"></i> <span data-i18n="msg.security">Security</span>
                                 </span>
-                                <label class="flex items-center gap-1.5 cursor-pointer text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors" title="Attach your digital signature so the receiver can verify the sender">
+                                <label class="flex items-center gap-1.5 cursor-pointer text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors" title="Attach your digital signature so the receiver can verify the sender" data-i18n-title="msg.sign_tip">
                                     <input type="checkbox" id="sign-message" checked class="rounded border-gray-300 text-primary-500 focus:ring-primary-500">
                                     <span data-i18n="msg.sign"><i class="fas fa-signature text-xs"></i> Sign</span>
                                 </label>
-                                <label class="flex items-center gap-1.5 cursor-pointer text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors" title="Encrypt so only the selected receiver can read the message">
+                                <label class="flex items-center gap-1.5 cursor-pointer text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors" title="Encrypt so only the selected receiver can read the message" data-i18n-title="msg.encrypt_tip">
                                     <input type="checkbox" id="encrypt-message" class="rounded border-gray-300 text-primary-500 focus:ring-primary-500">
                                     <span data-i18n="msg.encrypt"><i class="fas fa-lock text-xs"></i> Encrypt</span>
                                 </label>
@@ -132,7 +132,7 @@
                             <textarea id="message-input" rows="2" class="flex-1 resize-none border border-gray-300 dark:border-dark-border rounded-lg p-2 text-sm bg-white dark:bg-dark-bg text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500" placeholder="Type your message here..." data-i18n-placeholder="msg.type_here"></textarea>
                             <div class="flex flex-col gap-1" id="action-buttons-container">
                                 <%-- Using verified key routing matching safe tag attributes layout validation mapping --%>
-                                <ui:button text="Send" theme="primary" icon="fas fa-paper-plane" onClick="sendMessage()" cssClass="h-[52px] !flex-col !gap-1 min-w-[70px] !text-xs !py-1" />
+                                <ui:button id="send-btn" text="Send" key="msg.send" theme="primary" icon="fas fa-paper-plane" onClick="sendMessage()" cssClass="h-[52px] !flex-col !gap-1 min-w-[70px] !text-xs !py-1" />
                             </div>
                         </div>
                     </div>
@@ -198,6 +198,9 @@
         </button>
     </div>
 
-    <script src="js/messenger.js?v=1004"></script>
+    <%-- Trust badge popover: hop-by-hop P2P security details, positioned & filled by messenger.js --%>
+    <div id="trust-popover" class="hidden fixed z-[100] w-72 max-w-[90vw] bg-white dark:bg-dark-card rounded-lg shadow-xl border border-gray-200 dark:border-dark-border p-3"></div>
+
+    <script src="js/messenger.js?v=1006"></script>
 </body>
 </html>

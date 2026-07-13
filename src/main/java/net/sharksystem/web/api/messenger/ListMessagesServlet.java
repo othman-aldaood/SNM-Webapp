@@ -3,6 +3,7 @@ package net.sharksystem.web.api.messenger;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import net.sharksystem.asap.ASAPHop;
+import net.sharksystem.asap.ASAPSecurityException;
 import net.sharksystem.app.messenger.*;
 import jakarta.servlet.http.HttpServlet;
 import net.sharksystem.web.peer.PeerRuntime;
@@ -134,9 +135,19 @@ public class ListMessagesServlet extends HttpServlet {
                 e2eJson.addProperty("signed", msg.signed());
                 e2eJson.addProperty("verified", msg.verified());
 
-                if (msg.signed() && !pki.getOwnerID().equals(senderID)) {
-                    e2eJson.addProperty("ia", WebPKIUtils.getIAExplainText(pki.getIdentityAssurance(senderID)));
+                // Identity assurance (0-10) drives the per-message trust badge; the owner is
+                // always fully trusted, everyone else is looked up (0 if no assurance exists).
+                int ia;
+                if (pki.getOwnerID().equals(senderID)) {
+                    ia = 10;
+                } else {
+                    try {
+                        ia = pki.getIdentityAssurance(senderID);
+                    } catch (ASAPSecurityException e) {
+                        ia = 0;
+                    }
                 }
+                e2eJson.addProperty("ia", ia);
 
                 msgJson.add("e2eSecurity", e2eJson);
 

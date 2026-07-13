@@ -156,6 +156,29 @@
                         </div>
                     </div>
 
+                    <%-- Peer Encounters Table Card (data from /api/peer/status: encounters[]) --%>
+                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden w-full">
+                        <div class="p-4 md:p-6 border-b border-gray-100 dark:border-gray-700">
+                            <h3 class="text-base font-bold" data-i18n="net.encounters_title">Peer Encounters</h3>
+                        </div>
+                        <div class="overflow-x-auto w-full">
+                            <table class="w-full text-left text-sm whitespace-nowrap">
+                                <thead class="text-xs uppercase bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-300">
+                                    <tr>
+                                        <th class="px-6 py-4 font-semibold" data-i18n="net.th.peer_id">Peer ID</th>
+                                        <th class="px-6 py-4 font-semibold" data-i18n="net.th.connection_type">Connection Type</th>
+                                        <th class="px-6 py-4 font-semibold" data-i18n="net.th.duration">Duration</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="encountersList" class="divide-y divide-gray-200 dark:divide-gray-700">
+                                    <tr>
+                                        <td colspan="3" class="px-6 py-8 text-center text-gray-500 dark:text-gray-400" data-i18n="common.loading">Loading...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
                     <%-- General Network Signal Footer Status --%>
                     <div class="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 py-2 justify-center md:justify-start">
                         <i class="fas fa-signal text-green-500"></i>
@@ -287,8 +310,11 @@
          * @param {string} fallback - Literal safe default visualization return values boundary
          */
         function tl(key, fallback) {
+            // NOTE: i18n.js declares `translations` with `const` at script top-level, so it
+            // lives in the shared global lexical scope, not as a `window` property - reference
+            // it directly (not via `window.translations`, which is always undefined).
             const currentLang = localStorage.getItem('snm-lang') || 'en';
-            return (window.translations && window.translations[currentLang] && window.translations[currentLang][key]) ? window.translations[currentLang][key] : fallback;
+            return (typeof translations !== 'undefined' && translations[currentLang] && translations[currentLang][key]) ? translations[currentLang][key] : fallback;
         }
 
         /** Utility to prevent XSS in dynamically injected nodes */
@@ -347,8 +373,75 @@
                 set('encounters-count', enc);
                 set('hubs-connected-count', hubs.hubsConnected);
                 set('hubs-failed-count', hubs.failedToConnect);
+                renderEncounters(data.encounters);
             })
             .catch(err => console.error('Error loading peer status:', err));
+        }
+
+        /**
+         * Formats a millisecond duration as a short human readable string, e.g. "5m 32s".
+         * @param {number} ms - Duration in milliseconds
+         * @return {string}
+         */
+        function formatDuration(ms) {
+            if (!ms || ms < 0) return '0s';
+            const totalSec = Math.floor(ms / 1000);
+            const h = Math.floor(totalSec / 3600);
+            const m = Math.floor((totalSec % 3600) / 60);
+            const s = totalSec % 60;
+            if (h > 0) return `\${h}h \${m}m`;
+            if (m > 0) return `\${m}m \${s}s`;
+            return `\${s}s`;
+        }
+
+        /**
+         * Maps an encounter connection type (TCP/HUB/Ad-Hoc/Onion/Unknown) to badge color classes.
+         * @param {string} type - Connection type label from /api/peer/status
+         * @return {string} Tailwind classes
+         */
+        function connectionTypeBadgeClasses(type) {
+            switch (type) {
+                case 'TCP': return 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400';
+                case 'HUB': return 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400';
+                case 'Ad-Hoc': return 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400';
+                case 'Onion': return 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900/30 dark:text-indigo-400';
+                default: return 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400';
+            }
+        }
+
+        /**
+         * Renders the peer encounters table (peerID, connectionType, duration/ongoing).
+         * @param {Array} encounters - encounters[] from /api/peer/status/{peerId}
+         * @return {void}
+         */
+        function renderEncounters(encounters) {
+            const tbody = document.getElementById('encountersList');
+            if (!tbody) return;
+
+            if (!encounters || encounters.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="3" class="px-6 py-8 text-center text-gray-500 dark:text-gray-400 italic">\${tl('net.no_encounters', 'No peer encounters recorded yet.')}</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = '';
+            encounters.forEach(enc => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors";
+                const isOngoing = enc.stopTime === undefined || enc.stopTime === null;
+                const durationHtml = isOngoing
+                    ? `<span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400 text-xs font-bold rounded-full"><span class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse inline-block"></span>\${tl('net.ongoing', 'Ongoing')}</span>`
+                    : `<span class="font-mono">\${formatDuration(enc.stopTime - enc.startTime)}</span>`;
+
+                tr.innerHTML = `
+                    <td class="px-6 py-4 font-mono font-medium">\${escapeHtml(enc.peerID)}</td>
+                    <td class="px-6 py-4"><span class="px-2.5 py-0.5 text-xs font-bold rounded-full \${connectionTypeBadgeClasses(enc.connectionType)}">\${escapeHtml(enc.connectionType)}</span></td>
+                    <td class="px-6 py-4">
+                        \${durationHtml}
+                        <div class="text-[0.7rem] text-gray-400 dark:text-gray-500 mt-1">\${tl('net.started', 'Started')} \${netRelativeAge(enc.startTime)}</div>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
         }
 
         /** Refreshes data for both tabs */

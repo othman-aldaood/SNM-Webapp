@@ -12,6 +12,8 @@
 <%@ attribute name="cssClass" required="false" type="java.lang.String" %>
 <%-- Added optional localization key attribute --%>
 <%@ attribute name="key" required="false" type="java.lang.String" %>
+<%-- Added optional id attribute so callers can target the button from JS --%>
+<%@ attribute name="id" required="false" type="java.lang.String" %>
 
 <%
     /**
@@ -49,6 +51,7 @@
      3. Final HTML Rendering
 =========================================== --%>
 <button type="<%= btnType %>"
+        <% if (id != null && !id.isEmpty()) { %> id="<%= id %>" <% } %>
         <% if (onClick != null && !onClick.isEmpty()) { %> onclick="${onClick}" <% } %>
         class="rounded-lg font-medium shadow-sm transition-colors flex items-center justify-center gap-2 <%= sizeClasses %> <%= themeClasses %> <%= extraClasses %>">
 
