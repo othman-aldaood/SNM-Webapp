@@ -198,6 +198,9 @@
         </button>
     </div>
 
-    <script src="js/messenger.js?v=1005"></script>
+    <%-- Trust badge popover: hop-by-hop P2P security details, positioned & filled by messenger.js --%>
+    <div id="trust-popover" class="hidden fixed z-[100] w-72 max-w-[90vw] bg-white dark:bg-dark-card rounded-lg shadow-xl border border-gray-200 dark:border-dark-border p-3"></div>
+
+    <script src="js/messenger.js?v=1006"></script>
 </body>
 </html>

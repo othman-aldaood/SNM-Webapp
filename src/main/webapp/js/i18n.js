@@ -18,6 +18,8 @@ const translations = {
         "common.error": "Error",
         "common.active": "Active",
         "common.inactive": "Inactive",
+        "common.yes": "Yes",
+        "common.no": "No",
 
         // Sidebar
         "nav.messenger": "Messenger",
@@ -457,6 +459,21 @@ const translations = {
         "msg.hops_tip": "Hop list (sender [connection] encrypted/verified)",
         "msg.hops_none": "direct",
         "msg.hops_none_tip": "Received directly - no intermediate hops",
+
+        // Messenger trust badge & hop popover (Phase 2)
+        "msg.trust.bad": "bad",
+        "msg.trust.enough": "enough",
+        "msg.trust.perfect": "perfect",
+        "msg.trust.tip": "Click for trust and hop details",
+        "msg.trust.title": "Trust Details",
+        "msg.trust.sender": "Sender",
+        "msg.trust.encrypted": "Encrypted",
+        "msg.trust.signed": "Signed",
+        "msg.trust.verified": "Verified",
+        "msg.trust.ia": "iA",
+        "msg.trust.hop_list": "Hop list",
+        "msg.trust.no_hops": "No hops - received directly",
+        "msg.trust.connection": "Connection",
         "time.now": "now",
         "time.min": "min ago",
         "time.hr": "h ago",
@@ -528,6 +545,8 @@ const translations = {
         "common.error": "Fehler",
         "common.active": "Aktiv",
         "common.inactive": "Inaktiv",
+        "common.yes": "Ja",
+        "common.no": "Nein",
 
         // Sidebar
         "nav.messenger": "Nachrichten",
@@ -969,6 +988,21 @@ const translations = {
         "msg.hops_tip": "Hop-Liste (Absender [Verbindung] verschlüsselt/verifiziert)",
         "msg.hops_none": "direkt",
         "msg.hops_none_tip": "Direkt empfangen - keine Zwischenstationen",
+
+        // Messenger trust badge & hop popover (Phase 2)
+        "msg.trust.bad": "schlecht",
+        "msg.trust.enough": "ausreichend",
+        "msg.trust.perfect": "perfekt",
+        "msg.trust.tip": "Klicken für Vertrauens- und Hop-Details",
+        "msg.trust.title": "Vertrauens-Details",
+        "msg.trust.sender": "Absender",
+        "msg.trust.encrypted": "Verschlüsselt",
+        "msg.trust.signed": "Signiert",
+        "msg.trust.verified": "Verifiziert",
+        "msg.trust.ia": "iA",
+        "msg.trust.hop_list": "Hop-Liste",
+        "msg.trust.no_hops": "Keine Hops - direkt empfangen",
+        "msg.trust.connection": "Verbindung",
         "time.now": "jetzt",
         "time.min": "Min.",
         "time.hr": "Std.",
@@ -1038,6 +1072,8 @@ const translations = {
         "common.error": "Hata",
         "common.active": "Aktif",
         "common.inactive": "Pasif",
+        "common.yes": "Evet",
+        "common.no": "Hayır",
 
         // Sidebar
         "nav.messenger": "Mesajlaşma",
@@ -1477,6 +1513,21 @@ const translations = {
         "msg.hops_tip": "Sıçrama listesi (gönderen [bağlantı] şifreli/doğrulanmış)",
         "msg.hops_none": "doğrudan",
         "msg.hops_none_tip": "Doğrudan alındı - ara sıçrama yok",
+
+        // Messenger trust badge & hop popover (Phase 2)
+        "msg.trust.bad": "kötü",
+        "msg.trust.enough": "yeterli",
+        "msg.trust.perfect": "mükemmel",
+        "msg.trust.tip": "Güven ve sıçrama detayları için tıklayın",
+        "msg.trust.title": "Güven Detayları",
+        "msg.trust.sender": "Gönderen",
+        "msg.trust.encrypted": "Şifreli",
+        "msg.trust.signed": "İmzalı",
+        "msg.trust.verified": "Doğrulandı",
+        "msg.trust.ia": "iA",
+        "msg.trust.hop_list": "Sıçrama listesi",
+        "msg.trust.no_hops": "Sıçrama yok - doğrudan alındı",
+        "msg.trust.connection": "Bağlantı",
         "time.now": "şimdi",
         "time.min": "dk önce",
         "time.hr": "sa önce",
@@ -1546,6 +1597,8 @@ const translations = {
         "common.error": "خطأ",
         "common.active": "نشط",
         "common.inactive": "غير نشط",
+        "common.yes": "نعم",
+        "common.no": "لا",
 
         // Sidebar
         "nav.messenger": "الدردشة",
@@ -1985,6 +2038,21 @@ const translations = {
         "msg.hops_tip": "قائمة القفزات (المرسل [الاتصال] مشفرة/موثقة)",
         "msg.hops_none": "مباشرة",
         "msg.hops_none_tip": "استُلمت مباشرة - بدون قفزات وسيطة",
+
+        // Messenger trust badge & hop popover (Phase 2)
+        "msg.trust.bad": "سيء",
+        "msg.trust.enough": "كافٍ",
+        "msg.trust.perfect": "ممتاز",
+        "msg.trust.tip": "انقر لعرض تفاصيل الثقة والقفزات",
+        "msg.trust.title": "تفاصيل الثقة",
+        "msg.trust.sender": "المرسل",
+        "msg.trust.encrypted": "مشفرة",
+        "msg.trust.signed": "موقعة",
+        "msg.trust.verified": "موثقة",
+        "msg.trust.ia": "iA",
+        "msg.trust.hop_list": "قائمة القفزات",
+        "msg.trust.no_hops": "لا قفزات - استُلمت مباشرة",
+        "msg.trust.connection": "الاتصال",
         "time.now": "الآن",
         "time.min": "د",
         "time.hr": "س",
