@@ -12,7 +12,7 @@ Make sure the following are installed on your machine:
 
 - **Java JDK 17+**
 - **Maven 3.8+**
-- **Apache Tomcat 9 or 10**
+- **Apache Tomcat 10+ (Jakarta EE 9+ / jakarta.servlet — Tomcat 9 will NOT work)**
 - **Git**
 - **Unix-based OS (Linux / macOS)** or WSL on Windows
 
