@@ -78,6 +78,9 @@ public class ChannelsServlet extends HttpServlet {
                 int messageCount = channel.getMessages() != null
                         ? channel.getMessages().size()
                         : 0;
+                // Exclude messages soft-deleted via MessageServlet (see PeerRuntime
+                // .markMessageDeleted) so this count matches what ListMessagesServlet returns.
+                messageCount -= peer.getDeletedMessageCount(channel.getURI());
 
                 ch.addProperty("messages", messageCount);
                 ch.addProperty("age", "unknown");

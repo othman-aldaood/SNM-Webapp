@@ -19,6 +19,7 @@ import java.util.Date;
 import java.util.List;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.nio.charset.StandardCharsets;
 
 /**
  * API to list messages in a messenger channel.
@@ -65,13 +66,17 @@ public class ListMessagesServlet extends HttpServlet {
             SharkNetMessengerChannel channel = messenger.getChannel(channelUri);
             SharkNetMessageList messages = channel.getMessages();
 
+            // Canonical channel URI - the same value MessageServlet resolves and uses as the
+            // tombstone/edit-override key, so deleted/edited messages line up correctly here.
+            CharSequence resolvedChannelUri = channel.getURI();
+
             SharkPKIComponent pki = peer.getPkiComponent();
             WebPKIUtils pkiUtils = new WebPKIUtils(pki);
 
             JsonObject channelJson = new JsonObject();
             channelJson.addProperty("uri", channelUri);
             channelJson.addProperty("name", channel.getName() != null ? channel.getName().toString() : "<no name set>");
-            channelJson.addProperty("messageCount", messages.size());
+            channelJson.addProperty("messageCount", messages.size() - peer.getDeletedMessageCount(resolvedChannelUri));
             channelJson.addProperty("age", "unknown");
 
             JsonArray msgArray = new JsonArray();
@@ -92,6 +97,16 @@ public class ListMessagesServlet extends HttpServlet {
 
             for (int i = 0; i < allMessages.size(); i++) {
                 SharkNetMessage msg = allMessages.get(i);
+
+                // The message's formatted creation timestamp doubles as its id - the same
+                // value returned here in "timestamp" and used by MessageServlet as the
+                // edit/delete tombstone key (see PeerRuntime.markMessageDeleted/Edited).
+                String messageKey = formatTime(msg.getCreationTime());
+
+                if (peer.isMessageDeleted(resolvedChannelUri, messageKey)) {
+                    continue;
+                }
+
                 JsonObject msgJson = new JsonObject();
 
                 // Note: The index here is just the position in the sorted display list,
@@ -105,11 +120,19 @@ public class ListMessagesServlet extends HttpServlet {
                 try {
                     byte[] bytes = msg.getContent();
                     if (bytes != null)
-                        content = new String(bytes);
+                        content = new String(bytes, StandardCharsets.UTF_8);
                 } catch (Exception e) {
                     content = "[Error reading content]";
                 }
+
+                String editedContent = peer.getEditedContent(resolvedChannelUri, messageKey);
+                boolean edited = editedContent != null;
+                if (edited) {
+                    content = editedContent;
+                }
+
                 msgJson.addProperty("content", content);
+                msgJson.addProperty("edited", edited);
 
                 // Sender
                 CharSequence senderID = msg.getSender();
@@ -127,7 +150,7 @@ public class ListMessagesServlet extends HttpServlet {
                 msgJson.add("recipients", recipientsJson);
 
                 // Time
-                msgJson.addProperty("timestamp", formatTime(msg.getCreationTime()));
+                msgJson.addProperty("timestamp", messageKey);
 
                 // E2E security
                 JsonObject e2eJson = new JsonObject();
