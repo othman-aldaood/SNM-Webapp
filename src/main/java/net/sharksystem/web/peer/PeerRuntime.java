@@ -2,9 +2,11 @@ package net.sharksystem.web.peer;
 
 import java.io.File;
 import java.util.Map;
+import java.util.Set;
 import java.util.List;
 import java.net.Socket;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.ArrayList;
 import java.io.IOException;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -91,6 +93,44 @@ public final class PeerRuntime {
     }
 
     private final Map<CharSequence, List<EncounterLog>> encounterLogs = new HashMap<>();
+
+    // Messenger message edit/delete tombstones. The underlying ASAP message store is
+    // append-only (SharkNetMessage has no update/remove API), so "editing" and "deleting"
+    // a message cannot rewrite or remove it from storage - instead we keep a peer-local
+    // override/hide list per channel, keyed by each message's formatted creation timestamp
+    // (the same value already exposed to - and echoed back by - the frontend as message id).
+    // This is in-memory only: it survives page reloads for the lifetime of this peer runtime,
+    // but not a full server restart.
+    private final Map<CharSequence, Set<String>> deletedMessageKeys = new HashMap<>();
+    private final Map<CharSequence, Map<String, String>> editedMessageContent = new HashMap<>();
+
+    public void markMessageDeleted(CharSequence channelUri, String messageKey) {
+        deletedMessageKeys.computeIfAbsent(channelUri, k -> new HashSet<>()).add(messageKey);
+        Map<String, String> edits = editedMessageContent.get(channelUri);
+        if (edits != null) {
+            edits.remove(messageKey);
+        }
+    }
+
+    public boolean isMessageDeleted(CharSequence channelUri, String messageKey) {
+        Set<String> keys = deletedMessageKeys.get(channelUri);
+        return keys != null && keys.contains(messageKey);
+    }
+
+    public int getDeletedMessageCount(CharSequence channelUri) {
+        Set<String> keys = deletedMessageKeys.get(channelUri);
+        return keys != null ? keys.size() : 0;
+    }
+
+    public void markMessageEdited(CharSequence channelUri, String messageKey, String newContent) {
+        editedMessageContent.computeIfAbsent(channelUri, k -> new HashMap<>()).put(messageKey, newContent);
+    }
+
+    /** @return the overridden content for this message, or null if it was never edited. */
+    public String getEditedContent(CharSequence channelUri, String messageKey) {
+        Map<String, String> edits = editedMessageContent.get(channelUri);
+        return edits != null ? edits.get(messageKey) : null;
+    }
 
     // App settings
     private boolean rememberNewHubConnections = true;
