@@ -33,20 +33,15 @@ cd snm-webapp
 
 Make sure Tomcat is installed and accessible.
 
-By default, the project expects Tomcat at:
+Tomcat location is auto-detected in this order:
+1. `$CATALINA_HOME` environment variable (if set)
+2. `/opt/homebrew/opt/tomcat/libexec`
+3. `/opt/homebrew/opt/tomcat@9/libexec`
+4. `/opt/homebrew/opt/tomcat@10/libexec`
 
-```text
-/opt/tomcat
-```
+No manual path editing is needed for standard Homebrew installs.
 
-If your Tomcat is installed elsewhere, update the path in:
-
-```text
-build.sh
-start.sh
-stop.sh
-logs.sh
-```
+> **Note:** This project requires **Tomcat 10+**. Tomcat 9 will deploy without errors but silently return 404 on all `/api/*` endpoints (annotation-based servlets are not supported under the Jakarta 6.0 schema on Tomcat 9).
 
 ---
 
