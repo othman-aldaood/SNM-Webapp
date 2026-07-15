@@ -23,7 +23,7 @@ Make sure the following are installed on your machine:
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/beingbiplov/SNM-Webapp
+git clone https://github.com/othman-aldaood/SNM-Webapp
 cd snm-webapp
 ```
 
