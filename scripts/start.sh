@@ -3,12 +3,13 @@ set -e
 
 if [ -n "$CATALINA_HOME" ]; then
   TOMCAT_HOME="$CATALINA_HOME"
+elif [ -d "/opt/homebrew/opt/tomcat@10/libexec" ]; then
+  TOMCAT_HOME="/opt/homebrew/opt/tomcat@10/libexec"
 elif [ -d "/opt/homebrew/opt/tomcat/libexec" ]; then
   TOMCAT_HOME="/opt/homebrew/opt/tomcat/libexec"
 elif [ -d "/opt/homebrew/opt/tomcat@9/libexec" ]; then
+  echo "⚠ Warning: only Tomcat 9 found. This project requires Tomcat 10+."
   TOMCAT_HOME="/opt/homebrew/opt/tomcat@9/libexec"
-elif [ -d "/opt/tomcat" ]; then
-  TOMCAT_HOME="/opt/homebrew/opt/tomcat@10/libexec"
 elif command -v catalina.sh &>/dev/null; then
   TOMCAT_HOME="$(dirname $(dirname $(which catalina.sh)))"
 else
