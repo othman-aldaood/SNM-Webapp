@@ -10,16 +10,26 @@ elif [ -d "/opt/homebrew/opt/tomcat/libexec" ]; then
 elif [ -d "/opt/homebrew/opt/tomcat@9/libexec" ]; then
   echo "⚠ Warning: only Tomcat 9 found. This project requires Tomcat 10+."
   TOMCAT_HOME="/opt/homebrew/opt/tomcat@9/libexec"
+elif [ -d "/usr/share/tomcat10" ]; then
+  TOMCAT_HOME="/usr/share/tomcat10"
+elif [ -d "/usr/local/tomcat10" ]; then
+  TOMCAT_HOME="/usr/local/tomcat10"
+elif [ -d "/c/Apache/Tomcat10" ]; then
+  TOMCAT_HOME="/c/Apache/Tomcat10"
+elif [ -d "/c/Program Files/Apache Software Foundation/Tomcat 10.0" ]; then
+  TOMCAT_HOME="/c/Program Files/Apache Software Foundation/Tomcat 10.0"
 elif command -v catalina.sh &>/dev/null; then
   TOMCAT_HOME="$(dirname $(dirname $(which catalina.sh)))"
 else
-  echo "✖ Tomcat not found. Set CATALINA_HOME environment variable."
+  echo "✖ Tomcat not found. Set CATALINA_HOME environment variable, e.g.:"
+  echo "  export CATALINA_HOME=\"/c/path/to/your/tomcat\""
   exit 1
 fi
 
 WAR="snm-webapp.war"
 
 echo "Starting SharkNet Web App..."
+echo "Using Tomcat at: $TOMCAT_HOME"
 
 ./scripts/build.sh
 
@@ -39,3 +49,38 @@ echo "Starting Tomcat..."
 
 echo "✔ SharkNet Web App is starting"
 echo "→ http://localhost:8080/snm-webapp/"
+
+#!/usr/bin/env bash
+set -e
+
+if [ -n "$CATALINA_HOME" ]; then
+  TOMCAT_HOME="$CATALINA_HOME"
+elif [ -d "/opt/homebrew/opt/tomcat@10/libexec" ]; then
+  TOMCAT_HOME="/opt/homebrew/opt/tomcat@10/libexec"
+elif [ -d "/opt/homebrew/opt/tomcat/libexec" ]; then
+  TOMCAT_HOME="/opt/homebrew/opt/tomcat/libexec"
+elif [ -d "/opt/homebrew/opt/tomcat@9/libexec" ]; then
+  TOMCAT_HOME="/opt/homebrew/opt/tomcat@9/libexec"
+elif [ -d "/usr/share/tomcat10" ]; then
+  TOMCAT_HOME="/usr/share/tomcat10"
+elif [ -d "/usr/local/tomcat10" ]; then
+  TOMCAT_HOME="/usr/local/tomcat10"
+elif [ -d "/c/Apache/Tomcat10" ]; then
+  TOMCAT_HOME="/c/Apache/Tomcat10"
+elif [ -d "/c/Program Files/Apache Software Foundation/Tomcat 10.0" ]; then
+  TOMCAT_HOME="/c/Program Files/Apache Software Foundation/Tomcat 10.0"
+elif command -v catalina.sh &>/dev/null; then
+  TOMCAT_HOME="$(dirname $(dirname $(which catalina.sh)))"
+else
+  echo "✖ Tomcat not found. Set CATALINA_HOME environment variable."
+  exit 1
+fi
+
+echo "Stopping SharkNet Web App (Tomcat)..."
+
+if [ -f "$TOMCAT_HOME/bin/shutdown.sh" ]; then
+  "$TOMCAT_HOME/bin/shutdown.sh"
+  echo "✔ Tomcat shutdown signal sent"
+else
+  echo "✖ Tomcat shutdown script not found"
+fi
