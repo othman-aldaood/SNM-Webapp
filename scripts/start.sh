@@ -27,6 +27,20 @@ fi
 
 WAR="snm-webapp.war"
 
+# Persist SNM_DATA_DIR into Tomcat's setenv.sh so the data dir is also found
+# when Tomcat is started outside this script (e.g. `brew services start tomcat`,
+# which runs with cwd=/ and no inherited environment).
+SETENV="$TOMCAT_HOME/bin/setenv.sh"
+if [ ! -f "$SETENV" ] || ! grep -q "SNM_DATA_DIR" "$SETENV"; then
+  {
+    echo ""
+    echo "# --- added by SNM-Webapp scripts/start.sh ---"
+    echo "export SNM_DATA_DIR=\"$PROJECT_DIR/data\""
+  } >> "$SETENV"
+  chmod +x "$SETENV" 2>/dev/null || true
+  echo "✔ Wrote SNM_DATA_DIR to $SETENV"
+fi
+
 echo "Starting SharkNet Web App..."
 
 ./scripts/build.sh
