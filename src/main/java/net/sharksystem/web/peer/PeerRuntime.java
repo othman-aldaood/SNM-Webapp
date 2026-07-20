@@ -146,7 +146,7 @@ public final class PeerRuntime {
 
         this.peerName = peerName;
 
-        String dataDir = "./data/" + peerName;
+        String dataDir = DataDir.resolve(peerName).toString();
         new File(dataDir).mkdirs();
 
         ExtraData peerData = new ExtraDataFS(dataDir + "/.peerRuntime");

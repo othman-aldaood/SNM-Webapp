@@ -18,7 +18,7 @@ import java.util.List;
  */
 public final class PeerRegistryStore {
 
-    private static final Path FILE = Path.of("data/peers.json");
+    private static final Path FILE = DataDir.resolve("peers.json");
     private static final Gson gson = new Gson();
 
     private PeerRegistryStore() {
@@ -35,8 +35,11 @@ public final class PeerRegistryStore {
             stored.add(new StoredPeer(runtime.getPeerName()));
         }
 
-        try (Writer writer = Files.newBufferedWriter(FILE)) {
-            gson.toJson(stored, writer);
+        try {
+            Files.createDirectories(FILE.getParent());
+            try (Writer writer = Files.newBufferedWriter(FILE)) {
+                gson.toJson(stored, writer);
+            }
         } catch (IOException e) {
             throw new RuntimeException("Failed to save peer registry", e);
         }

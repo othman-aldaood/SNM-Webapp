@@ -1,6 +1,14 @@
 #!/usr/bin/env bash
 set -e
 
+# Always run from the project root, no matter where the script is called from
+PROJECT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
+cd "$PROJECT_DIR"
+
+# Tell the webapp where peer data lives (absolute path, survives any Tomcat
+# working directory). Read by DataDir.java; safe with spaces in the path.
+export SNM_DATA_DIR="$PROJECT_DIR/data"
+
 if [ -n "$CATALINA_HOME" ]; then
   TOMCAT_HOME="$CATALINA_HOME"
 elif [ -d "/opt/homebrew/opt/tomcat@10/libexec" ]; then
