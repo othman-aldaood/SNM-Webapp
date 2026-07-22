@@ -38,8 +38,8 @@
                 <%-- Page Top Header Bar --%>
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-2 md:mb-6 gap-4">
                     <div>
-                        <h1 class="text-xl md:text-2xl font-bold" data-i18n="contacts.title">Peer Management</h1>
-                        <p class="text-sm text-gray-500 dark:text-gray-400 mt-1" data-i18n="contacts.desc">Create, start, stop, and manage your local peers.</p>
+                        <h1 class="text-xl md:text-2xl font-bold" data-i18n="contacts.title">Manageable Peers</h1>
+                        <p class="text-sm text-gray-500 dark:text-gray-400 mt-1" data-i18n="contacts.desc">Create, start, stop, and manage your local peers — fully offline, no internet required.</p>
                     </div>
                     <button class="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 px-5 rounded-lg shadow-sm transition-colors flex justify-center items-center gap-2" onclick="showCreatePeerModal()">
                         <i class="fas fa-plus"></i> <span data-i18n="contacts.create_btn">Create New Peer</span>

@@ -23,7 +23,7 @@ const translations = {
 
         // Sidebar
         "nav.messenger": "Messenger",
-        "nav.peer": "Peer Contacts",
+        "nav.peer": "Manageable Peers",
         "nav.persons": "Persons",
         "nav.certificates": "Certificates",
         "nav.network": "Network Status",
@@ -166,8 +166,8 @@ const translations = {
         "cert.revoke.warning": "<strong>⚠️ Warning:</strong> This action cannot be undone. The certificate will be revoked and can no longer be used for verification.",
 
         // Peer Management Page
-        "contacts.title": "Peer Management",
-        "contacts.desc": "Create, start, stop, and manage your local peers.",
+        "contacts.title": "Manageable Peers",
+        "contacts.desc": "Create, start, stop, and manage your local peers — fully offline, no internet required.",
         "contacts.create_btn": "Create New Peer",
         "contacts.local_peers": "Local Peers",
         "contacts.th.status": "Status",
@@ -564,7 +564,7 @@ const translations = {
 
         // Sidebar
         "nav.messenger": "Nachrichten",
-        "nav.peer": "Peer-Kontakte",
+        "nav.peer": "Verwaltbare Peers",
         "nav.persons": "Personen",
         "nav.certificates": "Zertifikate",
         "nav.network": "Netzwerk-Status",
@@ -707,8 +707,8 @@ const translations = {
         "cert.revoke.warning": "<strong>⚠️ Warnung:</strong> Diese Aktion kann nicht rückgängig gemacht werden. Das Zertifikat wird widerrufen und kann nicht mehr zur Verifizierung verwendet werden.",
 
         // Peer Management Page
-        "contacts.title": "Peer-Verwaltung",
-        "contacts.desc": "Erstellen, starten, stoppen und verwalten Sie Ihre lokalen Peers.",
+        "contacts.title": "Verwaltbare Peers",
+        "contacts.desc": "Erstellen, starten, stoppen und verwalten Sie Ihre lokalen Peers — vollständig offline, keine Internetverbindung erforderlich.",
         "contacts.create_btn": "Neuen Peer erstellen",
         "contacts.local_peers": "Lokale Peers",
         "contacts.th.status": "Status",
@@ -1105,7 +1105,7 @@ const translations = {
 
         // Sidebar
         "nav.messenger": "Mesajlaşma",
-        "nav.peer": "Eş Kişileri",
+        "nav.peer": "Yönetilebilir Eşler",
         "nav.persons": "Kişiler",
         "nav.certificates": "Sertifikalar",
         "nav.network": "Ağ Durumu",
@@ -1269,8 +1269,8 @@ const translations = {
         "cert.revoke.warning": "<strong>⚠️ Uyarı:</strong> Bu işlem geri alınamaz. Sertifika iptal edilecek ve artık doğrulama için kullanılamayacaktır.",
 
         // Peer Management Page
-        "contacts.title": "Eş Yönetimi",
-        "contacts.desc": "Yerel eşlerinizi oluşturun, başlatın, durdurun ve yönetin.",
+        "contacts.title": "Yönetilebilir Eşler",
+        "contacts.desc": "Yerel eşlerinizi oluşturun, başlatın, durdurun ve yönetin — tamamen çevrimdışı, internet gerekmez.",
         "contacts.create_btn": "Yeni Eş Oluştur",
         "contacts.local_peers": "Yerel Eşler",
         "contacts.th.status": "Durum",
@@ -1644,7 +1644,7 @@ const translations = {
 
         // Sidebar
         "nav.messenger": "الدردشة",
-        "nav.peer": "جهات اتصال النظراء",
+        "nav.peer": "النظراء القابلون للإدارة",
         "nav.persons": "الأشخاص",
         "nav.certificates": "الشهادات",
         "nav.network": "حالة الشبكة",
@@ -1808,8 +1808,8 @@ const translations = {
         "cert.revoke.warning": "<strong>⚠️ تحذير:</strong> لا يمكن التراجع عن هذا الإجراء. سيتم إلغاء الشهادة ولن يمكن استخدامها للتحقق بعد الآن.",
 
         // Peer Management Page
-        "contacts.title": "إدارة النظراء",
-        "contacts.desc": "إنشاء وبدء وإيقاف وإدارة النظراء المحليين لديك.",
+        "contacts.title": "النظراء القابلون للإدارة",
+        "contacts.desc": "إنشاء وبدء وإيقاف وإدارة النظراء المحليين لديك — بشكل غير متصل بالكامل تمامًا، دون الحاجة إلى الإنترنت.",
         "contacts.create_btn": "إنشاء نظير جديد",
         "contacts.local_peers": "النظراء المحليون",
         "contacts.th.status": "الحالة",
