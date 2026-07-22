@@ -7,11 +7,6 @@
 // --- Global State ---
 let currentChannelState = {uri: null, index: null, name: null};
 let currentMessages = [];
-let editingMessageId = null;
-
-// Context Menu Targets
-let ctxTargetMsgId = null;
-let ctxTargetMsgContent = null;
 
 /**
  * Global helper function to retrieve active language localized string from window dictionary.
@@ -44,9 +39,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
-
-    // Hide context menu on global click
-    document.addEventListener('click', hideContextMenu);
 
     // Encryption is only possible with a specific receiver
     const receiverSelect = document.getElementById('message-receiver');
@@ -217,7 +209,6 @@ function selectChannel(element, uri, name, index) {
     document.getElementById('message-search').disabled = false;
     document.getElementById('filter-toggle-btn').disabled = false;
     clearFilters();
-    cancelEditMode();
 
     loadMessages(uri);
 }
@@ -567,22 +558,17 @@ function renderMessages(messages, searchTerm = '') {
         const msgId = msg.id || msg.timestamp;
 
         const highlightedContent = highlightText(msg.content, searchTerm);
-        const escapedContentForJS = escapeHtml(msg.content).replace(/'/g, "\\'").replace(/"/g, '&quot;');
-        const isMeStr = isMe ? 'true' : 'false';
 
         line.innerHTML = `
             <div class="mb-4 max-w-[85%] ${isMe ? 'ml-auto text-right' : 'mr-auto text-left'}">
                 <div class="text-[0.7rem] text-gray-500 dark:text-gray-400 mb-1 px-1">
                     <span title="${escapeHtml(msg.timestamp)}">${formatMsgDayTime(msg.timestamp)}</span>
                     - ${escapeHtml(msg.sender)}
-                    ${msg.edited ? '<span class="italic text-gray-400 text-[0.65rem] ml-1">(edited)</span>' : ''}
                 </div>
                 <div class="mb-1 px-1 flex flex-wrap gap-1 ${isMe ? 'justify-end' : 'justify-start'}">
                     ${securityBadgesHTML(msg)} ${hopsChipHTML(msg)}
                 </div>
-                <div oncontextmenu="handleContextMenu(event, '${escapeHtml(msgId)}', '${escapedContentForJS}', ${isMeStr})"
-                     class="${isMe ? 'cursor-context-menu bg-primary-500 text-white rounded-l-xl rounded-tr-xl hover:brightness-110' : 'bg-white dark:bg-dark-card border border-gray-200 dark:border-dark-border text-gray-800 dark:text-gray-200 rounded-r-xl rounded-tl-xl'} px-4 py-2 inline-block text-sm shadow-sm text-left break-words max-w-full transition-all"
-                     title="${isMe ? 'Right-click to Edit or Delete' : ''}">
+                <div class="${isMe ? 'bg-primary-500 text-white rounded-l-xl rounded-tr-xl hover:brightness-110' : 'bg-white dark:bg-dark-card border border-gray-200 dark:border-dark-border text-gray-800 dark:text-gray-200 rounded-r-xl rounded-tl-xl'} px-4 py-2 inline-block text-sm shadow-sm text-left break-words max-w-full transition-all">
                     ${highlightedContent}
                 </div>
                 <div class="mt-1 px-1 flex ${isMe ? 'justify-end' : 'justify-start'}">
@@ -596,129 +582,6 @@ function renderMessages(messages, searchTerm = '') {
     chatLog.scrollTop = chatLog.scrollHeight;
 }
 
-// --- Context Menu Logic ---
-
-/**
- * Handles the right-click context menu for messages.
- * @param {Event} event - The contextmenu event
- * @param {string} msgId - The ID of the message
- * @param {string} content - The content of the message
- * @param {boolean} isMe - Indicates if the user is the sender
- * @return {void}
- */
-function handleContextMenu(event, msgId, content, isMe) {
-    if (!isMe) return;
-
-    event.preventDefault();
-
-    ctxTargetMsgId = msgId;
-    ctxTargetMsgContent = content;
-
-    const menu = document.getElementById('message-context-menu');
-    menu.classList.remove('hidden', 'opacity-0', 'pointer-events-none');
-    menu.classList.add('opacity-100', 'pointer-events-auto');
-
-    let x = event.clientX;
-    let y = event.clientY;
-
-    if (x + menu.offsetWidth > window.innerWidth) x = window.innerWidth - menu.offsetWidth;
-    if (y + menu.offsetHeight > window.innerHeight) y = window.innerHeight - menu.offsetHeight;
-
-    menu.style.left = `${x}px`;
-    menu.style.top = `${y}px`;
-}
-
-/**
- * Hides the custom context menu.
- * @return {void}
- */
-function hideContextMenu() {
-    const menu = document.getElementById('message-context-menu');
-    if (menu && !menu.classList.contains('hidden')) {
-        menu.classList.add('hidden', 'opacity-0', 'pointer-events-none');
-        menu.classList.remove('opacity-100', 'pointer-events-auto');
-    }
-    ctxTargetMsgId = null;
-    ctxTargetMsgContent = null;
-}
-
-/**
- * Triggers the edit process from the context menu.
- * @return {void}
- */
-function triggerEditFromMenu() {
-    if (ctxTargetMsgId && ctxTargetMsgContent) {
-        startEditMessage(ctxTargetMsgId, ctxTargetMsgContent);
-    }
-    hideContextMenu();
-}
-
-/**
- * Triggers the delete process from the context menu.
- * @return {void}
- */
-function triggerDeleteFromMenu() {
-    if (ctxTargetMsgId) {
-        deleteMessage(ctxTargetMsgId);
-    }
-    hideContextMenu();
-}
-
-// --- Edit & Delete Logic (Optimistic UI) ---
-
-/**
- * Initializes the message edit mode in the UI.
- * @param {string} id - Message ID
- * @param {string} content - Original Message Content
- * @return {void}
- */
-function startEditMessage(id, content) {
-    editingMessageId = id;
-    const input = document.getElementById('message-input');
-    input.value = content;
-    input.focus();
-
-    const sendBtn = document.getElementById('send-btn');
-    if (sendBtn) {
-        sendBtn.innerHTML = `<i class="fas fa-save text-base"></i><span class="text-xs" data-i18n="msg.update">${t('msg.update', 'Update')}</span>`;
-        sendBtn.classList.remove('bg-primary-500', 'hover:bg-primary-600');
-        sendBtn.classList.add('bg-yellow-500', 'hover:bg-yellow-600');
-    }
-
-    if (!document.getElementById('cancel-edit-btn')) {
-        const cancelBtn = document.createElement('button');
-        cancelBtn.id = 'cancel-edit-btn';
-        cancelBtn.className = 'text-xs text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors font-medium mt-1';
-        cancelBtn.setAttribute('data-i18n', 'msg.cancel_edit');
-        cancelBtn.innerText = t('msg.cancel_edit', 'Cancel Edit');
-        cancelBtn.onclick = cancelEditMode;
-        document.getElementById('action-buttons-container')?.appendChild(cancelBtn);
-    }
-}
-
-/**
- * Cancels the message edit mode.
- * @return {void}
- */
-function cancelEditMode() {
-    editingMessageId = null;
-    const input = document.getElementById('message-input');
-    if (input) input.value = '';
-
-    const sendBtn = document.getElementById('send-btn');
-    if (sendBtn) {
-        sendBtn.innerHTML = `<i class="fas fa-paper-plane text-base"></i><span class="text-xs" data-i18n="msg.send">${t('msg.send', 'Send')}</span>`;
-        sendBtn.classList.add('bg-primary-500', 'hover:bg-primary-600');
-        sendBtn.classList.remove('bg-yellow-500', 'hover:bg-yellow-600');
-    }
-
-    document.getElementById('cancel-edit-btn')?.remove();
-}
-
-/**
- * Gathers input and sends (or updates) a message.
- * @return {Promise<void>}
- */
 /**
  * Encryption requires a specific receiver (their certificate is used as
  * the encryption key). When "Anyone" is selected, encryption is impossible,
@@ -764,39 +627,6 @@ async function sendMessage() {
     const content = input.value.trim();
     if (!content) return;
 
-    if (editingMessageId) {
-        try {
-            const payload = {messageId: editingMessageId, channelIndex: currentChannelState.index, content: content};
-            const response = await fetch('/snm-webapp/api/messenger/messages', {
-                method: 'PUT',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify(payload)
-            });
-
-            if (response.ok) {
-                cancelEditMode();
-                loadMessages(currentChannelState.uri);
-            } else {
-                const msgIndex = currentMessages.findIndex(m => (m.id || m.timestamp) === editingMessageId);
-                if (msgIndex !== -1) {
-                    currentMessages[msgIndex].content = content;
-                    currentMessages[msgIndex].edited = true;
-                }
-                cancelEditMode();
-                applyFilters();
-            }
-        } catch (error) {
-            const msgIndex = currentMessages.findIndex(m => (m.id || m.timestamp) === editingMessageId);
-            if (msgIndex !== -1) {
-                currentMessages[msgIndex].content = content;
-                currentMessages[msgIndex].edited = true;
-            }
-            cancelEditMode();
-            applyFilters();
-        }
-        return;
-    }
-
     try {
         const payload = {
             content: content,
@@ -825,31 +655,6 @@ async function sendMessage() {
         }
     } catch (error) {
         alert(t('msg.err.send_generic', 'Error sending message'));
-    }
-}
-
-/**
- * Deletes a message (Optimistic UI fallback).
- * @param {string} msgId - Message ID
- * @return {Promise<void>}
- */
-async function deleteMessage(msgId) {
-    if (!confirm(t('msg.confirm_delete_message', 'Are you sure you want to delete this message?'))) return;
-
-    try {
-        const response = await fetch(`/snm-webapp/api/messenger/messages?msgId=${encodeURIComponent(msgId)}&channelIndex=${currentChannelState.index}`, {
-            method: 'DELETE'
-        });
-
-        if (response.ok) {
-            loadMessages(currentChannelState.uri);
-        } else {
-            currentMessages = currentMessages.filter(m => (m.id || m.timestamp) !== msgId);
-            applyFilters();
-        }
-    } catch (e) {
-        currentMessages = currentMessages.filter(m => (m.id || m.timestamp) !== msgId);
-        applyFilters();
     }
 }
 

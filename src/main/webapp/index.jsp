@@ -189,15 +189,6 @@
         </div>
     </div>
 
-    <div id="message-context-menu" class="hidden fixed z-[100] w-48 bg-white dark:bg-dark-card rounded-lg shadow-xl border border-gray-200 dark:border-dark-border py-1 text-sm transition-opacity duration-200 opacity-0 pointer-events-none">
-        <button onclick="triggerEditFromMenu()" class="w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 flex items-center gap-2 transition-colors">
-            <i class="fas fa-edit text-blue-500 w-4"></i> Edit Message
-        </button>
-        <button onclick="triggerDeleteFromMenu()" class="w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-800 text-red-500 flex items-center gap-2 transition-colors">
-            <i class="fas fa-trash-alt text-red-500 w-4"></i> Delete Message
-        </button>
-    </div>
-
     <%-- Trust badge popover: hop-by-hop P2P security details, positioned & filled by messenger.js --%>
     <div id="trust-popover" class="hidden fixed z-[100] w-72 max-w-[90vw] bg-white dark:bg-dark-card rounded-lg shadow-xl border border-gray-200 dark:border-dark-border p-3"></div>
 
