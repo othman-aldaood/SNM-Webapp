@@ -95,7 +95,7 @@
             <div class="p-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700/50 flex justify-end gap-3">
                 <button onclick="hideCreatePeerModal()" class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 font-medium transition-colors text-sm" data-i18n="common.cancel">Cancel</button>
                 <button onclick="submitNewPeer()" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium shadow-sm transition-colors flex items-center gap-2 text-sm">
-                    <i class="fas fa-check"></i> <span data-i18n="msg.create_channel">Create</span>
+                    <i class="fas fa-check"></i> <span data-i18n="contacts.modal.create_btn">Create Peer</span>
                 </button>
             </div>
         </div>

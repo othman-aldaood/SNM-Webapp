@@ -56,7 +56,7 @@ function applyTheme(theme) {
 /**
  * Toggles the sidebar visibility with a smooth slide animation.
  * On mobile: Slides completely in and out of the screen.
- * On desktop: Smoothly collapses width to show icons only (w-20) or expands to full width (w-64).
+ * On desktop: Smoothly collapses width to show icons only (w-20) or expands to full width (w-72).
  *
  * @return {void}
  */
@@ -74,14 +74,14 @@ function toggleSidebar() {
 
         // Ensure it's full width and texts are visible when opened on mobile
         sidebar.classList.remove('md:w-20');
-        sidebar.classList.add('md:w-64');
+        sidebar.classList.add('md:w-72');
         texts.forEach(text => {
             text.style.display = 'block';
             setTimeout(() => text.style.opacity = '1', 10);
         });
     } else {
         // Desktop behavior: Collapse / Expand width
-        sidebar.classList.toggle('md:w-64');
+        sidebar.classList.toggle('md:w-72');
         sidebar.classList.toggle('md:w-20'); // w-20 = 80px (Centers the icon perfectly)
 
         const isCollapsed = sidebar.classList.contains('md:w-20');

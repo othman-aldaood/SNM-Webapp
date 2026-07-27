@@ -25,21 +25,20 @@ const translations = {
         "nav.messenger": "Messenger",
         "nav.peer": "Manageable Peers",
         "nav.persons": "Persons",
-        "nav.certificates": "Certificates",
-        "nav.network": "Network Status",
-        "nav.hubs": "ASAP Hubs",
+        "nav.encounters": "Encounter Management",
+        "nav.tcp": "TCP Connections",
+        "nav.hubs": "Hub Connections",
+        "nav.certificates": "Certificate Management",
         "nav.settings": "Settings",
         "nav.profile": "My Profile",
-        "nav.about": "About",
 
         // Header
-        "header.internet": "Internet",
         "header.logout": "Logout",
         "header.logout_confirm": "Confirm Logout",
         "header.logout_desc": "Are you sure you want to log out?<br>This will stop the active peer and redirect you to the login screen.",
 
         // Settings Page
-        "settings.title": "Settings & Configuration",
+        "settings.title": "Settings",
         "settings.desc": "Manage peer configuration and application settings.",
         "settings.app_settings": "Application Settings",
         "settings.msg_defaults": "Message Defaults",
@@ -51,28 +50,14 @@ const translations = {
         "settings.reconnect_hubs": "Enable hub reconnection",
         "settings.reconnect_hubs_desc": "Automatically attempt to reconnect to hubs when connection is lost.",
         "settings.save_changes_btn": "Save Changes",
-        "settings.peer_status_title": "Peer Status",
-        "settings.loading_peer_status": "Loading peer status...",
-        "settings.pki_status_title": "PKI Status",
-        "settings.loading_pki_status": "Loading PKI status...",
-        "settings.loading_network_status": "Loading network status...",
         "settings.display_prefs_title": "Display Preferences",
         "settings.display_name_label": "Peer Display Name Customization",
         "settings.display_name_placeholder": "Enter custom display name...",
         "settings.lang.title": "Language Preference",
-        "settings.peer_name_label": "Peer Name:",
-        "settings.peer_id_label": "Peer ID:",
-        "settings.err.peer_status": "Failed to load peer status:",
-        "settings.known_persons_label": "Known Persons:",
-        "settings.certificates_label": "Certificates:",
-        "settings.connected_hubs_label": "Connected Hubs:",
-        "settings.failed_hub_connections_label": "Failed Hub Connections:",
-        "settings.encounters_tracked_label": "Encounters Tracked:",
         "settings.save_success": "Settings successfully saved! (Note: Persistence requires backend API)",
 
         // Messenger Page
         "msg.channels": "Channels",
-        "msg.create_channel": "Create Channel",
         "msg.search_ph": "Search text...",
         "msg.filters": "Filters",
         "msg.sender_name": "Sender Name",
@@ -134,6 +119,7 @@ const translations = {
         "contacts.modal.title": "Create New Peer",
         "contacts.modal.label": "Peer Name",
         "contacts.modal.placeholder": "e.g. My Local Node",
+        "contacts.modal.create_btn": "Create Peer",
 
         // Login Page Localization Mapping
         "login.subtitle": "Decentralized P2P Communication",
@@ -172,9 +158,13 @@ const translations = {
         "hubs.loading": "Loading active connections...",
 
         // Network Overview Page
-        "net.title": "Network Overview",
-        "net.desc": "Manage direct TCP connections and open ports.",
         "net.refresh": "Refresh Network",
+        "enc.title": "Encounter Management",
+        "enc.desc": "Track peer encounters recorded during this session.",
+        "tcp.title": "TCP Connections",
+        "tcp.desc": "Manage direct TCP connections to other peers.",
+        "hubconn.title": "Hub Connections",
+        "hubconn.desc": "Connect to ASAP hub routers for background data synchronization.",
         "net.direct_conns": "Direct TCP Connections",
         "net.listen_port": "Listen on New Port",
         "net.port_number": "Port Number",
@@ -221,11 +211,10 @@ const translations = {
         "persons.modal.details_title": "Person Details",
 
         // Profile Page Localization
-        "prof.title": "Peer Profile",
+        "prof.title": "My Profile",
         "prof.desc": "Manage your decentralized identity and view network metrics.",
-        "prof.active_identity": "Active Identity",
-        "prof.export": "Export Identity",
         "prof.crypto_id": "Cryptographic Identity",
+        "prof.peer_name": "Peer Name",
         "prof.peer_id": "Peer ID",
         "prof.fingerprint": "Public Key Fingerprint",
         "prof.resolving": "Resolving from PKI...",
@@ -242,8 +231,6 @@ const translations = {
 
         // Network redesign (UC1)
         "common.coming_soon": "Coming soon",
-        "net.tab_tcp": "TCP",
-        "net.tab_hub": "Hub",
         "net.option_a": "Option A",
         "net.option_b": "Option B",
         "net.open_desc": "You wait. The other peer connects to you.",
@@ -480,18 +467,7 @@ const translations = {
         "net.started": "Started",
         "net.no_encounters": "No peer encounters recorded yet.",
         "hubs.connected_count": "Connected hubs",
-        "hubs.failed_count": "Failed connections",
-
-        // About page
-        "about.title": "About SharkNet Messenger",
-        "about.desc": "A decentralised peer-to-peer messenger built on the ASAP protocol.",
-        "about.version_label": "Version",
-        "about.description": "A decentralised peer-to-peer messenger built on the ASAP protocol",
-        "about.team_label": "Team",
-        "about.supervisor_label": "Supervisor",
-        "about.tech_label": "Technologies Used",
-        "about.source_label": "Source Code",
-        "about.github_link": "View on GitHub"
+        "hubs.failed_count": "Failed connections"
     },
 
 
@@ -515,21 +491,20 @@ const translations = {
         "nav.messenger": "Nachrichten",
         "nav.peer": "Verwaltbare Peers",
         "nav.persons": "Personen",
-        "nav.certificates": "Zertifikate",
-        "nav.network": "Netzwerk-Status",
-        "nav.hubs": "ASAP Hubs",
+        "nav.encounters": "Begegnungsverwaltung",
+        "nav.tcp": "TCP-Verbindungen",
+        "nav.hubs": "Hub-Verbindungen",
+        "nav.certificates": "Zertifikatsverwaltung",
         "nav.settings": "Einstellungen",
         "nav.profile": "Mein Profil",
-        "nav.about": "Über",
 
         // Header
-        "header.internet": "Internet",
         "header.logout": "Abmelden",
         "header.logout_confirm": "Abmeldung bestätigen",
         "header.logout_desc": "Möchten Sie sich wirklich abmelden?<br>Dies stoppt den aktiven Peer und leitet Sie zur Anmeldeseite weiter.",
 
         // Settings Page
-        "settings.title": "Einstellungen & Konfiguration",
+        "settings.title": "Einstellungen",
         "settings.desc": "Verwalten Sie Peer-Konfigurationen und Anwendungseinstellungen.",
         "settings.app_settings": "Anwendungseinstellungen",
         "settings.msg_defaults": "Nachrichten-Standards",
@@ -541,28 +516,14 @@ const translations = {
         "settings.reconnect_hubs": "Hub-Wiederverbindung aktivieren",
         "settings.reconnect_hubs_desc": "Automatisch versuchen, die Verbindung zu Hubs wiederherzustellen, wenn diese abbricht.",
         "settings.save_changes_btn": "Änderungen speichern",
-        "settings.peer_status_title": "Peer-Status",
-        "settings.loading_peer_status": "Peer-Status wird geladen...",
-        "settings.pki_status_title": "PKI-Status",
-        "settings.loading_pki_status": "PKI-Status wird geladen...",
-        "settings.loading_network_status": "Netzwerkstatus wird geladen...",
         "settings.display_prefs_title": "Anzeigeeinstellungen",
         "settings.display_name_label": "Anpassung des Peer-Anzeigenamens",
         "settings.display_name_placeholder": "Benutzerdefinierten Anzeigenamen eingeben...",
         "settings.lang.title": "Sprachpräferenz",
-        "settings.peer_name_label": "Peer-Name:",
-        "settings.peer_id_label": "Peer-ID:",
-        "settings.err.peer_status": "Peer-Status konnte nicht geladen werden:",
-        "settings.known_persons_label": "Bekannte Personen:",
-        "settings.certificates_label": "Zertifikate:",
-        "settings.connected_hubs_label": "Verbundene Hubs:",
-        "settings.failed_hub_connections_label": "Fehlgeschlagene Hub-Verbindungen:",
-        "settings.encounters_tracked_label": "Erfasste Begegnungen:",
         "settings.save_success": "Einstellungen erfolgreich gespeichert! (Hinweis: Persistenz erfordert Backend-API)",
 
         // Messenger Page
         "msg.channels": "Kanäle",
-        "msg.create_channel": "Kanal erstellen",
         "msg.search_ph": "Text suchen...",
         "msg.filters": "Filter",
         "msg.sender_name": "Absender",
@@ -624,6 +585,7 @@ const translations = {
         "contacts.modal.title": "Neuen Peer erstellen",
         "contacts.modal.label": "Peer-Name",
         "contacts.modal.placeholder": "z.B. Mein lokaler Knoten",
+        "contacts.modal.create_btn": "Peer erstellen",
 
 
         // Login Page Localization Mapping
@@ -664,9 +626,13 @@ const translations = {
 
 
         // Network Overview Page
-        "net.title": "Netzwerkübersicht",
-        "net.desc": "Direkte TCP-Verbindungen und offene Ports verwalten.",
         "net.refresh": "Netzwerk aktualisieren",
+        "enc.title": "Begegnungsverwaltung",
+        "enc.desc": "Verfolgen Sie die in dieser Sitzung erfassten Peer-Begegnungen.",
+        "tcp.title": "TCP-Verbindungen",
+        "tcp.desc": "Verwalten Sie direkte TCP-Verbindungen zu anderen Peers.",
+        "hubconn.title": "Hub-Verbindungen",
+        "hubconn.desc": "Verbinden Sie sich mit ASAP-Hub-Routern für die Hintergrund-Datensynchronisation.",
         "net.direct_conns": "Direkte TCP-Verbindungen",
         "net.listen_port": "Auf neuem Port lauschen",
         "net.port_number": "Portnummer",
@@ -713,11 +679,10 @@ const translations = {
         "persons.modal.details_title": "Personendetails",
 
         // Profile Page Localization
-        "prof.title": "Peer-Profil",
+        "prof.title": "Mein Profil",
         "prof.desc": "Verwalten Sie Ihre dezentrale Identität und zeigen Sie Netzwerkmetriken an.",
-        "prof.active_identity": "Aktive Identität",
-        "prof.export": "Identität exportieren",
         "prof.crypto_id": "Kryptografische Identität",
+        "prof.peer_name": "Peer-Name",
         "prof.peer_id": "Peer-ID",
         "prof.fingerprint": "Öffentlicher Schlüssel-Fingerabdruck",
         "prof.resolving": "Wird von PKI aufgelöst...",
@@ -734,8 +699,6 @@ const translations = {
 
         // Network redesign (UC1)
         "common.coming_soon": "Demnächst",
-        "net.tab_tcp": "TCP",
-        "net.tab_hub": "Hub",
         "net.option_a": "Option A",
         "net.option_b": "Option B",
         "net.open_desc": "Du wartest. Der andere Peer verbindet sich mit dir.",
@@ -972,18 +935,7 @@ const translations = {
         "net.started": "Gestartet",
         "net.no_encounters": "Noch keine Peer-Begegnungen erfasst.",
         "hubs.connected_count": "Verbundene Hubs",
-        "hubs.failed_count": "Fehlgeschlagene Verbindungen",
-
-        // About page
-        "about.title": "Über SharkNet Messenger",
-        "about.desc": "Ein dezentraler Peer-to-Peer-Messenger auf Basis des ASAP-Protokolls.",
-        "about.version_label": "Version",
-        "about.description": "Ein dezentraler Peer-to-Peer-Messenger auf Basis des ASAP-Protokolls",
-        "about.team_label": "Team",
-        "about.supervisor_label": "Betreuer",
-        "about.tech_label": "Verwendete Technologien",
-        "about.source_label": "Quellcode",
-        "about.github_link": "Auf GitHub ansehen"
+        "hubs.failed_count": "Fehlgeschlagene Verbindungen"
     },
     tr: {
         // Common
@@ -1005,21 +957,20 @@ const translations = {
         "nav.messenger": "Mesajlaşma",
         "nav.peer": "Yönetilebilir Eşler",
         "nav.persons": "Kişiler",
-        "nav.certificates": "Sertifikalar",
-        "nav.network": "Ağ Durumu",
-        "nav.hubs": "ASAP Hub'ları",
+        "nav.encounters": "Karşılaşma Yönetimi",
+        "nav.tcp": "TCP Bağlantıları",
+        "nav.hubs": "Hub Bağlantıları",
+        "nav.certificates": "Sertifika Yönetimi",
         "nav.settings": "Ayarlar",
         "nav.profile": "Profilim",
-        "nav.about": "Hakkında",
 
         // Header
-        "header.internet": "İnternet",
         "header.logout": "Çıkış Yap",
         "header.logout_confirm": "Çıkışı Onayla",
         "header.logout_desc": "Çıkış yapmak istediğinizden emin misiniz?<br>Bu, aktif eşi durduracak ve sizi giriş ekranına yönlendirecektir.",
 
         // Settings Page
-        "settings.title": "Ayarlar & Konfigürasyon",
+        "settings.title": "Ayarlar",
         "settings.desc": "Eş konfigürasyonunu ve uygulama ayarlarını yönetin.",
         "settings.app_settings": "Uygulama Ayarları",
         "settings.msg_defaults": "Mesaj Varsayılanları",
@@ -1031,28 +982,14 @@ const translations = {
         "settings.reconnect_hubs": "Hub yeniden bağlantısını etkinleştir",
         "settings.reconnect_hubs_desc": "Bağlantı koptuğunda hub'lara otomatik olarak yeniden bağlanmaya çalış.",
         "settings.save_changes_btn": "Değişiklikleri Kaydet",
-        "settings.peer_status_title": "Eş Durumu",
-        "settings.loading_peer_status": "Eş durumu yükleniyor...",
-        "settings.pki_status_title": "PKI Durumu",
-        "settings.loading_pki_status": "PKI durumu yükleniyor...",
-        "settings.loading_network_status": "Ağ durumu yükleniyor...",
         "settings.display_prefs_title": "Görüntüleme Tercihleri",
         "settings.display_name_label": "Eş Görünen Adı Özelleştirmesi",
         "settings.display_name_placeholder": "Özel görünen ad girin...",
         "settings.lang.title": "Dil Tercihi",
-        "settings.peer_name_label": "Eş Adı:",
-        "settings.peer_id_label": "Eş Kimliği:",
-        "settings.err.peer_status": "Eş durumu yüklenemedi:",
-        "settings.known_persons_label": "Bilinen Kişiler:",
-        "settings.certificates_label": "Sertifikalar:",
-        "settings.connected_hubs_label": "Bağlı Hub'lar:",
-        "settings.failed_hub_connections_label": "Başarısız Hub Bağlantıları:",
-        "settings.encounters_tracked_label": "İzlenen Karşılaşmalar:",
         "settings.save_success": "Ayarlar başarıyla kaydedildi! (Not: Kalıcılık için arka uç API'si gereklidir)",
 
         // Messenger Page
         "msg.channels": "Kanallar",
-        "msg.create_channel": "Kanal Oluştur",
         "msg.search_ph": "Metin ara...",
         "msg.filters": "Filtreler",
         "msg.sender_name": "Gönderen Adı",
@@ -1067,11 +1004,10 @@ const translations = {
         "msg.stats": "İstatistikler",
 
         // Profile Page
-        "prof.title": "Eş Profili",
+        "prof.title": "Profilim",
         "prof.desc": "Merkezi olmayan kimliğinizi yönetin ve ağ metriklerini görüntüleyin.",
-        "prof.active_identity": "Aktif Kimlik",
-        "prof.export": "Kimliği Dışa Aktar",
         "prof.crypto_id": "Kriptografik Kimlik",
+        "prof.peer_name": "Eş Adı",
         "prof.peer_id": "Eş Kimliği (Peer ID)",
         "prof.fingerprint": "Açık Anahtar Parmak İzi",
         "prof.resolving": "PKI'dan çözümleniyor...",
@@ -1134,6 +1070,7 @@ const translations = {
         "contacts.modal.title": "Yeni Eş Oluştur",
         "contacts.modal.label": "Eş Adı",
         "contacts.modal.placeholder": "örn. Yerel Düğümüm",
+        "contacts.modal.create_btn": "Eş Oluştur",
 
         // Login Page Localization Mapping
         "login.subtitle": "Merkezi Olmayan P2P İletişimi",
@@ -1172,9 +1109,13 @@ const translations = {
         "hubs.loading": "Aktif bağlantılar yükleniyor...",
 
         // Network Overview Page
-        "net.title": "Ağa Genel Bakış",
-        "net.desc": "Doğrudan TCP bağlantılarını ve açık portları yönetin.",
         "net.refresh": "Ağı Yenile",
+        "enc.title": "Karşılaşma Yönetimi",
+        "enc.desc": "Bu oturumda kaydedilen eş karşılaşmalarını takip edin.",
+        "tcp.title": "TCP Bağlantıları",
+        "tcp.desc": "Diğer eşlerle doğrudan TCP bağlantılarını yönetin.",
+        "hubconn.title": "Hub Bağlantıları",
+        "hubconn.desc": "Arka planda veri senkronizasyonu için ASAP hub yönlendiricilerine bağlanın.",
         "net.direct_conns": "Doğrudan TCP Bağlantıları",
         "net.listen_port": "Yeni Portu Dinle",
         "net.port_number": "Port Numarası",
@@ -1222,8 +1163,6 @@ const translations = {
 
         // Network redesign (UC1)
         "common.coming_soon": "Çok yakında",
-        "net.tab_tcp": "TCP",
-        "net.tab_hub": "Hub",
         "net.option_a": "Seçenek A",
         "net.option_b": "Seçenek B",
         "net.open_desc": "Sen beklersin. Diğer eş sana bağlanır.",
@@ -1460,18 +1399,7 @@ const translations = {
         "net.started": "Başladı",
         "net.no_encounters": "Henüz eş karşılaşması kaydedilmedi.",
         "hubs.connected_count": "Bağlı hub'lar",
-        "hubs.failed_count": "Başarısız bağlantılar",
-
-        // About page
-        "about.title": "SharkNet Messenger Hakkında",
-        "about.desc": "ASAP protokolü üzerine inşa edilmiş merkeziyetsiz bir eşler arası (P2P) mesajlaşma uygulaması.",
-        "about.version_label": "Sürüm",
-        "about.description": "ASAP protokolü üzerine inşa edilmiş merkeziyetsiz bir eşler arası (P2P) mesajlaşma uygulaması",
-        "about.team_label": "Ekip",
-        "about.supervisor_label": "Danışman",
-        "about.tech_label": "Kullanılan Teknolojiler",
-        "about.source_label": "Kaynak Kod",
-        "about.github_link": "GitHub'da Görüntüle"
+        "hubs.failed_count": "Başarısız bağlantılar"
     },
     ar: {
         // Common
@@ -1493,21 +1421,20 @@ const translations = {
         "nav.messenger": "الدردشة",
         "nav.peer": "النظراء القابلون للإدارة",
         "nav.persons": "الأشخاص",
-        "nav.certificates": "الشهادات",
-        "nav.network": "حالة الشبكة",
-        "nav.hubs": "موزعات ASAP",
+        "nav.encounters": "إدارة اللقاءات",
+        "nav.tcp": "اتصالات TCP",
+        "nav.hubs": "اتصالات الموزعات",
+        "nav.certificates": "إدارة الشهادات",
         "nav.settings": "الإعدادات",
         "nav.profile": "ملفي الشخصي",
-        "nav.about": "حول",
 
         // Header
-        "header.internet": "الإنترنت",
         "header.logout": "تسجيل الخروج",
         "header.logout_confirm": "تأكيد تسجيل الخروج",
         "header.logout_desc": "هل أنت متأكد أنك تريد تسجيل الخروج؟<br>سيؤدي هذا إلى إيقاف النظير النشط وتوجيهك إلى شاشة تسجيل الدخول.",
 
         // Settings Page
-        "settings.title": "الإعدادات والتهيئة",
+        "settings.title": "الإعدادات",
         "settings.desc": "إدارة تكوين النظير وإعدادات التطبيق.",
         "settings.app_settings": "إعدادات التطبيق",
         "settings.msg_defaults": "الإعدادات الافتراضية للرسائل",
@@ -1519,28 +1446,14 @@ const translations = {
         "settings.reconnect_hubs": "تمكين إعادة الاتصال بالموزع",
         "settings.reconnect_hubs_desc": "محاولة إعادة الاتصال بالموزعات تلقائيًا عند فقدان الاتصال.",
         "settings.save_changes_btn": "حفظ التغييرات",
-        "settings.peer_status_title": "حالة النظير",
-        "settings.loading_peer_status": "جارٍ تحميل حالة النظير...",
-        "settings.pki_status_title": "حالة PKI",
-        "settings.loading_pki_status": "جارٍ تحميل حالة PKI...",
-        "settings.loading_network_status": "جارٍ تحميل حالة الشبكة...",
         "settings.display_prefs_title": "تفضيلات العرض",
         "settings.display_name_label": "تخصيص اسم عرض النظير",
         "settings.display_name_placeholder": "أدخل اسم عرض مخصص...",
         "settings.lang.title": "تفضيل اللغة",
-        "settings.peer_name_label": "اسم النظير:",
-        "settings.peer_id_label": "معرف النظير:",
-        "settings.err.peer_status": "فشل تحميل حالة النظير:",
-        "settings.known_persons_label": "الأشخاص المعروفون:",
-        "settings.certificates_label": "الشهادات:",
-        "settings.connected_hubs_label": "الموزعات المتصلة:",
-        "settings.failed_hub_connections_label": "اتصالات الموزع الفاشلة:",
-        "settings.encounters_tracked_label": "اللقاءات المتتبعة:",
         "settings.save_success": "تم حفظ الإعدادات بنجاح! (ملاحظة: الاستمرارية تتطلب واجهة برمجة تطبيقات خلفية)",
 
         // Messenger Page
         "msg.channels": "القنوات",
-        "msg.create_channel": "إنشاء قناة",
         "msg.search_ph": "البحث في النص...",
         "msg.filters": "عوامل التصفية",
         "msg.sender_name": "اسم المرسل",
@@ -1555,11 +1468,10 @@ const translations = {
         "msg.stats": "الإحصائيات",
 
         // Profile Page
-        "prof.title": "ملف النظير",
+        "prof.title": "ملفي الشخصي",
         "prof.desc": "إدارة هويتك اللامركزية وعرض مقاييس الشبكة.",
-        "prof.active_identity": "الهوية النشطة",
-        "prof.export": "تصدير الهوية",
         "prof.crypto_id": "الهوية المشفرة",
+        "prof.peer_name": "اسم النظير",
         "prof.peer_id": "معرف النظير",
         "prof.fingerprint": "بصمة المفتاح العام",
         "prof.resolving": "جاري الحل من PKI...",
@@ -1622,6 +1534,7 @@ const translations = {
         "contacts.modal.title": "إنشاء نظير جديد",
         "contacts.modal.label": "اسم النظير",
         "contacts.modal.placeholder": "مثال: العقدة المحلية الخاصة بي",
+        "contacts.modal.create_btn": "إنشاء نظير",
 
         // Login Page Localization Mapping
         "login.subtitle": "الاتصال اللامركزي (P2P)",
@@ -1660,9 +1573,13 @@ const translations = {
         "hubs.loading": "جاري تحميل الاتصالات النشطة...",
 
         // Network Overview Page
-        "net.title": "نظرة عامة على الشبكة",
-        "net.desc": "إدارة اتصالات TCP المباشرة والمنافذ المفتوحة.",
         "net.refresh": "تحديث الشبكة",
+        "enc.title": "إدارة اللقاءات",
+        "enc.desc": "تتبع لقاءات النظراء المسجلة خلال هذه الجلسة.",
+        "tcp.title": "اتصالات TCP",
+        "tcp.desc": "إدارة اتصالات TCP المباشرة مع النظراء الآخرين.",
+        "hubconn.title": "اتصالات الموزعات",
+        "hubconn.desc": "الاتصال بموجهات ASAP hub لمزامنة البيانات في الخلفية.",
         "net.direct_conns": "اتصالات TCP المباشرة",
         "net.listen_port": "الاستماع على منفذ جديد",
         "net.port_number": "رقم المنفذ",
@@ -1710,8 +1627,6 @@ const translations = {
 
         // Network redesign (UC1)
         "common.coming_soon": "قريباً",
-        "net.tab_tcp": "TCP",
-        "net.tab_hub": "Hub",
         "net.option_a": "الخيار أ",
         "net.option_b": "الخيار ب",
         "net.open_desc": "أنت تنتظر. النظير الآخر يتصل بك.",
@@ -1948,18 +1863,7 @@ const translations = {
         "net.started": "بدأ",
         "net.no_encounters": "لم يتم تسجيل أي لقاءات نظراء بعد.",
         "hubs.connected_count": "موزّعات متصلة",
-        "hubs.failed_count": "اتصالات فاشلة",
-
-        // About page
-        "about.title": "حول SharkNet Messenger",
-        "about.desc": "تطبيق مراسلة لامركزي من نظير إلى نظير مبني على بروتوكول ASAP.",
-        "about.version_label": "الإصدار",
-        "about.description": "تطبيق مراسلة لامركزي من نظير إلى نظير مبني على بروتوكول ASAP",
-        "about.team_label": "الفريق",
-        "about.supervisor_label": "المشرف",
-        "about.tech_label": "التقنيات المستخدمة",
-        "about.source_label": "الكود المصدري",
-        "about.github_link": "عرض على GitHub"
+        "hubs.failed_count": "اتصالات فاشلة"
     }
 };
 

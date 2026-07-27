@@ -21,7 +21,6 @@
 
     // Set clean EL variables to prevent Scriptlet usage in the HTML body
     pageContext.setAttribute("peerId", activePeer.getPeerID());
-    pageContext.setAttribute("peerName", activePeer.getPeerName() != null ? activePeer.getPeerName() : "Unknown Peer");
     pageContext.setAttribute("openPorts", activePeer.getOpenSockets().size());
     pageContext.setAttribute("activeConns", activePeer.getActiveConnections().size());
 %>
@@ -52,7 +51,7 @@
                         <i class="fas fa-id-card"></i>
                     </div>
                     <div>
-                        <h1 class="text-2xl font-bold text-gray-900 dark:text-white" data-i18n="prof.title">Peer Profile</h1>
+                        <h1 class="text-2xl font-bold text-gray-900 dark:text-white" data-i18n="prof.title">My Profile</h1>
                         <p class="text-sm text-gray-500 dark:text-gray-400" data-i18n="prof.desc">Manage your decentralized identity and view network metrics.</p>
                     </div>
                 </div>
@@ -63,23 +62,21 @@
                          Column 1: Identity Overview (Name, ID, PKI, Avatar)
                     =========================================== --%>
                     <div class="lg:col-span-1 space-y-6">
-                        <ui:card cssClass="text-center">
-                            <div class="flex flex-col items-center py-4">
-                                <%-- Avatar Placeholder --%>
-                                <div class="w-24 h-24 rounded-full bg-gradient-to-br from-primary-500 to-blue-700 text-white flex items-center justify-center text-4xl shadow-lg mb-4">
-                                    <i class="fas fa-user-astronaut"></i>
-                                </div>
-                                <h2 class="text-xl font-bold text-gray-800 dark:text-white mb-1">${peerName}</h2>
-                                <ui:badge text="Active Identity" theme="success" cssClass="mb-4" key="prof.active_identity" />
-
-                                <%-- Export/Share Profile Button configured with valid i18n key tracking --%>
-                                <ui:button text="Export Identity" theme="primary" icon="fas fa-file-export" onClick="exportProfileData()" cssClass="w-full justify-center" key="prof.export" />
-                            </div>
-                        </ui:card>
-
                         <%-- Cryptographic Identity Panel configured with valid i18n key tracking --%>
                         <ui:card title="Cryptographic Identity" icon="fas fa-fingerprint" key="prof.crypto_id">
                             <div class="space-y-4 text-sm">
+                                <div>
+                                    <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1" data-i18n="prof.peer_name">Peer Name</label>
+                                    <div id="profile-peer-name" class="p-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-dark-border rounded text-sm text-gray-700 dark:text-gray-300 break-all">
+                                        <span class="opacity-60 italic" data-i18n="common.loading">Loading...</span>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1" data-i18n="common.status">Status</label>
+                                    <div id="profile-status-badge">
+                                        <span class="px-2.5 py-0.5 bg-gray-100 text-gray-500 dark:bg-gray-700 dark:text-gray-400 text-xs font-bold rounded-full" data-i18n="common.loading">Loading...</span>
+                                    </div>
+                                </div>
                                 <div>
                                     <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1" data-i18n="prof.peer_id">Peer ID</label>
                                     <div class="p-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-dark-border rounded font-mono text-xs break-all text-gray-700 dark:text-gray-300">
@@ -168,8 +165,7 @@
          * so the external profile.js file can access them securely.
          */
         window.PROFILE_CONTEXT = {
-            peerId: '${peerId}',
-            peerName: '${peerName}'
+            peerId: '${peerId}'
         };
     </script>
 
