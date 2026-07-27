@@ -131,7 +131,7 @@ peer lifecycle events, and shutdown hooks.
 
 Once logged in, the app is organized into the following pages (left sidebar):
 
-- **Messenger** — create/select channels and send signed or encrypted messages to other peers.
+- **Messenger** — create/select channels and send signed or encrypted messages to other peers; each message displays a trust badge showing its Identity Assurance (IA) score and hop path, based on the sender's certificate chain.
 - **Manageable Peers** — create, start, stop, and manage your local peers.
 - **Encounter Management** — track peer encounters recorded during the current session.
 - **TCP Connections** — open a listening port or connect directly to another peer over TCP.
