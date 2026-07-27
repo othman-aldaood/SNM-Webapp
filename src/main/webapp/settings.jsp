@@ -31,22 +31,13 @@
 
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-2 md:mb-6 gap-4">
                     <div>
-                        <h1 class="text-xl md:text-2xl font-bold" data-i18n="settings.title">Settings & Configuration</h1>
+                        <h1 class="text-xl md:text-2xl font-bold" data-i18n="settings.title">Settings</h1>
                         <p class="text-sm text-gray-500 dark:text-gray-400 mt-1" data-i18n="settings.desc">Manage peer configuration and application settings.</p>
                     </div>
                     <div class="w-full sm:w-auto">
                         <button class="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 px-5 rounded-lg shadow-sm transition-colors flex justify-center items-center gap-2" onclick="saveSettings()">
                             <i class="fas fa-save"></i> <span data-i18n="settings.save_changes_btn">Save Changes</span>
                         </button>
-                    </div>
-                </div>
-
-                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4 md:p-6">
-                    <div class="border-b border-gray-100 dark:border-gray-700 pb-3 md:pb-4 mb-4">
-                        <h3 class="text-lg font-bold" data-i18n="settings.peer_status_title">Peer Status</h3>
-                    </div>
-                    <div id="peer-status-content">
-                        <div class="animate-pulse text-gray-500 dark:text-gray-400 text-sm" data-i18n="settings.loading_peer_status">Loading peer status...</div>
                     </div>
                 </div>
 
@@ -125,26 +116,6 @@
                     <div class="mb-2">
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" data-i18n="settings.display_name_label">Peer Display Name Customization</label>
                         <input type="text" id="customDisplayName" class="w-full bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none transition-shadow" placeholder="Enter custom display name..." data-i18n-placeholder="settings.display_name_placeholder">
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4 md:p-6 w-full overflow-hidden">
-                        <div class="border-b border-gray-100 dark:border-gray-700 pb-3 md:pb-4 mb-4">
-                            <h3 class="text-lg font-bold" data-i18n="settings.pki_status_title">PKI Status</h3>
-                        </div>
-                        <div id="pki-status-content" class="w-full">
-                            <div class="animate-pulse text-gray-500 dark:text-gray-400 text-sm" data-i18n="settings.loading_pki_status">Loading PKI status...</div>
-                        </div>
-                    </div>
-
-                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4 md:p-6 w-full overflow-hidden">
-                        <div class="border-b border-gray-100 dark:border-gray-700 pb-3 md:pb-4 mb-4">
-                            <h3 class="text-lg font-bold" data-i18n="nav.network">Network Status</h3>
-                        </div>
-                        <div id="network-status-content" class="w-full">
-                            <div class="animate-pulse text-gray-500 dark:text-gray-400 text-sm" data-i18n="settings.loading_network_status">Loading network status...</div>
-                        </div>
                     </div>
                 </div>
 

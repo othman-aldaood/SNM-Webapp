@@ -44,10 +44,12 @@
         <button onclick="toggleSidebar()" class="text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 p-2 rounded-lg transition-colors focus:outline-none" title="Toggle Sidebar">
             <i class="fas fa-bars text-xl"></i>
         </button>
-        <div class="bg-gradient-to-br from-primary-500 to-blue-700 text-white font-bold w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded-lg text-lg sm:text-xl shadow-md">
-            <i class="fas fa-water"></i>
-        </div>
-        <span class="font-bold text-lg sm:text-xl text-gray-800 dark:text-white font-mono hidden sm:block tracking-tight">SharkNet</span>
+        <a href="index.jsp" class="flex items-center gap-3 sm:gap-4 hover:opacity-80 transition-opacity" title="Go to Messenger">
+            <div class="bg-gradient-to-br from-primary-500 to-blue-700 text-white font-bold w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded-lg text-lg sm:text-xl shadow-md">
+                <i class="fas fa-water"></i>
+            </div>
+            <span class="font-bold text-lg sm:text-xl text-gray-800 dark:text-white font-mono hidden sm:block tracking-tight">SharkNet</span>
+        </a>
     </div>
 
     <div class="flex items-center gap-2 sm:gap-4">
@@ -58,12 +60,9 @@
                 <i class="fas fa-user-circle text-sm"></i> <span id="activePeerName"><%= activePeerName %></span>
             </a>
 
-            <div class="flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full bg-green-50 text-green-700 dark:bg-green-900/30 dark:text-green-400 border border-green-100 dark:border-green-800/50 shadow-sm">
-                <i class="fas fa-globe text-sm"></i> <span data-i18n="header.internet">Internet</span>
-            </div>
-            <div class="flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300 border border-gray-200 dark:border-gray-700 shadow-sm">
+            <a href="contacts.jsp" class="flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300 border border-gray-200 dark:border-gray-700 shadow-sm hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors cursor-pointer" title="View Manageable Peers">
                 <i class="fas fa-users text-sm"></i> <span id="globalPeerCount">...</span>
-            </div>
+            </a>
         </div>
 
         <!-- Mobile Profile Link -->
