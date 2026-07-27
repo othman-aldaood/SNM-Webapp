@@ -30,7 +30,6 @@ const translations = {
         "nav.hubs": "ASAP Hubs",
         "nav.settings": "Settings",
         "nav.profile": "My Profile",
-        "nav.help": "Help",
         "nav.about": "About",
 
         // Header
@@ -38,15 +37,6 @@ const translations = {
         "header.logout": "Logout",
         "header.logout_confirm": "Confirm Logout",
         "header.logout_desc": "Are you sure you want to log out?<br>This will stop the active peer and redirect you to the login screen.",
-
-        // Presence Status (header + profile)
-        "status.set_status": "Set Status",
-        "status.active": "Active",
-        "status.away": "Away",
-        "status.dnd": "Do Not Disturb",
-        "status.invisible": "Invisible",
-        "status.lock_status": "Lock Status",
-        "status.lock_desc": "Locked status won't change automatically (e.g. when you're away).",
 
         // Settings Page
         "settings.title": "Settings & Configuration",
@@ -96,48 +86,8 @@ const translations = {
         "msg.peer_info": "Peer Info",
         "msg.stats": "Statistics",
 
-        // Onboarding / Welcome Alerts
-        "welcome.alert.name_required": "Please input your display name representation to proceed.",
-        "welcome.alert.hub_required": "Please enter both target remote address and operational port mappings.",
-        "welcome.alert.hub_failed": "Failed dispatching operational frame context to target hub.",
-        "welcome.alert.uri_required": "A valid active scope target channel URI is required.",
-        "welcome.alert.channel_failed": "Failed to initialize your first channel: ",
-        "welcome.alert.save_error": "An error occurred while saving your configuration.",
-
-        // Onboarding Welcome Page
-        "welcome.step.profile": "Profile",
-        "welcome.step.pki": "Keys (PKI)",
-        "welcome.step.hub": "Hub Link",
-        "welcome.step.channels": "Channels",
-
-        "welcome.prof.header": "Configure User Profile",
-        "welcome.prof.desc": "Set up your local display preference for this SharkNet peer identity.",
-        "welcome.prof.label": "Peer Custom Name",
-        "welcome.prof.placeholder": "e.g. Shark_Node_Alpha",
-        "welcome.prof.info": "This configuration establishes your personal identifier representation across active channels within the decentralized framework.",
-
-        "welcome.pki.header": "Cryptographic Key Infrastructure",
-        "welcome.pki.desc": "Your secure decentralized cryptographic identity credentials are automatically managed.",
-        "welcome.pki.status": "PKI Infrastructure Status:",
+        // Used by profile.jsp
         "welcome.pki.active": "Active",
-        "welcome.pki.hash": "Public Key Fingerprint Hash",
-        "welcome.pki.resolving": "Resolving identity fingerprint string...",
-        "welcome.pki.storage": "Keys are stored securely inside your local peer data partition directories.",
-
-        "welcome.hub.header": "Establish Hub Link",
-        "welcome.hub.desc": "Connect to an operational ASAP protocol hub router to enable background data sync orchestration.",
-        "welcome.hub.address": "Hub Address / Host",
-        "welcome.hub.port": "Target TCP Port",
-        "welcome.hub.dispatch": "Dispatch Connection",
-
-        "welcome.chan.header": "Initialize First Channel",
-        "welcome.chan.desc": "Establish or subscribe to a communication URI space instance channel to initiate message interactions.",
-        "welcome.chan.uri": "Channel Address Identity URI",
-        "welcome.chan.friendly": "Descriptive Friendly Label Name (Optional)",
-        "welcome.chan.placeholder": "Global Mesh Exchange Channel",
-
-        "welcome.btn.prev": "Previous",
-        "welcome.btn.next": "Next",
 
         // Certificate Management Page
         "cert.title": "Certificate Management",
@@ -274,7 +224,6 @@ const translations = {
         "prof.title": "Peer Profile",
         "prof.desc": "Manage your decentralized identity and view network metrics.",
         "prof.active_identity": "Active Identity",
-        "prof.status_title": "Presence Status",
         "prof.export": "Export Identity",
         "prof.crypto_id": "Cryptographic Identity",
         "prof.peer_id": "Peer ID",
@@ -571,7 +520,6 @@ const translations = {
         "nav.hubs": "ASAP Hubs",
         "nav.settings": "Einstellungen",
         "nav.profile": "Mein Profil",
-        "nav.help": "Hilfe",
         "nav.about": "Über",
 
         // Header
@@ -579,15 +527,6 @@ const translations = {
         "header.logout": "Abmelden",
         "header.logout_confirm": "Abmeldung bestätigen",
         "header.logout_desc": "Möchten Sie sich wirklich abmelden?<br>Dies stoppt den aktiven Peer und leitet Sie zur Anmeldeseite weiter.",
-
-        // Presence Status (header + profile)
-        "status.set_status": "Status festlegen",
-        "status.active": "Aktiv",
-        "status.away": "Abwesend",
-        "status.dnd": "Nicht stören",
-        "status.invisible": "Unsichtbar",
-        "status.lock_status": "Status sperren",
-        "status.lock_desc": "Gesperrter Status ändert sich nicht automatisch (z. B. bei Abwesenheit).",
 
         // Settings Page
         "settings.title": "Einstellungen & Konfiguration",
@@ -637,48 +576,8 @@ const translations = {
         "msg.peer_info": "Peer-Info",
         "msg.stats": "Statistiken",
 
-        // Onboarding / Welcome Alerts
-        "welcome.alert.name_required": "Bitte geben Sie Ihren Anzeigenamen ein, um fortzufahren.",
-        "welcome.alert.hub_required": "Bitte geben Sie sowohl die Zieladresse als auch die Port-Zuweisungen ein.",
-        "welcome.alert.hub_failed": "Fehler beim Senden des Betriebskontexts an den Ziel-Hub.",
-        "welcome.alert.uri_required": "Eine gültige Kanal-URI ist erforderlich.",
-        "welcome.alert.channel_failed": "Fehler beim Initialisieren Ihres ersten Kanals: ",
-        "welcome.alert.save_error": "Beim Speichern Ihrer Konfiguration ist ein Fehler aufgetreten.",
-
-        // Onboarding Welcome Page
-        "welcome.step.profile": "Profil",
-        "welcome.step.pki": "Schlüssel (PKI)",
-        "welcome.step.hub": "Hub-Link",
-        "welcome.step.channels": "Kanäle",
-
-        "welcome.prof.header": "Benutzerprofil konfigurieren",
-        "welcome.prof.desc": "Richten Sie Ihren lokalen Anzeigenamen für diese SharkNet-Peer-Identität ein.",
-        "welcome.prof.label": "Benutzerdefinierter Peer-Name",
-        "welcome.prof.placeholder": "z.B. Shark_Node_Alpha",
-        "welcome.prof.info": "Diese Konfiguration legt Ihre persönliche Kennung in aktiven Kanälen innerhalb des dezentralen Frameworks fest.",
-
-        "welcome.pki.header": "Kryptografische Schlüsselinfrastruktur",
-        "welcome.pki.desc": "Ihre sicheren dezentralen kryptografischen Identitätsdaten werden automatisch verwaltet.",
-        "welcome.pki.status": "PKI-Infrastrukturstatus:",
+        // Used by profile.jsp
         "welcome.pki.active": "Aktiv",
-        "welcome.pki.hash": "Öffentlicher Schlüssel-Fingerabdruck-Hash",
-        "welcome.pki.resolving": "Identitäts-Fingerabdruck-String wird aufgelöst...",
-        "welcome.pki.storage": "Schlüssel werden sicher in Ihren lokalen Peer-Datenpartitionsverzeichnissen gespeichert.",
-
-        "welcome.hub.header": "Hub-Verbindung herstellen",
-        "welcome.hub.desc": "Verbinden Sie sich mit einem aktiven ASAP-Protokoll-Hub-Router, um die Synchronisation im Hintergrund zu aktivieren.",
-        "welcome.hub.address": "Hub-Adresse / Host",
-        "welcome.hub.port": "Ziel-TCP-Port",
-        "welcome.hub.dispatch": "Verbindung senden",
-
-        "welcome.chan.header": "Ersten Kanal initialisieren",
-        "welcome.chan.desc": "Erstellen oder abonnieren Sie einen Kommunikations-URI-Raum, um Nachrichtenaustausch zu starten.",
-        "welcome.chan.uri": "Kanal-Adressidentitäts-URI",
-        "welcome.chan.friendly": "Beschreibender Anzeigename (Optional)",
-        "welcome.chan.placeholder": "Globaler Mesh-Austauschkanal",
-
-        "welcome.btn.prev": "Zurück",
-        "welcome.btn.next": "Weiter",
 
         // Certificate Management Page
         "cert.title": "Zertifikatsverwaltung",
@@ -817,7 +716,6 @@ const translations = {
         "prof.title": "Peer-Profil",
         "prof.desc": "Verwalten Sie Ihre dezentrale Identität und zeigen Sie Netzwerkmetriken an.",
         "prof.active_identity": "Aktive Identität",
-        "prof.status_title": "Anwesenheitsstatus",
         "prof.export": "Identität exportieren",
         "prof.crypto_id": "Kryptografische Identität",
         "prof.peer_id": "Peer-ID",
@@ -1112,7 +1010,6 @@ const translations = {
         "nav.hubs": "ASAP Hub'ları",
         "nav.settings": "Ayarlar",
         "nav.profile": "Profilim",
-        "nav.help": "Yardım",
         "nav.about": "Hakkında",
 
         // Header
@@ -1120,15 +1017,6 @@ const translations = {
         "header.logout": "Çıkış Yap",
         "header.logout_confirm": "Çıkışı Onayla",
         "header.logout_desc": "Çıkış yapmak istediğinizden emin misiniz?<br>Bu, aktif eşi durduracak ve sizi giriş ekranına yönlendirecektir.",
-
-        // Presence Status (header + profile)
-        "status.set_status": "Durum Belirle",
-        "status.active": "Aktif",
-        "status.away": "Uzakta",
-        "status.dnd": "Rahatsız Etmeyin",
-        "status.invisible": "Görünmez",
-        "status.lock_status": "Durumu Kilitle",
-        "status.lock_desc": "Kilitli durum otomatik olarak değişmez (örn. uzaktayken).",
 
         // Settings Page
         "settings.title": "Ayarlar & Konfigürasyon",
@@ -1182,7 +1070,6 @@ const translations = {
         "prof.title": "Eş Profili",
         "prof.desc": "Merkezi olmayan kimliğinizi yönetin ve ağ metriklerini görüntüleyin.",
         "prof.active_identity": "Aktif Kimlik",
-        "prof.status_title": "Bulunma Durumu",
         "prof.export": "Kimliği Dışa Aktar",
         "prof.crypto_id": "Kriptografik Kimlik",
         "prof.peer_id": "Eş Kimliği (Peer ID)",
@@ -1199,48 +1086,8 @@ const translations = {
         "prof.badge_direct_trust": "Doğrudan Güven: Yüksek",
         "prof.badge_no_flags": "Güvenlik uyarısı yok",
 
-        // Onboarding / Welcome Alerts
-        "welcome.alert.name_required": "Devam etmek için lütfen görünen adınızı girin.",
-        "welcome.alert.hub_required": "Lütfen hem hedef uzak adresi hem de port eşlemelerini girin.",
-        "welcome.alert.hub_failed": "Operasyonel çerçeve hedef hub'a gönderilemedi.",
-        "welcome.alert.uri_required": "Geçerli bir hedef kanal URI'si gereklidir.",
-        "welcome.alert.channel_failed": "İlk kanalınız başlatılamadı: ",
-        "welcome.alert.save_error": "Yapılandırmanız kaydedilirken bir hata oluştu.",
-
-        // Onboarding Welcome Page
-        "welcome.step.profile": "Profil",
-        "welcome.step.pki": "Anahtarlar (PKI)",
-        "welcome.step.hub": "Hub Bağlantısı",
-        "welcome.step.channels": "Kanallar",
-
-        "welcome.prof.header": "Kullanıcı Profilini Yapılandır",
-        "welcome.prof.desc": "Bu SharkNet eş kimliği için yerel görüntüleme tercihinizi ayarlayın.",
-        "welcome.prof.label": "Özel Eş Adı",
-        "welcome.prof.placeholder": "örn. Shark_Node_Alpha",
-        "welcome.prof.info": "Bu konfigürasyon, merkezi olmayan sistemdeki aktif kanallarda kişisel kimliğinizi oluşturur.",
-
-        "welcome.pki.header": "Kriptografik Anahtar Altyapısı",
-        "welcome.pki.desc": "Güvenli merkezi olmayan kriptografik kimlik bilgileriniz otomatik olarak yönetilir.",
-        "welcome.pki.status": "PKI Altyapı Durumu:",
+        // Used by profile.jsp
         "welcome.pki.active": "Aktif",
-        "welcome.pki.hash": "Açık Anahtar Parmak İzi Özeti",
-        "welcome.pki.resolving": "Kimlik parmak izi dizisi çözümleniyor...",
-        "welcome.pki.storage": "Anahtarlar, yerel eş veri bölümlerinizde güvenli bir şekilde saklanır.",
-
-        "welcome.hub.header": "Hub Bağlantısı Kur",
-        "welcome.hub.desc": "Arka planda veri senkronizasyonunu etkinleştirmek için operasyonel bir ASAP protokol hub yönlendiricisine bağlanın.",
-        "welcome.hub.address": "Hub Adresi / Sunucu",
-        "welcome.hub.port": "Hedef TCP Portu",
-        "welcome.hub.dispatch": "Bağlantıyı Başlat",
-
-        "welcome.chan.header": "İlk Kanalı Başlat",
-        "welcome.chan.desc": "Mesajlaşmayı başlatmak için bir iletişim URI kanalı oluşturun veya abone olun.",
-        "welcome.chan.uri": "Kanal Adresi Kimlik URI'si",
-        "welcome.chan.friendly": "Açıklayıcı Görünen Ad (İsteğe Bağlı)",
-        "welcome.chan.placeholder": "Küresel Ağ Değişim Kanalı",
-
-        "welcome.btn.prev": "Önceki",
-        "welcome.btn.next": "Sonraki",
 
         // Certificate Management Page
         "cert.title": "Sertifika Yönetimi",
@@ -1651,7 +1498,6 @@ const translations = {
         "nav.hubs": "موزعات ASAP",
         "nav.settings": "الإعدادات",
         "nav.profile": "ملفي الشخصي",
-        "nav.help": "المساعدة",
         "nav.about": "حول",
 
         // Header
@@ -1659,15 +1505,6 @@ const translations = {
         "header.logout": "تسجيل الخروج",
         "header.logout_confirm": "تأكيد تسجيل الخروج",
         "header.logout_desc": "هل أنت متأكد أنك تريد تسجيل الخروج؟<br>سيؤدي هذا إلى إيقاف النظير النشط وتوجيهك إلى شاشة تسجيل الدخول.",
-
-        // Presence Status (header + profile)
-        "status.set_status": "تعيين الحالة",
-        "status.active": "نشط",
-        "status.away": "بعيد",
-        "status.dnd": "عدم الإزعاج",
-        "status.invisible": "غير مرئي",
-        "status.lock_status": "قفل الحالة",
-        "status.lock_desc": "لن تتغير الحالة المقفلة تلقائيًا (مثلاً عند الابتعاد).",
 
         // Settings Page
         "settings.title": "الإعدادات والتهيئة",
@@ -1721,7 +1558,6 @@ const translations = {
         "prof.title": "ملف النظير",
         "prof.desc": "إدارة هويتك اللامركزية وعرض مقاييس الشبكة.",
         "prof.active_identity": "الهوية النشطة",
-        "prof.status_title": "حالة الحضور",
         "prof.export": "تصدير الهوية",
         "prof.crypto_id": "الهوية المشفرة",
         "prof.peer_id": "معرف النظير",
@@ -1738,48 +1574,8 @@ const translations = {
         "prof.badge_direct_trust": "الثقة المباشرة: عالية",
         "prof.badge_no_flags": "لا توجد علامات أمنية",
 
-        // Onboarding / Welcome Alerts
-        "welcome.alert.name_required": "يرجى إدخال اسم العرض الخاص بك للمتابعة.",
-        "welcome.alert.hub_required": "يرجى إدخال كل من العنوان البعيد المستهدف وتعيينات المنافذ.",
-        "welcome.alert.hub_failed": "فشل في إرسال سياق الإطار التشغيلي إلى الموزع المستهدف.",
-        "welcome.alert.uri_required": "مطلوب معرف (URI) صالح للقناة المستهدفة.",
-        "welcome.alert.channel_failed": "فشل في تهيئة قناتك الأولى: ",
-        "welcome.alert.save_error": "حدث خطأ أثناء حفظ تكوينك.",
-
-        // Onboarding Welcome Page
-        "welcome.step.profile": "الملف الشخصي",
-        "welcome.step.pki": "المفاتيح (PKI)",
-        "welcome.step.hub": "ارتباط الموزع",
-        "welcome.step.channels": "القنوات",
-
-        "welcome.prof.header": "تكوين ملف المستخدم",
-        "welcome.prof.desc": "قم بإعداد تفضيلات العرض المحلي لهوية نظير SharkNet الخاصة بك.",
-        "welcome.prof.label": "اسم النظير المخصص",
-        "welcome.prof.placeholder": "مثال: Shark_Node_Alpha",
-        "welcome.prof.info": "يؤسس هذا التكوين تمثيل هويتك الشخصية عبر القنوات النشطة ضمن الإطار اللامركزي.",
-
-        "welcome.pki.header": "البنية التحتية لمفاتيح التشفير",
-        "welcome.pki.desc": "تتم إدارة بيانات هويتك المشفرة اللامركزية والآمنة تلقائيًا.",
-        "welcome.pki.status": "حالة البنية التحتية لـ PKI:",
+        // Used by profile.jsp
         "welcome.pki.active": "نشط",
-        "welcome.pki.hash": "تجزئة بصمة المفتاح العام",
-        "welcome.pki.resolving": "جاري حل سلسلة بصمة الهوية...",
-        "welcome.pki.storage": "يتم تخزين المفاتيح بشكل آمن داخل أدلة تقسيم بيانات النظير المحلية الخاصة بك.",
-
-        "welcome.hub.header": "إنشاء ارتباط بالموزع",
-        "welcome.hub.desc": "اتصل بموجه بروتوكول ASAP تشغيلي لتمكين مزامنة البيانات في الخلفية.",
-        "welcome.hub.address": "عنوان الموزع / المضيف",
-        "welcome.hub.port": "منفذ TCP المستهدف",
-        "welcome.hub.dispatch": "بدء الاتصال",
-
-        "welcome.chan.header": "تهيئة القناة الأولى",
-        "welcome.chan.desc": "قم بإنشاء أو الاشتراك في مساحة قناة (URI) للاتصال لبدء تفاعلات الرسائل.",
-        "welcome.chan.uri": "معرف (URI) عنوان القناة",
-        "welcome.chan.friendly": "اسم العرض الوصفي (اختياري)",
-        "welcome.chan.placeholder": "قناة التبادل الشبكي العالمية",
-
-        "welcome.btn.prev": "السابق",
-        "welcome.btn.next": "التالي",
 
         // Certificate Management Page
         "cert.title": "إدارة الشهادات",
