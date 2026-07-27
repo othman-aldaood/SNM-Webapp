@@ -32,8 +32,7 @@ const PRECACHE_URLS = [
     '/snm-webapp/js/certificates.js',
     '/snm-webapp/js/hubs.js',
     '/snm-webapp/js/profile.js',
-    '/snm-webapp/js/pki-tutorial.js',
-    '/snm-webapp/js/welcome.js'
+    '/snm-webapp/js/pki-tutorial.js'
 ];
 
 /** Static, cacheable file extensions - everything else is network-only. */
